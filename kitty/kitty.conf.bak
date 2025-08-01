@@ -29,6 +29,6 @@ window_padding_width 4
 
 
 # BEGIN_KITTY_THEME
-# 3024 Night
+# Black Metal
 include current-theme.conf
 # END_KITTY_THEME
