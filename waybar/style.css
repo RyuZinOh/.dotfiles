@@ -1,5 +1,5 @@
 * {
-    font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-family: "CaskaydiaCove NF", "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
     font-size: 15px;
     transition: background-color .3s ease-out;
 }
@@ -7,7 +7,7 @@
 window#waybar {
     background: transparent;
     color: #c0caf5;
-    font-family: 
+    font-family:
         SpaceMono Nerd Font,
         feather;
     transition: background-color .5s;

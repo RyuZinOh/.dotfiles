@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Directory containing wallpapers
@@ -47,6 +48,5 @@ hyprctl hyprpaper wallpaper "eDP-1 ,$WALLPAPER"
 
 #`swww` for smooth transitions
 swww img "$WALLPAPER" --transition-type grow --transition-duration 1 --transition-fps 60
-
 
 
