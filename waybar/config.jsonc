@@ -1,24 +1,21 @@
 {
     "layer": "top", 
     "position": "top",
-    "height": 44, 
+    "height":60 , 
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     "modules-left": [
         "custom/arch",
-        "hyprland/workspaces"
+        "custom/docker_mariadb"
     ],
     "modules-center": [
-        "hyprland/window"
+        "hyprland/workspaces"
     ],
     "modules-right": [
-        "idle_inhibitor",
-        "pulseaudio",
         "network",
         "cpu",
         "memory",
         "temperature",
-        "hyprland/language",
         "battery",
         //"custom/cava",
         "clock"

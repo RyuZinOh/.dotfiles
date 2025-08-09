@@ -1,16 +1,22 @@
 {
-    "custom/arch": {
-        "format": "󰣇",
-        "tooltip": true,
-        "tooltip-format": "btw"
-    },
-    "custom/cava": {
+  
+"custom/docker_mariadb": {
+  "exec": "~/.config/waybar/scripts/checkStuff.sh",
+  "interval": 10,
+  "format": "{}",
+  "tooltip": false
+},  "custom/cava": {
       "exec": "~/.config/waybar/scripts/cava.sh",
       "interval": 0,
       "format": "{text}",
       "tooltip": true,
       "return-type": "json",
       "on-click": "pkill cava; pkill cava.sh"
+    },
+    "custom/arch": {
+        "format": "󰣇",
+        "tooltip": true,
+        "tooltip-format": "safal726"
     },
     "hyprland/workspaces": {
         "disable-scroll": true,
@@ -23,35 +29,10 @@
             "default": ""
         }
     },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
-    },
-    "pulseaudio": {
-        "format": "{icon}  {volume}%",
-        "format-bluetooth": "{icon} {volume}%  {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-source": " {volume}%",
-        "format-source-muted": "",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
-        },
-        "on-click": ""
-    },
-    "network": {
-        "format-wifi": "   {essid} ({signalStrength}%)",
+   "network": {
+        "format-wifi": " ",
+        "tooltip-format":" {essid} ",
         "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
         "format-disconnected": "Disconnected ⚠",
 	"on-click": ""
 	 
@@ -70,11 +51,6 @@
         "critical-threshold": 100,
         "format-critical": " {temperatureC}",
         "format": " {temperatureC}°C"
-    },
-    "hyprland/language": {
-       "format": "  {}",
-       "format-en": "EN",
-       "format-ru": "RU"
     },
     "battery": {
         "states": {

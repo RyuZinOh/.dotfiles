@@ -1,33 +1,32 @@
 * {
     font-family: "CaskaydiaCove NF", "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
     font-size: 15px;
-    transition: background-color .3s ease-out;
+    transition: background-color 0.3s ease-out, color 0.3s ease-out;
 }
 
 window#waybar {
     background: transparent;
     color: #c0caf5;
-    font-family:
-        SpaceMono Nerd Font,
-        feather;
-    transition: background-color .5s;
+    font-family: "SpaceMono Nerd Font", feather;
 }
 
 .modules-left,
 .modules-center,
-.modules-right
-{
-    background: #000000;
-    margin: 5px 10px;
-    padding: 0 5px;
-    border-radius: 5px;
-    border: solid #ffffff 2px;
+.modules-right {
+    background: rgba(0, 0, 0, 0.75);
+    margin: 6px 10px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 2px solid white;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
+
 .modules-left {
-    padding: 0;
+    padding: 4px 6px;
 }
+
 .modules-center {
-    padding: 0 10px;
+    padding: 4px 12px;
 }
 
 #clock,
@@ -38,7 +37,6 @@ window#waybar {
 #temperature,
 #backlight,
 #network,
-#pulseaudio,
 #wireplumber,
 #custom-media,
 #tray,
@@ -46,12 +44,15 @@ window#waybar {
 #idle_inhibitor,
 #scratchpad,
 #power-profiles-daemon,
-#language,
-#mpd {
-    padding: 0 10px;
-    border-radius: 10px;
+#mpd,
+#custom-arch {
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: transparent;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ========== HOVER EFFECTS ========== */
 #clock:hover,
 #battery:hover,
 #cpu:hover,
@@ -60,48 +61,56 @@ window#waybar {
 #temperature:hover,
 #backlight:hover,
 #network:hover,
-#pulseaudio:hover,
 #wireplumber:hover,
 #custom-media:hover,
 #tray:hover,
 #mode:hover,
-#idle_inhibitor:hover,
 #scratchpad:hover,
 #power-profiles-daemon:hover,
-#language:hover,
-#mpd:hover {
-    background: rgba(26, 27, 38, 0.9);
+#mpd:hover,
+#custom-arch:hover {
+    background: rgba(36, 39, 58, 0.9);
+    color: #89b4fa;
 }
 
+#workspaces {
+    margin: 0 5px;
+}
 
 #workspaces button {
-  background: transparent;
-  font-family:
-    SpaceMono Nerd Font,
-    feather;
-  font-weight: 900;
-  font-size: 13pt;
-  color: #c0caf5;
-  border:none;
-  border-radius: 5px;
+    background: transparent;
+    font-family: "SpaceMono Nerd Font", feather;
+    font-weight: bold;
+    font-size: 14px;
+    color: #c0caf5;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 0 3px;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #workspaces button.active {
-    background: #13131d; 
+    background: #1e1e2e;
+    color: #89dceb;
 }
 
 #workspaces button:hover {
-  background: #11111b;
-  color: #cdd6f4;
-  box-shadow: none;
+    background: #11111b;
+    color: #cdd6f4;
 }
 
 #custom-arch {
-    margin-left: 5px;
-    padding: 0 10px;
-    font-size: 25px;
-    transition: color .5s;
+    margin-left: 6px;
+    font-size: 22px;
+    color: #7dcfff;
 }
+
 #custom-arch:hover {
     color: #1793d1;
 }
+
+#tray {
+    padding-right: 8px;
+}
+
