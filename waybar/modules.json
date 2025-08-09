@@ -58,9 +58,10 @@
         "format-icons": ["", "", "", "", ""]
     },
     "clock": {
-        "format": "{:%H:%M | %e %B} ",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
-    }
+    "format": "{:%I:%M %p | %e %B} ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "format-alt": "{:%Y-%m-%d}"
+}
+
 
 }
