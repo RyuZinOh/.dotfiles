@@ -1,0 +1,30 @@
+#!/bin/bash
+
+fifo="/tmp/cava.raw"
+
+map_height_to_block() {
+  local h=$1
+  if (( h < 125 )); then echo "▁"
+  elif (( h < 250 )); then echo "▂"
+  elif (( h < 375 )); then echo "▃"
+  elif (( h < 500 )); then echo "▄"
+  elif (( h < 625 )); then echo "▅"
+  elif (( h < 750 )); then echo "▆"
+  elif (( h < 875 )); then echo "▇"
+  else echo "█"
+  fi
+}
+
+if [[ ! -p $fifo ]]; then
+  echo "FIFO $fifo not found. Start cava first."
+  exit 1
+fi
+
+while IFS= read -r line; do
+  IFS=';' read -ra bars <<< "$line"
+  output=""
+  for bar in "${bars[@]}"; do
+    output+=$(map_height_to_block "$bar")
+  done
+  echo "{\"text\": \"$output\", \"tooltip\": \"Cava visualizer\"}"
+done < "$fifo"

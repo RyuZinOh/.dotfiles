@@ -1,0 +1,11 @@
+[general]
+bars = 16
+
+[input]
+method = pipewire
+source = auto
+
+[output]
+method = raw
+raw_target = /tmp/cava.raw
+data_format = ascii
