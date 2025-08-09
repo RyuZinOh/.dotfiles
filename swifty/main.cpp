@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QCryptographicHash>
 #include <QWidget>
 #include <QScrollArea>
 #include <QDir>
@@ -60,25 +61,48 @@ private:
     QWidget *containerWidget;
     QHBoxLayout *hLayout;
 
-    void loadWallpapers() {
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-        QStringList filters = {"*.jpg", "*.jpeg", "*.png", "*.gif"};
-        QFileInfoList files = dir.entryInfoList(filters, QDir::Files);
 
-        for (const QFileInfo &file : files) {
-            QImage img(file.absoluteFilePath());
+
+void loadWallpapers() {
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    QStringList filters = {"*.jpg", "*.jpeg", "*.png", "*.gif"};
+    QFileInfoList files = dir.entryInfoList(filters, QDir::Files);
+
+    QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/swifty";
+    QDir().mkpath(cachePath);
+
+    for (const QFileInfo &file : files) {
+        QString imagePath = file.absoluteFilePath();
+
+        QByteArray hash = QCryptographicHash::hash(imagePath.toUtf8(), QCryptographicHash::Sha1).toHex();
+        QString thumbPath = cachePath + "/" + hash + ".jpg";
+
+        QPixmap thumbnail;
+
+        if (QFile::exists(thumbPath)) {
+            thumbnail.load(thumbPath);
+        } else {
+            QImage img(imagePath);
             if (img.isNull()) continue;
 
             int h = 200;
             int w = img.width() * h / img.height();
 
-            ClickableLabel *label = new ClickableLabel(file.absoluteFilePath());
-            label->setPixmap(QPixmap::fromImage(img.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
-            label->setFixedSize(w, h);
-            connect(label, &ClickableLabel::clicked, this, &Swifty::applyWallpaper);
-            hLayout->addWidget(label);
+            QImage thumb = img.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            thumb.save(thumbPath);
+            thumbnail = QPixmap::fromImage(thumb);
         }
+
+        if (thumbnail.isNull()) continue;
+
+        ClickableLabel *label = new ClickableLabel(imagePath);
+        label->setPixmap(thumbnail);
+        label->setFixedSize(thumbnail.size());
+        connect(label, &ClickableLabel::clicked, this, &Swifty::applyWallpaper);
+        hLayout->addWidget(label);
     }
+}
+
 
 private slots:
     void applyWallpaper(const QString &path) {
