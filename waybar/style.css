@@ -1,0 +1,113 @@
+* {
+    font-family: "CaskaydiaCove NF", "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    transition: background-color 0.3s ease-out, color 0.3s ease-out;
+}
+
+window#waybar {
+    background: transparent;
+    color: #c0caf5;
+    font-family: "SpaceMono Nerd Font", feather;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    background: rgba(0, 0, 0, 0.75);
+    margin: 3px 5px;
+    padding: 1px 5px;
+    border-radius: 6px;
+    border: 1px solid #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.modules-left {
+    padding: 1px 3px;
+}
+
+.modules-center {
+    padding: 1px 8px;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#scratchpad,
+#power-profiles-daemon,
+#mpd,
+#custom-arch {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: transparent;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#clock:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#temperature:hover,
+#backlight:hover,
+#network:hover,
+#wireplumber:hover,
+#custom-media:hover,
+#tray:hover,
+#mode:hover,
+#scratchpad:hover,
+#power-profiles-daemon:hover,
+#mpd:hover,
+#custom-arch:hover {
+    background: rgba(36, 39, 58, 0.9);
+    color: #89b4fa;
+}
+
+#workspaces {
+    margin: 0 2px;
+}
+
+#workspaces button {
+    background: transparent;
+    font-family: "SpaceMono Nerd Font", feather;
+    font-weight: bold;
+    font-size: 12px;
+    color: #c0caf5;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    margin: 0 2px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#workspaces button.active {
+    background: #1e1e2e;
+    color: #89dceb;
+}
+
+#workspaces button:hover {
+    background: #11111b;
+    color: #cdd6f4;
+}
+
+#custom-arch {
+    margin-left: 4px;
+    font-size: 18px;
+    color: #7dcfff;
+}
+
+#custom-arch:hover {
+    color: #1793d1;
+}
+
+#tray {
+    padding-right: 5px;
+}
