@@ -36,19 +36,18 @@ class Swifty : public QWidget {
 public:
     Swifty(QWidget *parent = nullptr) : QWidget(parent) {
         setFixedSize(1890, 200);
-        setStyleSheet("background-color: rgba(0, 0, 0, 0.85); border-radius: 8px;");
+        setStyleSheet("background-color: black; border-radius: 8px;");
         setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-        setAttribute(Qt::WA_TranslucentBackground);
         
         scrollArea = new QScrollArea(this);
         scrollArea->setGeometry(0, 0, width(), height());
         scrollArea->setWidgetResizable(true);
         scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        scrollArea->setStyleSheet("background: transparent; border: none;");
+        scrollArea->setStyleSheet("background: black; border: none;");
         
         containerWidget = new QWidget();
-        containerWidget->setStyleSheet("background: transparent;");
+        containerWidget->setStyleSheet("background: black;");
         hLayout = new QHBoxLayout(containerWidget);
         hLayout->setSpacing(8);
         hLayout->setContentsMargins(5, 1, 5, 1);
