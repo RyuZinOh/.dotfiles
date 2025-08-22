@@ -1,22 +1,27 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import SddmComponents 2.0 as SDDM
 
 Item {
     id: sessionButton
 
-    height: root.font.pointSize
-    width: parent.width / 2
+    height: root.font.pointSize * 2
+    width: implicitWidth
     
-    property var selectedSession: selectSession.currentIndex
-    property string textConstantSession
-    property int loginButtonWidth
+    property alias implicitWidth: selectSession.implicitWidth
+    property alias currentIndex: selectSession.currentIndex
+    property alias currentText: selectSession.currentText
+    property alias model: selectSession.model
+    property alias hovered: selectSession.hovered
+    property alias pressed: selectSession.down
     property ComboBox exposeSession: selectSession
 
     ComboBox {
         id: selectSession
 
-        height: root.font.pointSize * 2
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.fill: parent
+        implicitWidth: displayedItem.implicitWidth + 20
+        implicitHeight: root.font.pointSize * 2
 
         hoverEnabled: true
         model: sessionModel
@@ -36,7 +41,6 @@ Item {
             contentItem: Text {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-
                 text: model.name
                 font.pointSize: root.font.pointSize * 0.8
                 font.family: root.font.family
@@ -56,7 +60,6 @@ Item {
             id: displayedItem
 
             verticalAlignment: Text.AlignVCenter
-            
             text: (config.TranslateSessionSelection || "Session") + " (" + selectSession.currentText + ")"
             color: config.SessionButtonTextColor
             font.pointSize: root.font.pointSize * 0.8
@@ -68,7 +71,6 @@ Item {
         background: Rectangle {
             height: parent.visualFocus ? 2 : 0
             width: displayedItem.implicitWidth
-
             color: "transparent"
         }
 
@@ -78,12 +80,11 @@ Item {
             implicitHeight: contentItem.implicitHeight
             width: sessionButton.width
             y: parent.height - 1
-            x:  -popupHandler.width/2 + displayedItem.width/2
+            x: -popupHandler.width/2 + displayedItem.width/2
             padding: 10
 
             contentItem: ListView {
                 implicitHeight: contentHeight + 20
-
                 clip: true
                 model: selectSession.popup.visible ? selectSession.delegateModel : null
                 currentIndex: selectSession.highlightedIndex
@@ -135,7 +136,5 @@ Item {
                 }
             }
         ]
-
     }
-
 }

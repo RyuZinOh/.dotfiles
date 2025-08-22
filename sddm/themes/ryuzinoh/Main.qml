@@ -45,35 +45,54 @@ Pane {
         z: 1
         color: config.DimBackgroundColor
         opacity: config.DimBackground || 0
+}
+
+    Quotes {
+        id: quotesComponent
+        anchors {
+            top: parent.top
+            left: parent.left
+            margins: 40
+            topMargin: 60
+        }
+        width: 200
+        z: 4
+        quote: config.Quote || "She was the Beautful gyaru, I was the dumb one to not notice! fuck!"
+        textColor: config.QuoteColor || "white"
+        fontSize: config.QuoteFontSize || 16
     }
 
-    Rectangle {
-        id: formBackground
-        anchors.centerIn: form
-        width: form.width + 80
-        height: form.height + 80
-        z: 2
-        color: config.FormBackgroundColor || "#aa000000"
-        visible: config.HaveFormBackground == "true"
-        opacity: config.PartialBlur == "true" ? 0.3 : 0.9
-        radius: 15
-        layer.enabled: config.PartialBlur == "true"
-        layer.effect: MultiEffect {
-            autoPaddingEnabled: true
-            blurEnabled: config.PartialBlur == "true"
-            blurMax: 32
-            blur: 1.0
+    DateTime {
+        id: dateTimeComponent
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+            topMargin: 200
         }
+        z: 4
+        textColor: config.DateTimeColor || "white"
+        dateFontSize: config.DateFontSize || 24
+        timeFontSize: config.TimeFontSize || 48
+    }
+
+    SessionButton {
+        id: sessionSelect
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: 40
+        anchors.topMargin: 60
+        z: 4
+        model: sessionModel
+        currentIndex: model.lastIndex
     }
 
     Rectangle {
         id: pfpContainer
-        width: 160
-        height: 160
-        anchors.horizontalCenter: form.horizontalCenter
+        width: 80  
+        height: 80 
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: form.top
-        anchors.bottomMargin: 20
-        color: "transparent"
+        anchors.bottomMargin: -50
         z: 3
         radius: width / 2
 
@@ -116,7 +135,7 @@ Pane {
             anchors.fill: parent
             color: "transparent"
             radius: width / 2
-            border.width: 5
+            border.width: 3 
             border.color: "#1c1d1d"
         }
     }
@@ -124,10 +143,10 @@ Pane {
     LoginForm {
         id: form
         width: Math.min(parent.width * 0.25, 500)
-        height: Math.min(parent.height * 0.35, 350)
-        anchors.right: parent.right
+        height: Math.min(parent.height * 0.3, 150)
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.margins: 60
+        anchors.bottomMargin: 0
         z: 3
     }
 

@@ -3,7 +3,7 @@ feel free to use this, I myself using others modules and stuffs with a lil bit o
 
 # ScreenShots
 ![1](./Assets/full_1755847579.png)
-![2](./Assets/full_1755847594.png)
+![2](./Assets/full_1755865592.png)
 ![3](./Assets/full_1755847607.png)
 ![4](./Assets/full_1755847651.png)
 ![5](./Assets/full_1755847703.png)
