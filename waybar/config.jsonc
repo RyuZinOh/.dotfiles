@@ -1,0 +1,27 @@
+{
+    "layer": "top", 
+    "position": "top",
+    "height":42 , 
+    // "width": 1280, // Waybar width
+    "spacing": 4, // Gaps between modules (4px)
+    "modules-left": [
+        "custom/arch",
+        "custom/docker_mariadb"
+    ],
+    "modules-center": [
+        "hyprland/workspaces"
+    ],
+    "modules-right": [
+        "network",
+        "cpu",
+        "memory",
+        "temperature",
+        "battery",
+        //"custom/cava",
+        "clock"
+    ],
+    //Modules configuration
+    "include": [
+		"~/.config/waybar/modules.json"
+	]
+}

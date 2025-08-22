@@ -1,0 +1,13 @@
+[SddmGreeterTheme]
+Name=sddm-ryuzinoh-theme
+Description=fallen shade
+Author=safal lama
+Website=https://github.com/ryuzinoh/.dotfiles
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.0
+ConfigFile=Themes/ryu.conf
+MainScript=Main.qml
+Theme-Id=sddm-ryuzinoh-theme
+Theme-API=2.0
+QtVersion=6
