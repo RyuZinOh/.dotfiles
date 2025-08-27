@@ -1,6 +1,10 @@
 # dotfiles - Safal Lama
 feel free to use this, I myself using others modules and stuffs with a lil bit of tweaks
 
+# preview
+https://github.com/user-attachments/assets/548451e5-0947-4f7f-91d2-fe1aa530ebaa
+
+
 # ScreenShots
 ![1](./Assets/full_1755847579.png)
 ![2](./Assets/full_1755865592.png)
