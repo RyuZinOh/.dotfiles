@@ -69,7 +69,30 @@ void Swifty::loadWallpapers() {
 
 void Swifty::applyWallpaper(const QString &path) {
     QString wallpaperName = QFileInfo(path).completeBaseName();
-    QString notifyCmd = QString("hyprctl notify -1 3000 \"rgb(003366)\" \"fontsize:20 %1 Applied!\"").arg(wallpaperName);
-    QProcess::execute("sh", {"-c", notifyCmd});
-    QProcess::execute("swww", {"img", path, "--transition-type","wipe","--transition-duration","1","--transition-fps","60"});
+
+    QProcess::startDetached("sh", {"-c",
+        QString("hyprctl notify -1 3000 \"rgb(003366)\" \"fontsize:20 %1 Applied!\"").arg(wallpaperName)
+    });
+
+    QProcess::startDetached("swww", {"img", path,
+                                     "--transition-type", "wipe",
+                                     "--transition-duration", "1",
+                                     "--transition-fps", "60"});
+
+    QString hyprlockDir = "/home/safal726/.cache/hyprlock-safal";
+    QString finalPath = hyprlockDir + "/mystic_blur.jpg";
+    QString tmpPath   = hyprlockDir + "/mystic_blur.jpg.tmp";
+
+    QDir().mkpath(hyprlockDir);
+
+    QString blurCmd = QString("magick \"%1\" -blur 0x25 \"%2\"").arg(path, tmpPath);
+    QProcess::startDetached("sh", {"-c", blurCmd});
+
+    QString atomicMoveCmd = QString(R"(
+        while [ ! -f "%1" ]; do sleep 0.1; done
+        mv "%1" "%2"
+    )").arg(tmpPath, finalPath);
+
+    QProcess::startDetached("sh", {"-c", atomicMoveCmd});
 }
+
