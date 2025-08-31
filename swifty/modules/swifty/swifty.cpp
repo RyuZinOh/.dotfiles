@@ -85,7 +85,7 @@ void Swifty::applyWallpaper(const QString &path) {
 
     QDir().mkpath(hyprlockDir);
 
-    QString blurCmd = QString("magick \"%1\" -blur 0x25 \"%2\"").arg(path, tmpPath);
+    QString blurCmd = QString("magick \"%1\" -blur 0x25 jpeg:\"%2\"").arg(path, tmpPath);
     QProcess::startDetached("sh", {"-c", blurCmd});
 
     QString atomicMoveCmd = QString(R"(
