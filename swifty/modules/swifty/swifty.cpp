@@ -80,19 +80,12 @@ void Swifty::applyWallpaper(const QString &path) {
                                      "--transition-fps", "60"});
 
     QString hyprlockDir = "/home/safal726/.cache/hyprlock-safal";
-    QString finalPath = hyprlockDir + "/mystic_blur.jpg";
-    QString tmpPath   = hyprlockDir + "/mystic_blur.jpg.tmp";
+    QString finalPath = hyprlockDir + "/bg.jpg";
 
     QDir().mkpath(hyprlockDir);
 
-    QString blurCmd = QString("magick \"%1\" -blur 0x25 jpeg:\"%2\"").arg(path, tmpPath);
-    QProcess::startDetached("sh", {"-c", blurCmd});
-
-    QString atomicMoveCmd = QString(R"(
-        while [ ! -f "%1" ]; do sleep 0.1; done
-        mv "%1" "%2"
-    )").arg(tmpPath, finalPath);
-
-    QProcess::startDetached("sh", {"-c", atomicMoveCmd});
+    QImage img(path);
+    if (!img.isNull()) {
+        img.save(finalPath, "JPG");  
+    }
 }
-
