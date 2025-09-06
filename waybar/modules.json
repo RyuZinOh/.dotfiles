@@ -10,7 +10,7 @@
         "format": "󰣇",
         "tooltip": true,
         "tooltip-format": "safal726",
-        "on-click": "kitty --title power_menu --hold -e ~/.config/waybar/scripts/powermenu"
+        "on-click": "~/.dotfiles/waybar/scripts/powerski"
     },
     "hyprland/workspaces": {
         "disable-scroll": true,

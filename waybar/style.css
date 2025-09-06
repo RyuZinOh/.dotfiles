@@ -1,40 +1,30 @@
 * {
-    font-family: "CaskaydiaCove NF", "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-family: "CaskaydiaCove NF", monospace;
     font-size: 13px;
-    transition: background-color 0.3s ease-out, color 0.3s ease-out;
+    transition: color 0.3s ease-out;
 }
 
 window#waybar {
     background: transparent;
     color: #c0caf5;
-    font-family: "SpaceMono Nerd Font", feather;
+    border-radius: 0;
+    padding: 2px 4px;
 }
 
 .modules-left,
 .modules-center,
 .modules-right {
-    background: rgba(0, 0, 0, 0.75);
-    margin: 3px 5px;
-    padding: 1px 5px;
-    border-radius: 6px;
-    border: 1px solid #ffffff;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-.modules-left {
-    padding: 1px 3px;
-}
-
-.modules-center {
-    padding: 1px 8px;
+    background: #000000;
+    margin: 3px 6px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid #111111;
 }
 
 #clock,
-#battery,
 #cpu,
 #memory,
 #disk,
-#temperature,
 #backlight,
 #network,
 #wireplumber,
@@ -42,21 +32,20 @@ window#waybar {
 #tray,
 #mode,
 #scratchpad,
-#power-profiles-daemon,
 #mpd,
-#custom-arch {
-    padding: 2px 8px;
-    border-radius: 6px;
+#custom-arch,
+#temperature {
     background: transparent;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 0 5px;
+    margin: 0 2px;
+    border-radius: 0;
+    transition: color 0.3s ease;
 }
 
 #clock:hover,
-#battery:hover,
 #cpu:hover,
 #memory:hover,
 #disk:hover,
-#temperature:hover,
 #backlight:hover,
 #network:hover,
 #wireplumber:hover,
@@ -64,43 +53,42 @@ window#waybar {
 #tray:hover,
 #mode:hover,
 #scratchpad:hover,
-#power-profiles-daemon:hover,
 #mpd:hover,
-#custom-arch:hover {
-    background: rgba(36, 39, 58, 0.9);
+#custom-arch:hover,
+#temperature:hover {
     color: #89b4fa;
-}
-
-#workspaces {
-    margin: 0 2px;
 }
 
 #workspaces button {
     background: transparent;
-    font-family: "SpaceMono Nerd Font", feather;
     font-weight: bold;
     font-size: 12px;
     color: #c0caf5;
     border: none;
-    border-radius: 4px;
-    padding: 4px 10px;
+    border-radius: 0;
+    padding: 0 8px;
     margin: 0 2px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    border-bottom: 2px solid transparent;
+    outline: none;
+    box-shadow: none;
 }
 
 #workspaces button.active {
-    background: #1e1e2e;
     color: #89dceb;
+    border-bottom: 2px solid #89dceb;
 }
 
 #workspaces button:hover {
-    background: #11111b;
-    color: #cdd6f4;
+    color: inherit;
+    border-bottom: 2px solid transparent;
+    outline: none;
+    box-shadow: none;
 }
 
 #custom-arch {
     margin-left: 4px;
-    font-size: 18px;
+    padding: 0 5px;
+    font-size: 13px;
     color: #7dcfff;
 }
 
