@@ -6,19 +6,18 @@
 
 window#waybar {
     background: transparent;
-    color: #c0caf5;
+    color: #ffffff;
     border-radius: 0;
-    padding: 2px 4px;
+    padding: 2px 2px;
 }
 
 .modules-left,
 .modules-center,
 .modules-right {
 background: rgba(0, 0, 0, 0.6);
-    margin: 3px 6px;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: 1px solid #111111;
+    margin: 2px 2px;
+    padding: 3px 3px;
+    border-radius: 0px;
 }
 
 #clock,
@@ -56,7 +55,7 @@ background: rgba(0, 0, 0, 0.6);
 #mpd:hover,
 #custom-arch:hover,
 #temperature:hover {
-    color: #89b4fa;
+    color: #1793d1;
 }
 
 #workspaces button {
@@ -86,10 +85,11 @@ background: rgba(0, 0, 0, 0.6);
 }
 
 #custom-arch {
-    margin-left: 4px;
+    margin-left: 0px;
+    margin-right: 4px;
     padding: 0 5px;
-    font-size: 13px;
-    color: #7dcfff;
+    font-size: 24px;
+    color: #ffffff;
 }
 
 #custom-arch:hover {
