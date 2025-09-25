@@ -1,25 +1,28 @@
 sort=-time
 layer=overlay
-background-color=#00000080
-width=300
-height=110
+background-color=#000000cc
+width=360
+height=150
 border-size=2
-border-color=#1a237e
-border-radius=15
+border-color=#ffffff
+border-radius=12
 icons=0
-max-icon-size=64
+max-icon-size=48
 default-timeout=5000
 ignore-timeout=1
-font=poppins 14
+font=0xProto Nerd Font 12
 
 [urgency=low]
-border-color=#3949ab
+border-color=#ffffff
+background-color=#00000040
 
 [urgency=normal]
-border-color=#283593      
+border-color=#ffffff
+background-color=#000000b0
 
 [urgency=high]
-border-color=#0d47a1        
+border-color=#ffffff
+background-color=#000000e0
 default-timeout=0
 
 [category=mpd]

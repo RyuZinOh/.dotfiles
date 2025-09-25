@@ -5,9 +5,9 @@ $firefox = firefox
 $mainMod = SUPER 
 
 
-bindl = , PRINT, exec, grim ~/Snaps/full_$(date +%s).png && notify-send  "  Fullscreen Saved!"  
+bindl = , PRINT, exec, grim ~/Snaps/full_$(date +%s).png && notify-send -u normal "  Fullscreen Saved!"  
 
-bindl = $mainMod, PRINT, exec, grim -g "$(slurp)" ~/Snaps/region_$(date +%s).png && notify-send  "󰒅 Region Saved!"  
+bindl = $mainMod, PRINT, exec, grim -g "$(slurp)" ~/Snaps/region_$(date +%s).png && notify-send -u normal "  Region Saved!"  
 
 bind = $mainMod, Q, killactive,
 bind = $mainMod, Return, exec, $terminal
