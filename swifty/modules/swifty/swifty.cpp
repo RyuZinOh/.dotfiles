@@ -70,10 +70,10 @@ void Swifty::loadWallpapers() {
 void Swifty::applyWallpaper(const QString &path) {
     QString wallpaperName = QFileInfo(path).completeBaseName();
 
-    QProcess::startDetached("sh", {"-c",
-        QString("hyprctl notify -1 3000 \"rgb(003366)\" \"fontsize:20 %1 Applied!\"").arg(wallpaperName)
+    QProcess::startDetached("notify-send", { 
+        wallpaperName + " Applied!" 
     });
-
+  
     QProcess::startDetached("swww", {"img", path,
                                      "--transition-type", "wipe",
                                      "--transition-duration", "1",
