@@ -16,4 +16,3 @@ protected:
 private:
     QString imagePath;
 };
-

@@ -9,19 +9,22 @@ class KineticScrollArea : public QScrollArea {
     Q_OBJECT
 public:
     explicit KineticScrollArea(QWidget *parent = nullptr);
-    void setLabels(const QList<ClickableLabel *> &l);
+    void setLabels(const QList<ClickableLabel *> &labels);
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+
 private slots:
-    void onMomentum();
-    void updateScaling();
+    void handleMomentum();
+    void updateLabelScaling();
+
 private:
     QPoint lastPos;
     QElapsedTimer lastTime;
     QTimer *momentumTimer;
-    QTimer *updateTimer;
-    double velocity = 0;
+    QTimer *scalingTimer;
+    double velocity = 0.0;
     QList<ClickableLabel *> labels;
 };
