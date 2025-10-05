@@ -58,6 +58,11 @@ background: rgba(0, 0, 0, 0.6);
     color: #1793d1;
 }
 
+#cava {
+    font-size: 14px;
+    padding: 0 8px;
+    color: #ffffff;
+}
 #workspaces button {
     background: transparent;
     font-weight: bold;

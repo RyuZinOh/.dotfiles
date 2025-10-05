@@ -12,6 +12,13 @@
         "tooltip-format": "safal726",
         "on-click": "~/.dotfiles/waybar/scripts/powerski"
     },
+"cava": {
+    "bars": 12,
+    "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    "bar_delimiter": 0,
+    "method": "pipewire",
+    "input_delay": 0
+},
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,

@@ -17,8 +17,8 @@
         "memory",
         "temperature",
         "battery",
-        //"custom/cava",
-        "clock"
+        "clock",
+        "cava"
     ],
     //Modules configuration
     "include": [
