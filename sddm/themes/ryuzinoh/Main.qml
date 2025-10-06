@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
 import "Components"
 
 Pane {
@@ -45,7 +46,7 @@ Pane {
         z: 1
         color: config.DimBackgroundColor
         opacity: config.DimBackground || 0
-}
+    }
 
     Quotes {
         id: quotesComponent
@@ -88,55 +89,44 @@ Pane {
 
     Rectangle {
         id: pfpContainer
-        width: 80  
-        height: 80 
+        width: 80
+        height: 80
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: form.top
-        anchors.bottomMargin: -50
+        anchors.bottomMargin: -51
         z: 3
         radius: width / 2
-
-        Image {
-            id: userPfpSource
-            source: config.UserProfilePicture
-            anchors.fill: parent
-            fillMode: Image.PreserveAspectCrop
-            smooth: true
-            mipmap: true
-            visible: false
-        }
-
-        MultiEffect {
-            anchors.fill: parent
-            source: userPfpSource
-            maskEnabled: true
-            maskSource: mask
-            maskThresholdMin: 0.5
-            smooth: true
-            autoPaddingEnabled: true
-        }
+        color: config.HighlightBackgroundColor || "#ffffff"
+        antialiasing: true
 
         Item {
-            id: mask
-            width: pfpContainer.width
-            height: pfpContainer.height
-            visible: false
-            layer.enabled: true
+            width: 76
+            height: 76
+            anchors.centerIn: parent
+
+            Image {
+                id: userPfpSource
+                source: config.UserProfilePicture
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                smooth: true
+                mipmap: true
+                visible: false
+            }
 
             Rectangle {
-                width: parent.width
-                height: parent.height
+                id: circleMask
+                anchors.fill: parent
                 radius: width / 2
                 color: "black"
+                visible: false
             }
-        }
-        
-        Rectangle {
-            anchors.fill: parent
-            color: "transparent"
-            radius: width / 2
-            border.width: 3 
-            border.color: "#1c1d1d"
+
+            OpacityMask {
+                anchors.fill: userPfpSource
+                source: userPfpSource
+                maskSource: circleMask
+            }
         }
     }
 
