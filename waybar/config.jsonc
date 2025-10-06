@@ -12,6 +12,7 @@
         "hyprland/workspaces"
     ],
     "modules-right": [
+        "custom/powerprofiles",
         "network",
         "cpu",
         "memory",

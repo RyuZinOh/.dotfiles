@@ -12,6 +12,14 @@
         "tooltip-format": "safal726",
         "on-click": "~/.dotfiles/waybar/scripts/powerski"
     },
+
+"custom/powerprofiles": {
+  "exec": "~/.config/waybar/scripts/powerprofiles.sh",
+  "interval": 5,
+  "on-click": "~/.config/waybar/scripts/powerprofiles.sh toggle",
+  "tooltip": true,
+  "tooltip-format": "Power Profiles"
+},
 "cava": {
     "bars": 12,
     "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],

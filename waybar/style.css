@@ -14,7 +14,7 @@ window#waybar {
 .modules-left,
 .modules-center,
 .modules-right {
-background: rgba(0, 0, 0, 0.6);
+background: #000000;
     margin: 2px 2px;
     padding: 3px 3px;
     border-radius: 0px;
@@ -51,6 +51,7 @@ background: rgba(0, 0, 0, 0.6);
 #custom-media:hover,
 #tray:hover,
 #mode:hover,
+#custom-powerprofiles:hover,
 #scratchpad:hover,
 #mpd:hover,
 #custom-arch:hover,
@@ -58,11 +59,35 @@ background: rgba(0, 0, 0, 0.6);
     color: #1793d1;
 }
 
+#custom-docker_mariadb {
+    background: transparent;
+    padding: 0 5px 0 10px;
+    margin: 0 2px;
+    border-radius: 0;
+    color: #ffffff;
+    transition: color 0.3s ease;
+    font-size: 13px;
+}
+
+
+#custom-powerprofiles {
+    background: transparent;
+    padding: 0 5px 0 10px; 
+    margin: 0 2px;
+    border-radius: 0;
+    color: #ffffff;
+    transition: color 0.3s ease;
+    font-size: 13px;
+}
+
 #cava {
     font-size: 14px;
-    padding: 0 8px;
+    padding: 2px 8px;          
+    border: 2px solid #ffffff;
+    border-radius: 4px;       
     color: #ffffff;
 }
+
 #workspaces button {
     background: transparent;
     font-weight: bold;
