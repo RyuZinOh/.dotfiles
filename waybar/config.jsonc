@@ -18,8 +18,8 @@
         "memory",
         "temperature",
         "battery",
-        "clock",
-        "cava"
+        "clock"
+    //  "cava"
     ],
     //Modules configuration
     "include": [

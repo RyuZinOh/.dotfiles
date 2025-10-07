@@ -79,14 +79,14 @@ background: #000000;
     transition: color 0.3s ease;
     font-size: 13px;
 }
-
-#cava {
-    font-size: 14px;
-    padding: 2px 8px;          
-    border: 2px solid #ffffff;
-    border-radius: 4px;       
-    color: #ffffff;
-}
+/**/
+/* #cava { */
+/*     font-size: 14px; */
+/*     padding: 2px 8px;           */
+/*     border: 2px solid #ffffff; */
+/*     border-radius: 4px;        */
+/*     color: #ffffff; */
+/* } */
 
 #workspaces button {
     background: transparent;
