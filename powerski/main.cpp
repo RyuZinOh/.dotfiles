@@ -1,140 +1,128 @@
-#include <QDebug>
 #include <QApplication>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QSvgWidget>
-#include <QMouseEvent>
-#include <QProcess>
 #include <QDir>
-#include <QTimer>
+#include <QEnterEvent>
 #include <QGraphicsOpacityEffect>
-#include <QCursor>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QMouseEvent>
 #include <QPainter>
+#include <QProcess>
+#include <QSvgRenderer>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class BlurWindow : public QWidget {
 public:
-    BlurWindow(QWidget *parent = nullptr) : QWidget(parent) {
-        setAttribute(Qt::WA_TranslucentBackground);
-        setWindowFlags(Qt::FramelessWindowHint);
-    }
+  BlurWindow(QWidget *parent = nullptr) : QWidget(parent) {
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint |
+                   Qt::Tool);
+    setStyleSheet("background-color: black;");
+    setFixedSize(600, 250);
+  }
 
 protected:
-    void paintEvent(QPaintEvent *event) override {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-        
-        painter.fillRect(rect(), QColor(0, 0, 0, 180));
-        
-        QWidget::paintEvent(event);
-    }
+  void paintEvent(QPaintEvent *event) override {
+    QPainter p(this);
+    p.fillRect(rect(), QColor(0, 0, 0));
+    QWidget::paintEvent(event);
+  }
 };
 
-class ClickableSvg : public QSvgWidget {
-    Q_OBJECT
+class ClickableSvg : public QLabel {
+  Q_OBJECT
 public:
-    explicit ClickableSvg(const QString &file, QLabel *label, QWidget *parent=nullptr) 
-        : QSvgWidget(file, parent), m_label(label) {
-        setFixedSize(120, 120);
-        if(!QFile::exists(file))
-            qWarning() << "SVG not found:" << file;
-        setCursor(Qt::PointingHandCursor);
-        
-        if (m_label) {
-            m_label->hide();
-            m_label->setStyleSheet("color: white; font-size: 16px; font-weight: 500; background: transparent;");
-        }
-    }
-
+  explicit ClickableSvg(const QString &file, QLabel *label,
+                        QWidget *parent = nullptr)
+      : QLabel(parent), m_label(label), renderer(new QSvgRenderer(file, this)) {
+    setFixedSize(120, 120);
+    setCursor(Qt::PointingHandCursor);
+    if (m_label)
+      m_label->hide();
+  }
 signals:
-    void clicked();
+  void clicked();
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override {
-        if(event->button() == Qt::LeftButton) {
-            QGraphicsOpacityEffect *effect = new QGraphicsOpacityEffect;
-            effect->setOpacity(0.5);
-            setGraphicsEffect(effect);
-            
-            QTimer::singleShot(100, this, [this]() {
-                setGraphicsEffect(nullptr);
-                emit clicked();
-            });
-        }
+  void paintEvent(QPaintEvent *) override {
+    QPainter painter(this);
+    renderer->render(&painter, rect());
+  }
+  void mousePressEvent(QMouseEvent *event) override {
+    if (event->button() == Qt::LeftButton) {
+      auto *effect = new QGraphicsOpacityEffect;
+      effect->setOpacity(0.5);
+      setGraphicsEffect(effect);
+      QTimer::singleShot(100, this, [this] {
+        setGraphicsEffect(nullptr);
+        emit clicked();
+      });
     }
-
-    void enterEvent(QEvent *event) override {
-        if (m_label) {
-            m_label->show();
-        }
-        QWidget::enterEvent(event);
-    }
-
-    void leaveEvent(QEvent *event) override {
-        if (m_label) {
-            m_label->hide();
-        }
-        QWidget::leaveEvent(event);
-    }
+  }
+  void enterEvent(QEnterEvent *) override {
+    if (m_label)
+      m_label->show();
+  }
+  void leaveEvent(QEvent *) override {
+    if (m_label)
+      m_label->hide();
+  }
 
 private:
-    QLabel *m_label;
+  QLabel *m_label;
+  QSvgRenderer *renderer;
 };
 
 int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
+  QApplication app(argc, argv);
 
-    BlurWindow window;
-    window.setWindowTitle("Power Menu");
-    window.setFixedSize(600, 250);
+  BlurWindow window;
+  window.setWindowTitle("Power Menu");
 
-    QHBoxLayout *mainLayout = new QHBoxLayout(&window);
-    mainLayout->setSpacing(80);
-    mainLayout->setContentsMargins(100, 30, 100, 30);
+  QHBoxLayout *mainLayout = new QHBoxLayout(&window);
+  mainLayout->setSpacing(80);
+  mainLayout->setContentsMargins(100, 30, 100, 30);
 
-    QString iconPath = QDir::homePath() + "/.cache/powerski/icons/";
-    QString shutdownSvg = iconPath + "shutdown.svg";
-    QString restartSvg  = iconPath + "restart.svg";
+  QString iconPath = QDir::homePath() + "/.cache/powerski/icons/";
+  QString shutdownSvg = iconPath + "shutdown.svg";
+  QString restartSvg = iconPath + "restart.svg";
 
-    QLabel *shutdownLabel = new QLabel("Shutdown");
-    shutdownLabel->setStyleSheet("color: white; font-size: 16px; font-weight: 500; background: transparent;");
-    shutdownLabel->setAlignment(Qt::AlignCenter);
-    
-    QLabel *restartLabel = new QLabel("Restart");
-    restartLabel->setStyleSheet("color: white; font-size: 16px; font-weight: 500; background: transparent;");
-    restartLabel->setAlignment(Qt::AlignCenter);
+  QLabel *shutdownLabel = new QLabel("Shutdown");
+  shutdownLabel->setStyleSheet(
+      "color: white; font-size: 16px; font-weight: 500;");
+  shutdownLabel->setAlignment(Qt::AlignCenter);
 
-    QVBoxLayout *shutdownLayout = new QVBoxLayout();
-    shutdownLayout->setAlignment(Qt::AlignCenter);
-    shutdownLayout->setSpacing(10);
-    
-    QVBoxLayout *restartLayout = new QVBoxLayout();
-    restartLayout->setAlignment(Qt::AlignCenter);
-    restartLayout->setSpacing(10);
+  QLabel *restartLabel = new QLabel("Restart");
+  restartLabel->setStyleSheet(
+      "color: white; font-size: 16px; font-weight: 500;");
+  restartLabel->setAlignment(Qt::AlignCenter);
 
-    ClickableSvg *shutdownIcon = new ClickableSvg(shutdownSvg, shutdownLabel);
-    ClickableSvg *restartIcon = new ClickableSvg(restartSvg, restartLabel);
+  QVBoxLayout *shutdownLayout = new QVBoxLayout();
+  shutdownLayout->setAlignment(Qt::AlignCenter);
+  shutdownLayout->setSpacing(10);
 
-    shutdownLayout->addWidget(shutdownIcon, 0, Qt::AlignCenter);
-    shutdownLayout->addWidget(shutdownLabel, 0, Qt::AlignCenter);
-    
-    restartLayout->addWidget(restartIcon, 0, Qt::AlignCenter);
-    restartLayout->addWidget(restartLabel, 0, Qt::AlignCenter);
+  QVBoxLayout *restartLayout = new QVBoxLayout();
+  restartLayout->setAlignment(Qt::AlignCenter);
+  restartLayout->setSpacing(10);
 
-    mainLayout->addLayout(shutdownLayout);
-    mainLayout->addLayout(restartLayout);
+  ClickableSvg *shutdownIcon = new ClickableSvg(shutdownSvg, shutdownLabel);
+  ClickableSvg *restartIcon = new ClickableSvg(restartSvg, restartLabel);
 
-    QObject::connect(shutdownIcon, &ClickableSvg::clicked, [&](){
-        QProcess::startDetached("systemctl", {"poweroff"});
-    });
+  shutdownLayout->addWidget(shutdownIcon, 0, Qt::AlignCenter);
+  shutdownLayout->addWidget(shutdownLabel, 0, Qt::AlignCenter);
+  restartLayout->addWidget(restartIcon, 0, Qt::AlignCenter);
+  restartLayout->addWidget(restartLabel, 0, Qt::AlignCenter);
 
-    QObject::connect(restartIcon, &ClickableSvg::clicked, [&](){
-        QProcess::startDetached("systemctl", {"reboot"});
-    });
+  mainLayout->addLayout(shutdownLayout);
+  mainLayout->addLayout(restartLayout);
 
-    window.show();
-    return app.exec();
+  QObject::connect(shutdownIcon, &ClickableSvg::clicked,
+                   [] { QProcess::startDetached("systemctl", {"poweroff"}); });
+  QObject::connect(restartIcon, &ClickableSvg::clicked,
+                   [] { QProcess::startDetached("systemctl", {"reboot"}); });
+
+  window.show();
+  return app.exec();
 }
 
 #include "main.moc"

@@ -2,29 +2,23 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QList>
-#include "../clickablelabel/clickablelabel.h"
-#include "../kineticscrollarea/kineticscrollarea.h"
+#include "clickablelabel.h"
+#include "kineticscrollarea.h"
 
 class Swifty : public QWidget {
     Q_OBJECT
 public:
     explicit Swifty(QWidget *parent = nullptr);
-
 protected:
     void showEvent(QShowEvent *event) override;
-
 private:
     KineticScrollArea *scrollArea;
     QWidget *containerWidget;
     QHBoxLayout *hLayout;
     QList<ClickableLabel *> labels;
-
     void loadWallpapers();
-    void positionRibbon();
     void cleanupCache();
     QString swiftyCachePath() const;
-    QString hyprlockPath() const;
-
 private slots:
     void applyWallpaper(const QString &path);
 };

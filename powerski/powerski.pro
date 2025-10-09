@@ -1,3 +1,3 @@
 QT += core gui widgets svg
-CONFIG += c++17
+CONFIG += c++20
 SOURCES += main.cpp
