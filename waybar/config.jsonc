@@ -1,7 +1,7 @@
 {
     "layer": "top", 
     "position": "top",
-    "height":42 , 
+    "height":48 , 
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     "modules-left": [
