@@ -34,8 +34,7 @@ window#waybar {
 #mpd,
 #custom-arch,
 #temperature,
-#custom-docker_mariadb,
-#custom-powerprofiles {
+#custom-docker_mariadb{
     background: transparent;
     padding: 0 5px;
     margin: 0 2px;
@@ -60,7 +59,6 @@ window#waybar {
 #custom-arch:hover { color: #1793d1;}
 #temperature:hover { color: #ff6347; }
 #battery:hover { color: #32cd32; }
-#custom-powerprofiles:hover { color: #ff1493; }
 
 #workspaces button {
     background: transparent;

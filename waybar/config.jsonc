@@ -12,14 +12,12 @@
         "hyprland/workspaces"
     ],
     "modules-right": [
-        "custom/powerprofiles",
         "network",
         "cpu",
         "memory",
         "temperature",
         "battery",
         "clock"
-    //  "cava"
     ],
     //Modules configuration
     "include": [
