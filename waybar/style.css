@@ -1,23 +1,19 @@
 * {
     font-family: "CaskaydiaCove NF", monospace;
     font-size: 15px;
-    transition: color 0.3s ease-out;
 }
 
 window#waybar {
     background: transparent;
     color: #ffffff;
-    border-radius: 0;
-    padding: 2px;
 }
 
 .modules-left,
 .modules-center,
 .modules-right {
-    background: #000000;
-    margin: 2px;
+  border: solid white 2px;
+    background: black;
     padding: 3px;
-    border-radius: 0;
 }
 
 #clock,
@@ -34,14 +30,14 @@ window#waybar {
 #mpd,
 #custom-arch,
 #temperature,
-#custom-docker_mariadb{
-    background: transparent;
+#battery,
+#custom-docker,
+#custom-mariadb,
+#custom-nginx {
     padding: 0 5px;
     margin: 0 2px;
-    border-radius: 0;
-    color: #ffffff;
-    transition: color 0.3s ease;
-    font-size: 15px;
+    color: white;
+    font-size: 16px;
 }
 
 #clock:hover { color: #1793d1; }
@@ -56,9 +52,12 @@ window#waybar {
 #mode:hover { color: #40e0d0; }
 #scratchpad:hover { color: #ff4500; }
 #mpd:hover { color: #1e90ff; }
-#custom-arch:hover { color: #1793d1;}
+#custom-arch:hover { color: #1793d1; }
 #temperature:hover { color: #ff6347; }
 #battery:hover { color: #32cd32; }
+#custom-docker:hover { color: #00ff00; }
+#custom-mariadb:hover { color: #00ff00; }
+#custom-nginx:hover { color: #00ff00; }
 
 #workspaces button {
     background: transparent;
@@ -92,3 +91,16 @@ window#waybar {
     padding: 0 5px;
     font-size: 32px;
 }
+
+#custom-docker,
+#custom-mariadb,
+#custom-nginx {
+    font-size: 26px;
+}
+
+#custom-docker.running { color: #00ff00; }
+#custom-docker.not-running { color: #ff0000; }
+#custom-mariadb.running { color: #00ff00; }
+#custom-mariadb.not-running { color: #ff0000; }
+#custom-nginx.running { color: #00ff00; }
+#custom-nginx.not-running { color: #ff0000; }

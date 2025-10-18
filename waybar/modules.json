@@ -1,73 +1,82 @@
 {
-  
-"custom/docker_mariadb": {
-  "exec": "~/.config/waybar/scripts/checkStuff.sh",
-  "interval": 10,
-  "format": "{}",
-  "tooltip": false
-},
-    "custom/arch": {
-        "format": "󰣇",
-        "tooltip": true,
-        "tooltip-format": "safal726",
-        "on-click": "~/.dotfiles/waybar/scripts/powerski"
+  "custom/docker": {
+    "exec": "~/.config/waybar/scripts/check_docker.sh",
+    "interval": 10,
+    "return-type": "json",
+    "tooltip": true
+  },
+  "custom/mariadb": {
+    "exec": "~/.config/waybar/scripts/check_mariadb.sh", 
+    "interval": 10,
+    "return-type": "json",
+    "tooltip": true
+  },
+  "custom/nginx": {
+    "exec": "~/.config/waybar/scripts/check_nginx.sh", 
+    "interval": 10,
+    "return-type": "json",
+    "tooltip": true
+  },
+  "custom/arch": {
+    "format": "󰣇",
+    "tooltip": true,
+    "tooltip-format": "safal726",
+    "on-click": "~/.dotfiles/waybar/scripts/powerski"
+  },
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "all-outputs": true,
+    "warp-on-scroll": false,
+    "format": "{icon}",
+    "format-icons": {
+      "1": "一",
+      "2": "二", 
+      "3": "三",
+      "4": "四",
+      "5": "五",
+      "6": "六",
+      "7": "七",
+      "8": "八",
+      "9": "九",
+      "10": "十"
+    }
+  },
+  "network": {
+    "format-wifi": " ",
+    "tooltip-format": " {essid} ",
+    "format-ethernet": "{ipaddr}/{cidr} ",
+    "format-disconnected": "Disconnected ⚠",
+    "on-click": ""
+  },
+  "cpu": {
+    "format": "  {usage}%",
+    "tooltip": true
+  },
+  "memory": {
+    "format": "  {}%",
+    "tooltip": true
+  },
+  "temperature": {
+    "interval": 10,
+    "hwmon-path": "/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp1_input",
+    "critical-threshold": 100,
+    "format-critical": " {temperatureC}",
+    "format": " {temperatureC}°C"
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
     },
-    "hyprland/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": true,
-        "warp-on-scroll": false,
-        "format": "{icon}",
-        "format-icons": {
-          "1": "一",
-          "2": "二",
-          "3": "三",
-          "4": "四",
-          "5": "五",
-          "6": "六",
-          "7": "七",
-          "8": "八",
-          "9": "九",
-          "10": "十" 
-        }
-    },
-   "network": {
-        "format-wifi": " ",
-        "tooltip-format":" {essid} ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "format-disconnected": "Disconnected ⚠",
-	"on-click": ""
-	 
-    },
-    "cpu": {
-        "format": "  {usage}%",
-        "tooltip": true
-    },
-    "memory": {
-        "format": "  {}%",
-	"tooltip": true
-    },
-    "temperature": {
-        "interval": 10,
-        "hwmon-path": "/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp1_input",
-        "critical-threshold": 100,
-        "format-critical": " {temperatureC}",
-        "format": " {temperatureC}°C"
-    },
-    "battery": {
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{icon}  {capacity}%",
-        "format-full": "{icon}  {capacity}%",
-        "format-charging": "  {capacity}%",
-        "format-plugged": "  {capacity}%",
-        "format-alt": "{time}  {icon}",
-        "format-icons": ["", "", "", "", ""]
-    },
-    "clock": {
+    "format": "{icon}  {capacity}%",
+    "format-full": "{icon}  {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-plugged": "  {capacity}%",
+    "format-alt": "{time}  {icon}",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "clock": {
+    "tooltip": false,
     "format": "{:%I:%M %p | %e %B} "
-}
-
-
+  }
 }

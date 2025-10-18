@@ -1,26 +1,26 @@
 {
-    "layer": "top", 
-    "position": "top",
-    "height":48 , 
-    // "width": 1280, // Waybar width
-    "spacing": 4, // Gaps between modules (4px)
-    "modules-left": [
-        "custom/arch",
-        "custom/docker_mariadb"
-    ],
-    "modules-center": [
-        "hyprland/workspaces"
-    ],
-    "modules-right": [
-        "network",
-        "cpu",
-        "memory",
-        "temperature",
-        "battery",
-        "clock"
-    ],
-    //Modules configuration
-    "include": [
-		"~/.config/waybar/modules.json"
-	]
+  "layer": "top",
+  "position": "top", 
+  "height": 48,
+  "spacing": 4,
+  "modules-left": [
+    "custom/arch",
+    "custom/docker",
+    "custom/mariadb",
+    "custom/nginx"
+  ],
+  "modules-center": [
+    "hyprland/workspaces"
+  ],
+  "modules-right": [
+    "network", 
+    "cpu",
+    "memory",
+    "temperature",
+    "battery",
+    "clock"
+  ],
+  "include": [
+    "~/.config/waybar/modules.json"
+  ]
 }
