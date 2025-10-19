@@ -1,67 +1,81 @@
-local on_attach = require("nvchad.configs.lspconfig").on_attach
-local capabilities = require("nvchad.configs.lspconfig").capabilities
-local lspconfig = require "lspconfig"
-
--- Apply default NVChad LSP settings
 require("nvchad.configs.lspconfig").defaults()
 
--- List of LSP servers
-local servers = { "html", "cssls", "rust_analyzer", "tailwindcss", "pyright", "clangd", "jdtls" }
+local servers = { "html", "cssls" }
+vim.lsp.enable(servers)
 
--- Pyright settings for Django / Python projects
-local pyright_settings = {
-  python = {
-    analysis = {
-      typeCheckingMode = "basic",
-      autoSearchPaths = true,
-      useLibraryCodeForTypes = true,
-      diagnosticMode = "workspace",
-      extraPaths = { "." },
+-- read :h vim.lsp.config for changing options of lsp servers
+
+-- ##my rust configuration
+vim.lsp.config("rust_analyzer", {
+  cmd = { "rust-analyzer" },
+  filetypes = { "rust" },
+  root_dir = vim.fs.root(0, { "Cargo.toml", "rust-project.json" }), -- project root finding
+  settings = {
+    ["rust-analyzer"] = {
+      cargo = {
+        allFeatures = true,
+      },
+      check = {
+        command = "clippy",
+      },
     },
   },
-}
+})
 
--- Java LSP (jdtls) settings
-local jdtls_settings = {
-  java = {
-    eclipse = { downloadSources = true },
-    configuration = { updateBuildConfiguration = "interactive" },
-    maven = { downloadSources = true },
-    implementationsCodeLens = { enabled = true },
-    referencesCodeLens = { enabled = true },
-    references = { includeDecompiledSources = true },
-    format = { enabled = true },
+-- ## c/c++ configuration
+vim.lsp.config("clangd", {
+  cmd = {
+    "clangd",
+    "--clang-tidy",
+    "--background-index",
+    "--completion-style=detailed",
   },
-}
+  filetypes = { "c", "cpp", "objc", "objcpp" },
+  root_dir = vim.fs.root(0, { "compile_commands.json", ".git" }),
+})
 
--- Setup each LSP server
-for _, lsp in ipairs(servers) do
-  if lsp == "pyright" then
-    lspconfig[lsp].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      settings = pyright_settings,
-      root_dir = lspconfig.util.root_pattern("manage.py", ".git", "pyproject.toml"),
-    }
-  elseif lsp == "jdtls" then
-    lspconfig[lsp].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      settings = jdtls_settings,
-      root_dir = lspconfig.util.root_pattern(".git", "pom.xml", "build.gradle"),
-    }
-  else
-    lspconfig[lsp].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-    }
-  end
-end
+-- ##java configuration
+vim.lsp.config("jdtls", {
+  cmd = { "jdtls" },
+  filetypes = { "java" },
+  root_dir = vim.fs.root(0, { "pom.xml", "build.gradle", "mvnw", ".git" }),
+  settings = {
+    java = {
+      eclipse = {
+        downloadSources = true,
+      },
+      maven = {
+        downloadSources = true,
+      },
+      implementationCodeLens = {
+        enabled = true,
+      },
+      referenceCodeLens = {
+        enabled = true,
+      },
+      format = {
+        enabled = true,
+      },
+    },
+  },
+})
 
--- Special setup for tsserver
-lspconfig.tsserver.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-  settings = require("custom.configs.tsserver"),
-}
+-- ##python
+vim.lsp.config("pyright", {
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+  root_dir = vim.fs.root(0, { "pyproject.toml", "setup.py", "requirements.txt", "venv", ".git" }),
+  settings = {
+    python = {
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        diagnosticMode = "workspace",
+      },
+    },
+  },
+})
+vim.lsp.enable "rust_analyzer"
+vim.lsp.enable "clangd"
+vim.lsp.enable "jdtls"
+vim.lsp.enable "pyright"

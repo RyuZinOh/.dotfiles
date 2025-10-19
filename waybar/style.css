@@ -1,23 +1,24 @@
 * {
-    font-family: "CaskaydiaCove NF", monospace;
-    font-size: 15px;
+  font-family: "CaskaydiaCove NF", monospace;
+  font-size: 15px;
 }
 
 window#waybar {
-    background: transparent;
-    color: #ffffff;
+  background: transparent;
+  color: #ffffff;
 }
 
 .modules-left,
 .modules-center,
 .modules-right {
-  border: solid white 2px;
-    background: black;
-    padding: 3px;
+  background: black;
+  padding: 3px;
+  margin: 2px;
 }
 
 #clock,
 #cpu,
+#custom-powerprofile,
 #memory,
 #disk,
 #backlight,
@@ -34,73 +35,146 @@ window#waybar {
 #custom-docker,
 #custom-mariadb,
 #custom-nginx {
-    padding: 0 5px;
-    margin: 0 2px;
-    color: white;
-    font-size: 16px;
+  padding: 0 5px;
+  margin: 0 2px;
+  color: white;
+  font-size: 16px;
 }
 
-#clock:hover { color: #1793d1; }
-#cpu:hover { color: #ff6f61; }
-#memory:hover { color: #6a0dad; }
-#disk:hover { color: #ffa500; }
-#backlight:hover { color: #00ff00; }
-#network:hover { color: #00ced1; }
-#wireplumber:hover { color: #ff69b4; }
-#custom-media:hover { color: #8b0000; }
-#tray:hover { color: #ffd700; }
-#mode:hover { color: #40e0d0; }
-#scratchpad:hover { color: #ff4500; }
-#mpd:hover { color: #1e90ff; }
-#custom-arch:hover { color: #1793d1; }
-#temperature:hover { color: #ff6347; }
-#battery:hover { color: #32cd32; }
-#custom-docker:hover { color: #00ff00; }
-#custom-mariadb:hover { color: #00ff00; }
-#custom-nginx:hover { color: #00ff00; }
+#clock:hover {
+  color: #1793d1;
+}
+
+#cpu:hover {
+  color: #ff6f61;
+}
+
+#memory:hover {
+  color: #6a0dad;
+}
+
+#disk:hover {
+  color: #ffa500;
+}
+
+#backlight:hover {
+  color: #00ff00;
+}
+
+#network:hover {
+  color: #00ced1;
+}
+
+#wireplumber:hover {
+  color: #ff69b4;
+}
+
+#custom-media:hover {
+  color: #8b0000;
+}
+
+#tray:hover {
+  color: #ffd700;
+}
+
+#mode:hover {
+  color: #40e0d0;
+}
+
+#scratchpad:hover {
+  color: #ff4500;
+}
+
+#mpd:hover {
+  color: #1e90ff;
+}
+
+#temperature:hover {
+  color: #ff6347;
+}
+
+#battery:hover {
+  color: #32cd32;
+}
 
 #workspaces button {
-    background: transparent;
-    font-weight: bold;
-    font-size: 15px;
-    color: #ffffff;
-    border: none;
-    border-radius: 0;
-    padding: 0 8px;
-    margin: 0 2px;
-    border-bottom: 2px solid transparent;
-    outline: none;
-    box-shadow: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 15px;
+  color: #ffffff;
+  border: none;
+  border-radius: 0;
+  padding: 0 8px;
+  margin: 0 2px;
+  border-bottom: 2px solid transparent;
+  outline: none;
+  box-shadow: none;
 }
 
 #workspaces button.active {
-    color: #ffffff;
-    border-bottom: 2px solid #ffffff;
+  color: #ffffff;
+  border-bottom: 2px solid #ffffff;
 }
 
 #workspaces button:hover {
-    color: inherit;
+  color: inherit;
 }
 
 #tray {
-    padding-right: 5px;
+  padding-right: 5px;
 }
 
 #custom-arch {
-    margin: 0 4px 0 0;
-    padding: 0 5px;
-    font-size: 32px;
+  margin: 0 4px 0 0;
+  padding: 0 5px;
+  font-size: 32px;
+  color: #1793d1;
 }
 
 #custom-docker,
 #custom-mariadb,
 #custom-nginx {
-    font-size: 26px;
+  font-size: 26px;
 }
 
-#custom-docker.running { color: #00ff00; }
-#custom-docker.not-running { color: #ff0000; }
-#custom-mariadb.running { color: #00ff00; }
-#custom-mariadb.not-running { color: #ff0000; }
-#custom-nginx.running { color: #00ff00; }
-#custom-nginx.not-running { color: #ff0000; }
+#custom-docker.running {
+  color: #00ff00;
+}
+
+#custom-docker.not-running {
+  color: #ff0000;
+}
+
+#custom-mariadb.running {
+  color: #00ff00;
+}
+
+#custom-mariadb.not-running {
+  color: #ff0000;
+}
+
+#custom-nginx.running {
+  color: #00ff00;
+}
+
+#custom-nginx.not-running {
+  color: #ff0000;
+}
+
+#custom-powerprofile.power-saver {
+  color: #00ff00;
+}
+
+#custom-powerprofile.balanced {
+  color: #ffff00;
+}
+
+#custom-powerprofile.performance {
+  color: #ff4500;
+}
+
+#custom-powerprofile {
+  font-size: 20px;
+  padding: 0 5px;
+  margin-right: 12px;
+}

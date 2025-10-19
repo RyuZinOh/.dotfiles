@@ -1,7 +1,12 @@
 local options = {
   formatters_by_ft = {
     lua = { "stylua" },
-    -- css = { "prettier" },
+    rust = { "rustfmt" },
+    c = { "clang-format" },
+    cpp = { "clang-format" },
+    java = { "google-java-format" },
+    python = { "ruff_format", "ruff_organize_imports" },
+    css = { "prettier" },
     -- html = { "prettier" },
   },
 
