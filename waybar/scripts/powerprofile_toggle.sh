@@ -15,6 +15,7 @@ NEXT_PROFILE=${PROFILES[$NEXT_INDEX]}
 if [ "$1" == "toggle" ]; then
     powerprofilesctl set "$NEXT_PROFILE"
     echo $NEXT_INDEX > "$STATE_FILE"
+    notify-send "$NEXT_PROFILE initiated"
     echo "{\"text\":\"${ICON[$NEXT_PROFILE]}\", \"class\":\"$NEXT_PROFILE\", \"tooltip\":\"$NEXT_PROFILE\"}"
     exit 0
 fi
