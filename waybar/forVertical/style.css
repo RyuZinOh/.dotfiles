@@ -3,29 +3,19 @@
 }
 
 window#waybar {
-  background: transparent;
+  background: black;
   color: #ffffff;
 }
 
-.modules-left,
-.modules-center,
-.modules-right {
-  padding: 3px;
-  margin: 2px;
-  background: black;
-}
-
-#clock,
 #cpu,
 #custom-powerprofile,
 #memory,
 #network,
+#clock,
 #temperature,
 #battery{
-  padding: 3px;
-  margin: 2px;
   color: white;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 #clock:hover {
@@ -44,6 +34,13 @@ window#waybar {
   color: #00ced1;
 }
 
+
+
+#custom-media:hover {
+  color: #8b0000;
+}
+
+
 #temperature:hover {
   color: #ff6347;
 }
@@ -53,31 +50,27 @@ window#waybar {
 }
 
 #workspaces button {
-  background: transparent;
-  font-weight: bold;
-  font-size: 15px;
-  color: #ffffff;
   border: none;
-  border-radius: 0;
-  padding: 0 8px;
-  margin: 0 2px;
-  border-bottom: 2px solid transparent;
   outline: none;
   box-shadow: none;
+  background: transparent;
+  font-weight: bold;
+  color: #ffffff;
 }
 
 #workspaces button.active {
-  color: #ffffff;
-  border-bottom: 2px solid #ffffff;
+  color: #ffff00;
+  font-size: 20px;
 }
 
 #workspaces button:hover {
-  color: inherit;
+  font-size: 20px;
+  color: #ffff00;
 }
+
 #custom-arch {
-  margin: 0 4px 0 0;
-  padding: 0 5px;
-  font-size: 32px;
+  font-size:32px;
+  margin-left: -5px;
   color: #1793d1;
 }
 
@@ -85,8 +78,6 @@ window#waybar {
 #custom-mariadb,
 #custom-nginx {
   font-size: 26px;
-  margin: 0 4px 0 0;
-  padding: 0 5px;
 }
 
 #custom-docker.running {
@@ -127,6 +118,4 @@ window#waybar {
 
 #custom-powerprofile {
   font-size: 20px;
-  padding: 0 5px;
-  margin-right: 12px;
 }

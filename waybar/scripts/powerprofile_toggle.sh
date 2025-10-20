@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -A ICON=(["power-saver"]="󰌪" ["balanced"]="" ["performance"]="󱄟")
+declare -A ICON=(["power-saver"]="󰌪" ["balanced"]="󰗑" ["performance"]="󱄟")
 PROFILES=("performance" "balanced" "power-saver")
 STATE_FILE="$HOME/.config/waybar/scripts/powerprofile_index"
 

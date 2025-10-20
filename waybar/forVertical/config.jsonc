@@ -1,0 +1,28 @@
+{
+  "layer": "top",
+  "position": "left", 
+  "height": 1080,
+  "width":38,
+  "spacing": 4,
+  "modules-left": [
+    "custom/arch",
+    "custom/docker",
+    "custom/mariadb",
+    "custom/nginx",
+    "custom/powerprofile"
+  ],
+  "modules-center": [
+    "hyprland/workspaces"
+  ],
+  "modules-right": [
+    "network", 
+    "cpu",
+    "memory",
+    "temperature",
+    "battery",
+    "clock"
+  ],
+  "include": [
+    "~/.config/waybar/modules.json"
+  ]
+}
