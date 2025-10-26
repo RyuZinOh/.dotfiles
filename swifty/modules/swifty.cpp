@@ -189,9 +189,7 @@ void Swifty::loadWallpapers() {
 void Swifty::applyWallpaper(const QString &path) {
   QString wallpaperName = QFileInfo(path).completeBaseName();
   QProcess::startDetached("notify-send", {wallpaperName + " Applied!"});
-  QProcess::startDetached("swww", {"img", path, "--transition-type", "wipe",
-                                   "--transition-duration", "1",
-                                   "--transition-fps", "60"});
+  QProcess::startDetached("wallski", {"--set", path});
   QString hyprlockDir = "/home/safal726/.cache/hyprlock-safal";
   QDir dir(hyprlockDir);
   if (!dir.exists())
