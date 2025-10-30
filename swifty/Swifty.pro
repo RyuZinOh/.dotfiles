@@ -14,3 +14,11 @@ SOURCES += main.cpp \
 HEADERS += modules/headers/clickablelabel.h \
            modules/headers/kineticscrollarea.h \
            modules/headers/swifty.h
+
+
+# support layer-shell-qt
+unix:!mac {
+    LIBS += -lLayerShellQtInterface
+    INCLUDEPATH += /usr/include/LayerShellQt
+    DEFINES += HAVE_LAYERSHELL
+}

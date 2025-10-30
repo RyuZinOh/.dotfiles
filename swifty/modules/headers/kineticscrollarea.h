@@ -8,25 +8,31 @@
 #include <QTimer>
 #include <cmath>
 
+/*
+momentum based moment kineticsrollarea class
+*/
 class KineticScrollArea : public QScrollArea {
   Q_OBJECT
+
+  // public interface
 public:
-  explicit KineticScrollArea(QWidget *parent = nullptr);
-  void setLabels(const QList<ClickableLabel *> &labels);
+  explicit KineticScrollArea(QWidget *parent = nullptr); // scroll area
+  void
+  setLabels(const QList<ClickableLabel *> &labels); // list of widget to manage
 
 protected:
-  void mousePressEvent(QMouseEvent *event) override;
-  void mouseMoveEvent(QMouseEvent *event) override;
-  void mouseReleaseEvent(QMouseEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;   // drag initial
+  void mouseMoveEvent(QMouseEvent *event) override;    // drag/movements
+  void mouseReleaseEvent(QMouseEvent *event) override; // release and initial
 private slots:
-  void handleMomentum();
-  void updateLabelScaling();
+  void handleMomentum();     // repeately calling this
+  void updateLabelScaling(); // scalling
 
 private:
-  QPoint lastPos;
-  QElapsedTimer lastTime;
-  QTimer *momentumTimer{nullptr};
-  QTimer *scalingTimer{nullptr};
-  double velocity{0.0};
-  QList<ClickableLabel *> labels;
+  QPoint lastPos;                 // last mouse position
+  QElapsedTimer lastTime;         // timesbetween mouse event for velocity
+  QTimer *momentumTimer{nullptr}; // timer for moment
+  QTimer *scalingTimer{nullptr};  // timer for updation
+  double velocity{0.0};           // velocity of scroll
+  QList<ClickableLabel *> labels; // labels list
 };
