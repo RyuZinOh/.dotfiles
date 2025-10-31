@@ -1,6 +1,6 @@
-import QtQuick 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
 import "Components"
@@ -9,28 +9,24 @@ Pane {
     id: root
     height: config.ScreenHeight || Screen.height
     width: config.ScreenWidth || Screen.width
-    padding: config.ScreenPadding || 0
-    LayoutMirroring.enabled: config.RightToLeftLayout == "true" ? true : Qt.application.layoutDirection === Qt.RightToLeft
+    padding: 0
+    LayoutMirroring.enabled: false
     LayoutMirroring.childrenInherit: true
-    palette.window: config.BackgroundColor
-    palette.highlight: config.HighlightBackgroundColor
-    palette.highlightedText: config.HighlightTextColor
-    palette.buttonText: config.HoverSystemButtonsIconsColor
-    font.family: config.Font
+    palette.window: "#000000"
+    palette.highlight: "#ffffff"
+    palette.highlightedText: "#000000"
+    palette.buttonText: "#ffffff"
+    font.family: config.Font || "Sans Serif"
     font.pointSize: config.FontSize !== "" ? config.FontSize : parseInt(height / 80) || 13
     focus: true
 
     Image {
         id: backgroundImage
         anchors.fill: parent
-        horizontalAlignment: config.BackgroundHorizontalAlignment == "left" ? Image.AlignLeft : 
-                           config.BackgroundHorizontalAlignment == "right" ? Image.AlignRight : 
-                           Image.AlignHCenter
-        verticalAlignment: config.BackgroundVerticalAlignment == "top" ? Image.AlignTop :
-                         config.BackgroundVerticalAlignment == "bottom" ? Image.AlignBottom : 
-                         Image.AlignVCenter
-        fillMode: config.CropBackground == "true" ? Image.PreserveAspectCrop : Image.PreserveAspectFit
-        source: config.background || config.Background
+        horizontalAlignment: Image.AlignHCenter
+        verticalAlignment: Image.AlignVCenter
+        fillMode: Image.PreserveAspectCrop
+        source: config.Background || config.background
         asynchronous: true
         cache: true
         mipmap: true
@@ -44,8 +40,8 @@ Pane {
         id: tintLayer
         anchors.fill: parent
         z: 1
-        color: config.DimBackgroundColor
-        opacity: config.DimBackground || 0
+        color: "#000000"
+        opacity: 0
     }
 
     Quotes {
@@ -58,8 +54,8 @@ Pane {
         }
         width: 200
         z: 4
-        quote: config.Quote || "She was the Beautful gyaru, I was the dumb one to not notice! fuck!"
-        textColor: config.QuoteColor || "white"
+        quote: config.Quote || "Never Backdown, Never What?"
+        textColor: "#ffffff"
         fontSize: config.QuoteFontSize || 16
     }
 
@@ -71,9 +67,9 @@ Pane {
             topMargin: 200
         }
         z: 4
-        textColor: config.DateTimeColor || "white"
-        dateFontSize: config.DateFontSize || 24
-        timeFontSize: config.TimeFontSize || 48
+        textColor: "#ffffff"
+        dateFontSize: config.DateFontSize || 80
+        timeFontSize: config.TimeFontSize || 169
     }
 
     SessionButton {
@@ -96,36 +92,36 @@ Pane {
         anchors.bottomMargin: -51
         z: 3
         radius: width / 2
-        color: config.HighlightBackgroundColor || "#ffffff"
+        color: "#ffffff"
         antialiasing: true
 
-        Item {
+        Image {
+            id: userPfp
             width: 76
             height: 76
             anchors.centerIn: parent
-
-            Image {
-                id: userPfpSource
-                source: config.UserProfilePicture
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectCrop
-                smooth: true
-                mipmap: true
-                visible: false
+            source: config.UserProfilePicture
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            mipmap: true
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                maskEnabled: true
+                maskSource: mask
             }
-
-            Rectangle {
-                id: circleMask
-                anchors.fill: parent
-                radius: width / 2
-                color: "black"
+            
+            Item {
+                id: mask
+                width: userPfp.width
+                height: userPfp.height
+                layer.enabled: true
                 visible: false
-            }
-
-            OpacityMask {
-                anchors.fill: userPfpSource
-                source: userPfpSource
-                maskSource: circleMask
+                
+                Rectangle {
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: "white"
+                }
             }
         }
     }

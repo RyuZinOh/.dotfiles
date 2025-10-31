@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 import SddmComponents 2.0 as SDDM
 
 Item {
@@ -44,15 +44,15 @@ Item {
                 text: model.name
                 font.pointSize: root.font.pointSize * 0.8
                 font.family: root.font.family
-                color: config.DropdownTextColor
+                color: "#000000"
             }
             
             background: Rectangle {
-                color: selectSession.highlightedIndex === index ? config.DropdownSelectedBackgroundColor : "transparent"
+                color: selectSession.highlightedIndex === index ? "#e0e0e0" : "transparent"
             }
         }
 
-        indicator {
+        indicator: Item {
             visible: false
         }
 
@@ -60,8 +60,8 @@ Item {
             id: displayedItem
 
             verticalAlignment: Text.AlignVCenter
-            text: (config.TranslateSessionSelection || "Session") + " (" + selectSession.currentText + ")"
-            color: config.SessionButtonTextColor
+            text: "Session (" + selectSession.currentText + ")"
+            color: "#ffffff"
             font.pointSize: root.font.pointSize * 0.8
             font.family: root.font.family
 
@@ -92,8 +92,8 @@ Item {
             }
 
             background: Rectangle {
-                radius: config.RoundCorners / 2
-                color: config.DropdownBackgroundColor
+                radius: 8
+                color: "#ffffff"
                 layer.enabled: true
             }
 
@@ -108,7 +108,7 @@ Item {
                 when: selectSession.down
                 PropertyChanges {
                     target: displayedItem
-                    color: Qt.darker(config.HoverSessionButtonTextColor, 1.1)
+                    color: "#cccccc"
                 }
             },
             State {
@@ -116,7 +116,7 @@ Item {
                 when: selectSession.hovered
                 PropertyChanges {
                     target: displayedItem
-                    color: Qt.lighter(config.HoverSessionButtonTextColor, 1.1)
+                    color: "#ffffff"
                 }
             },
             State {
@@ -124,7 +124,7 @@ Item {
                 when: selectSession.visualFocus
                 PropertyChanges {
                     target: displayedItem
-                    color: config.HoverSessionButtonTextColor
+                    color: "#ffffff"
                 }
             }
         ]
