@@ -17,7 +17,6 @@ window#waybar {
 
 #clock,
 #cpu,
-#custom-powerprofile,
 #memory,
 #network,
 #temperature,
@@ -111,22 +110,4 @@ window#waybar {
 
 #custom-nginx.not-running {
   color: #ff0000;
-}
-
-#custom-powerprofile.power-saver {
-  color: #00ff00;
-}
-
-#custom-powerprofile.balanced {
-  color: #ffff00;
-}
-
-#custom-powerprofile.performance {
-  color: #ff4500;
-}
-
-#custom-powerprofile {
-  font-size: 20px;
-  padding: 0 5px;
-  margin-right: 12px;
 }

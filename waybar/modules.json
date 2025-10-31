@@ -78,12 +78,5 @@
   "clock": {
     "tooltip": false,
     "format": "{:%I:%M %p | %e %B} "
-  },
-"custom/powerprofile": {
-    "exec": "~/.config/waybar/scripts/powerprofile_toggle.sh",
-    "interval": 5,
-    "return-type": "json",
-    "tooltip": true,
-    "on-click": "~/.config/waybar/scripts/powerprofile_toggle.sh toggle"
-}
+  }
 }

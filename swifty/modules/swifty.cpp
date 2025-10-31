@@ -253,7 +253,7 @@ applying wallpaper
 void Swifty::applyWallpaper(const QString &path) {
   QString wallpaperName = QFileInfo(path).completeBaseName();
   QProcess::startDetached("notify-send", {wallpaperName + " Applied!"});
-  QProcess::startDetached("wallski", {"--set", path, "--transition", "ripple"});
+  QProcess::startDetached("wallski", {"--set", path, "--transition", "shatter"});
   QString hyprlockDir = "/home/safal726/.cache/hyprlock-safal";
   QDir dir(hyprlockDir);
   if (!dir.exists())
