@@ -75,7 +75,16 @@ vim.lsp.config("pyright", {
     },
   },
 })
+
+-- qml [for quickshelling]
+vim.lsp.config("qmlls", {
+  cmd = { "qmlls", "-E" },
+  filetypes = { "qml", "qmljs", "qtquick" }, --activate on this
+  root_dir = vim.fs.root(0, { "*.qmlproject", ".git", "qmldir" }),
+})
+
 vim.lsp.enable "rust_analyzer"
 vim.lsp.enable "clangd"
 vim.lsp.enable "jdtls"
 vim.lsp.enable "pyright"
+vim.lsp.enable "qmlls"

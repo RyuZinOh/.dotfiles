@@ -7,6 +7,7 @@ local options = {
     java = { "google-java-format" },
     python = { "ruff_format", "ruff_organize_imports" },
     css = { "prettier" },
+    qml = { "qmlformat" },
     -- html = { "prettier" },
   },
 
