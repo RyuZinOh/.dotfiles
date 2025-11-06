@@ -19,7 +19,7 @@ Item {
     Loader {
         anchors.fill: parent
         active: true
-        asynchronous: true
+        asynchronous: false // this mf was true bitch ass [took my 1h time fucking]
 
         sourceComponent: {
             if (root.style === 1) {
