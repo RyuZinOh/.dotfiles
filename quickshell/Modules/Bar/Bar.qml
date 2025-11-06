@@ -115,4 +115,7 @@ Scope {
     C.Popski {
         id: ppWindow
     }
+    C.BatteryPopup {
+        id: batteryPopup
+    }
 }
