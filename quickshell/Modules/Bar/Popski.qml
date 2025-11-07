@@ -5,6 +5,7 @@ import qs.components
 
 //continer for the popupShape yea, its transparent
 PanelWindow {
+    id: binbow
     //exposing the API
     property alias expanded: popup.expanded
     property alias hovered: popup.hovered
@@ -24,9 +25,11 @@ PanelWindow {
                     return;
                 }
                 expanded = hovered = true;
+                binbow.visible = true;
                 hideT.stop();
             } else if (!hovered) {
                 expanded = false;
+                closeT.start();
             }
         }
     }
@@ -37,6 +40,16 @@ PanelWindow {
         onTriggered: popup.toggle(false)
     }
 
+    Timer {
+        id: closeT
+        interval: 215 // ha some animation so like like all we wil try to fall back so syncing will will cause glitch
+        onTriggered: {
+            if (!popup.expanded && !popup.hovered) {
+                binbow.visible = false;
+            }
+        }
+    }
+    visible: false
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     screen: Quickshell.screens[0]
@@ -57,7 +70,7 @@ PanelWindow {
     PopoutShape {
         id: panel
         anchors.fill: parent
-        radius: 15
+        radius: 10
         color: "black"
         style: 1
         alignment: 0
@@ -74,18 +87,16 @@ PanelWindow {
 
             Behavior on yScale {
                 NumberAnimation {
-                    duration: 250
-                    easing.type: Easing.Bezier
-                    easing.bezierCurve: [0.25, 0.1, 0.25, 1]
+                    duration: 200
+                    easing.type: Easing.OutQuad
                 }
             }
         }
 
         Behavior on height {
             NumberAnimation {
-                duration: 250
-                easing.type: Easing.Bezier
-                easing.bezierCurve: [0.25, 0.1, 0.25, 1]
+                duration: 200
+                easing.type: Easing.OutQuad
             }
         }
 
@@ -96,7 +107,7 @@ PanelWindow {
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 200
+                    duration: 150
                     easing.type: Easing.OutCubic
                 }
             }
@@ -155,6 +166,7 @@ PanelWindow {
             onEntered: {
                 popup.hovered = true;
                 hideT.stop();
+                closeT.stop();
             }
             onExited: {
                 popup.hovered = false;

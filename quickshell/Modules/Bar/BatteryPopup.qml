@@ -6,6 +6,7 @@ import Quickshell.Services.UPower
 import qs.components
 
 PanelWindow {
+    id: window
     property alias expanded: popup.expanded
     property alias hovered: popup.hovered
     property alias hideT: hideT
@@ -20,12 +21,15 @@ PanelWindow {
         property bool hovered: false
         function toggle(show) {
             if (show) {
-                if (expanded)
+                if (expanded) {
                     return;
+                }
                 expanded = hovered = true;
+                window.visible = true;
                 hideT.stop();
             } else if (!hovered) {
                 expanded = false;
+                closeT.start();
             }
         }
     }
@@ -35,7 +39,16 @@ PanelWindow {
         interval: 200
         onTriggered: popup.toggle(false)
     }
-
+    Timer {
+        id: closeT
+        interval: 200 // we can make it like more smaller interval but the pops will have glitch so syncing
+        onTriggered: {
+            if (!popup.expanded && !popup.hovered) {
+                window.visible = false;
+            }
+        }
+    }
+    visible: false
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     screen: Quickshell.screens[0]
@@ -97,14 +110,30 @@ PanelWindow {
                     property int rawTime: isCharging ? modelData.timeToFull : modelData.timeToEmpty
                     property bool hasValidTime: rawTime > 0 && !isFullyCharged
                     property string timeText: {
-                        if (!hasValidTime)
+                        if (isFullyCharged) {
+                            return "Fully";
+                        }
+                        if (isCharging && !hasValidTime) {
+                            return "Charging";
+                        }
+                        if (!hasValidTime) {
                             return "";
+                        }
+
                         const t = rawTime;
                         const h = Math.floor(t / 3600);
                         const m = Math.floor((t % 3600) / 60);
                         return h === 0 ? `${m}m` : `${h}h ${m}m`;
                     }
-                    property string subText: isCharging ? "to full" : "remaining"
+                    property string subText: {
+                        if (isFullyCharged) {
+                            return "Charged";
+                        }
+                        if (isCharging && !hasValidTime) {
+                            return "";
+                        }
+                        return isCharging ? "to full" : "remaining";
+                    }
                 }
 
                 Column {
@@ -124,7 +153,7 @@ PanelWindow {
 
                     Text {
                         text: batteryData.timeText
-                        visible: batteryData.hasValidTime
+                        visible: batteryData.timeText!==""
                         font.family: "0xProto Nerd Font"
                         font.pointSize: 11
                         font.bold: true
@@ -133,7 +162,7 @@ PanelWindow {
 
                     Text {
                         text: batteryData.subText
-                        visible: batteryData.hasValidTime
+                        visible: batteryData.timeText!==""
                         font.family: "0xProto Nerd Font"
                         font.pointSize: 12
                         color: "#bbbbbb"
@@ -148,6 +177,7 @@ PanelWindow {
             onEntered: {
                 popup.hovered = true;
                 hideT.stop();
+                closeT.stop();
             }
             onExited: {
                 popup.hovered = false;
