@@ -17,7 +17,6 @@ Scope {
             readonly property int barWidth: Math.min(1440, modelData.width - 40)
             readonly property int centerOffset: (modelData.width - barWidth) / 2
             anchors.top: true
-            margins.top: 0
             implicitWidth: barWidth
             implicitHeight: 40
 
@@ -25,12 +24,11 @@ Scope {
             Rectangle {
                 anchors.fill: parent
                 color: "black"
-                radius: 8
                 Rectangle {
                     id: logo
                     width: 35
                     height: 35
-                    color: "black"
+                    color: "transparent"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 3
@@ -73,13 +71,13 @@ Scope {
                     showNumbers: true
                 }
                 Rectangle {
-                    color: "black"
-                    opacity: 0.85
+                    color: "transparent"
                     height: workspaces.height
                     width: rightPanel.width + 20
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
                     anchors.rightMargin: 3
+
                     Row {
                         id: rightPanel
                         spacing: 20
@@ -90,6 +88,7 @@ Scope {
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         DayWidget {
+
                             font.family: "0xProto Nerd Font"
                             font.pixelSize: 20
                             font.bold: true
@@ -117,5 +116,8 @@ Scope {
     }
     C.BatteryPopup {
         id: batteryPopup
+    }
+    C.NotificationPop {
+        id: notificationPopup
     }
 }
