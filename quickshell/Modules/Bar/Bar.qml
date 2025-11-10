@@ -1,5 +1,6 @@
 import Quickshell
 import QtQuick
+import Quickshell.Hyprland
 import qs.Modules.Bar as C
 import qs.Modules.Bar.workspace
 import qs.Modules.Bar.battery
@@ -12,6 +13,12 @@ Scope {
             id: mainBar
             required property var modelData
             screen: modelData
+
+            visible: {
+                const ws = Hyprland.focusedWorkspace;
+                const cnt = ws.toplevels.values.filter(t => !t.lastIpcObject.floating).length;
+                return cnt === 0;
+            }
 
             //layouts
             readonly property int barWidth: Math.min(1440, modelData.width - 40)
