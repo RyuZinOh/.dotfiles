@@ -23,8 +23,8 @@ Row {
 
             Pill {
                 id: pill
-                bWidth: 35
-                bHeight: 20
+                bWidth: 30
+                bHeight: 18
                 fillColor: "white"
                 bgColor: "white"
                 textColor: "black"

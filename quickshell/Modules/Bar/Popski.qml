@@ -102,7 +102,8 @@ PanelWindow {
 
         Column {
             anchors.centerIn: parent
-            spacing: 8
+            spacing: 20
+            width: 200
             opacity: popup.expanded ? 1 : 0
 
             Behavior on opacity {
@@ -112,45 +113,13 @@ PanelWindow {
                 }
             }
             // [took inspiration from my ryuzinoh sddm, for circular bg, but with OpacityMask instead of multiEffect]
-            Rectangle {
-                width: 80
-                height: 80
-                radius: width / 2
-                color: "transparent"
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Image {
-                    id: profileImg
-                    width: parent.width
-                    height: parent.height
-                    source: "/home/safal726/pfps/nura.jpg"
-                    fillMode: Image.PreserveAspectCrop
-                    smooth: true
-                    visible: false
-                }
-
-                Rectangle {
-                    id: maskRect
-                    width: parent.width
-                    height: parent.height
-                    radius: width / 2
-                    visible: false
-                }
-
-                OpacityMask {
-                    anchors.fill: parent
-                    source: profileImg
-                    maskSource: maskRect
-                }
+            BrightnessControl {
+                width: parent.width
+                height: 50
             }
-
-            Text {
-                text: "safalSki"
-                font.family: "CaskaydiaCove NF"
-                font.bold: true
-                font.pointSize: 18
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
+            VolumeControl {
+                width: parent.width
+                height: 50
             }
         }
 
@@ -163,6 +132,8 @@ PanelWindow {
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
+            acceptedButtons: Qt.NoButton
+            // cursorShape: Qt.PointingHandCursor
             onEntered: {
                 popup.hovered = true;
                 hideT.stop();

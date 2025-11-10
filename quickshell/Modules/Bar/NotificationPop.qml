@@ -38,7 +38,7 @@ PanelWindow {
             expanded = false;
             hovered = false;
             autoHideTimer.stop();
-            closeT.stop();
+            closeT.restart();
         }
     }
 
@@ -90,7 +90,7 @@ PanelWindow {
         let scr = Quickshell.screens[0];
         let barW = Math.min(1440, scr.width - 40);
         let barR = (scr.width - barW) / 2;
-        return barR + 20;
+        return barR ;
     }
     PopoutShape {
         id: panel
@@ -135,19 +135,62 @@ PanelWindow {
             Row {
                 anchors.fill: parent
                 spacing: 12
+
                 Rectangle {
                     width: 48
                     height: 48
-                    radius: 10
-                    color: "black"
+                    color: "transparent"
                     anchors.verticalCenter: parent.verticalCenter
+
+                    Image {
+                        id: profileImage
+                        anchors.fill: parent
+                        source: "https://safallama.com.np/assets/sanatao.png"
+                        fillMode: Image.PreserveAspectCrop
+                        visible: false
+                        asynchronous: true
+                        cache: true
+
+                        onStatusChanged: {
+                            if (status === Image.Error) {
+                                fallbackText.visible = true;
+                                fallbackBg.visible = true;
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        id: mask
+                        anchors.fill: parent
+                        radius: width / 2
+                        visible: false
+                    }
+
+                    OpacityMask {
+                        anchors.fill: parent
+                        source: profileImage
+                        maskSource: mask
+                        visible: profileImage.status === Image.Ready
+                    }
+
+                    Rectangle {
+                        id: fallbackBg
+                        anchors.fill: parent
+                        radius: width / 2
+                        color: "black"
+                        visible: profileImage.status !== Image.Ready
+                    }
+
+
                     Text {
+                        id: fallbackText
                         anchors.centerIn: parent
-                        text: "N"
+                        text: "N" //fall back
                         font.family: "CaskaydiaCove NF"
                         font.bold: true
                         font.pixelSize: 20
                         color: "white"
+                        visible: profileImage.status !== Image.Ready
                     }
                 }
                 Column {
