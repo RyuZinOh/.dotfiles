@@ -13,6 +13,13 @@ PanelWindow {
     function toggle(show) {
         popup.toggle(show);
     }
+
+    //configuration properties for modifying
+    readonly property int topBarHeight: 40
+    readonly property int maxBarWidth: 1440
+    readonly property int screenPadding: 0
+    readonly property int leftOffset: 250
+
     //states
     QtObject {
         id: popup
@@ -61,10 +68,10 @@ PanelWindow {
     anchors.left: true
     margins.top: 40 //correspondigly to the topbar at Bar.qml
     margins.left: {
-        let scr = Quickshell.screens[0];
-        let barW = Math.min(1440, scr.width - 40);
-        let barL = (scr.width - barW) / 2;
-        return barL + 120;
+        const screenWidth = screen.width;
+        let barW = Math.min(maxBarWidth, screenWidth - screenPadding);
+        let barL = (screenWidth - barW) / 2;
+        return barL + leftOffset;
     }
 
     PopoutShape {

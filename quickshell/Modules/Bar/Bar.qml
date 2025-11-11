@@ -16,6 +16,9 @@ Scope {
 
             visible: {
                 const ws = Hyprland.focusedWorkspace;
+                if (!ws) {
+                    return false; // for toplevels of null for kinda safety?
+                }
                 const cnt = ws.toplevels.values.filter(t => !t.lastIpcObject.floating).length;
                 return cnt === 0;
             }
@@ -23,7 +26,11 @@ Scope {
             //layouts
             readonly property int barWidth: Math.min(1440, modelData.width - 40)
             readonly property int centerOffset: (modelData.width - barWidth) / 2
-            anchors.top: true
+            anchors {
+                top: true
+                // left: true
+                // right: true
+            }
             implicitWidth: barWidth
             implicitHeight: 40
 
@@ -58,10 +65,16 @@ Scope {
 
                 // toggling and starting the hiding timer after invoking this
                 MouseArea {
-                    anchors.left: logo.right
-                    anchors.right: workspaces.left
+                    id: ptr
+
+                    // anchors.left: logo.right
+                    // anchors.right: workspaces.left
                     anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    // anchors.bottom: parent.bottom
+                    anchors.leftMargin: 250
+                    width: 250
+                    height: 40
                     hoverEnabled: true
                     onEntered: ppWindow.toggle(true)
                     onExited: {
