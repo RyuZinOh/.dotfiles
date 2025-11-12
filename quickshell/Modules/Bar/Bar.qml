@@ -15,12 +15,13 @@ Scope {
             screen: modelData
 
             visible: {
-                const ws = Hyprland.focusedWorkspace;
-                if (!ws) {
-                    return false; // for toplevels of null for kinda safety?
-                }
-                const cnt = ws.toplevels.values.filter(t => !t.lastIpcObject.floating).length;
-                return cnt === 0;
+                // const ws = Hyprland.focusedWorkspace;
+                // if (!ws) {
+                //     return false; // for toplevels of null for kinda safety?
+                // }
+                // const cnt = ws.toplevels.values.filter(t => !t.lastIpcObject.floating).length;
+                // return cnt === 0;
+                true;
             }
 
             //layouts
@@ -35,9 +36,67 @@ Scope {
             implicitHeight: 40
 
             color: "transparent"
+            // Canvas {
+            //     id: barshape
+            //     anchors.fill: parent
+            //
+            //     onPaint: {
+            //         var ctx = getContext("2d");
+            //         ctx.clearRect(0, 0, width, height);
+            //
+            //         var taperwidth = 10; //taper at edges
+            //         var rad = 10;
+            //
+            //         ctx.fillStyle = "black";
+            //         ctx.beginPath();
+            //
+            //         //top-left
+            //         ctx.moveTo(0, 0);
+            //
+            //         //top-edge
+            //         ctx.lineTo(width, 0);
+            //
+            //         //right edge
+            //         ctx.lineTo(width - taperwidth, height - rad);
+            //         ctx.quadraticCurveTo(width - taperwidth, height, width - taperwidth - rad, height);
+            //
+            //         //bottom edge
+            //         ctx.lineTo(taperwidth + rad, height);
+            //         ctx.quadraticCurveTo(taperwidth, height, taperwidth, height - rad);
+            //         //left edge
+            //         ctx.lineTo(0, 0);
+            //
+            //         ctx.closePath();
+            //         ctx.fill();
+            //     }
+            // }
+
+            Canvas {
+                id: barshape
+                anchors.fill: parent
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.clearRect(0, 0, width, height);
+
+                    var taperWidth = width * 0.01;
+                    var cornerRadius = Math.min(height * 0.15, taperWidth * 0.8);
+
+                    ctx.fillStyle = "black";
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(width, 0);
+                    ctx.lineTo(width - taperWidth, height - cornerRadius);
+                    ctx.arc(width - taperWidth - cornerRadius, height - cornerRadius, cornerRadius, 0, Math.PI / 2, false);
+                    ctx.lineTo(taperWidth + cornerRadius, height);
+                    ctx.arc(taperWidth + cornerRadius, height - cornerRadius, cornerRadius, Math.PI / 2, Math.PI, false);
+                    ctx.lineTo(0, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
             Rectangle {
                 anchors.fill: parent
-                color: "black"
+                color: "transparent"
                 Rectangle {
                     id: logo
                     width: 35
@@ -45,7 +104,7 @@ Scope {
                     color: "transparent"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
-                    anchors.leftMargin: 3
+                    anchors.leftMargin: 15
                     Text {
                         text: "\uF303"
                         font.pixelSize: 24
@@ -102,7 +161,7 @@ Scope {
                         id: rightPanel
                         spacing: 20
                         anchors.right: parent.right
-                        anchors.rightMargin: 10
+                        anchors.rightMargin: 15
                         anchors.verticalCenter: parent.verticalCenter
                         Battery {
                             anchors.verticalCenter: parent.verticalCenter

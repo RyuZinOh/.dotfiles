@@ -90,7 +90,7 @@ PanelWindow {
         let scr = Quickshell.screens[0];
         let barW = Math.min(1440, scr.width - 40);
         let barR = (scr.width - barW) / 2;
-        return barR ;
+        return barR + 15;
     }
     PopoutShape {
         id: panel
@@ -180,7 +180,6 @@ PanelWindow {
                         color: "black"
                         visible: profileImage.status !== Image.Ready
                     }
-
 
                     Text {
                         id: fallbackText

@@ -49,7 +49,7 @@ PanelWindow {
 
     Timer {
         id: closeT
-        interval: 215 // ha some animation so like like all we wil try to fall back so syncing will will cause glitch
+        interval: 200 // ha some animation so like like all we wil try to fall back so syncing will will cause glitch
         onTriggered: {
             if (!popup.expanded && !popup.hovered) {
                 binbow.visible = false;
