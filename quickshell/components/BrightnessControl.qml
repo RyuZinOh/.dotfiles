@@ -9,7 +9,7 @@ Item {
     property real currentBrightness: 50
     property real maxBrightness: 100
 
-    // exposing the control row
+    // Expose the control row
     property alias controlRow: brightnessRow
 
     Component.onCompleted: {
@@ -58,7 +58,7 @@ Item {
         id: brightnessRow
         anchors.horizontalCenter: parent.horizontalCenter
         iconText: "󰃠"
-        iconFamily: "Symbols Nerd Font"
+        iconFamily: "CaskaydiaCove NF"
         labelText: "Brightness"
         valueText: Math.round((sliderControl.isPressed ? sliderControl.value : (brightnessRoot.currentBrightness / brightnessRoot.maxBrightness)) * 100) + "%"
         sliderValue: brightnessRoot.currentBrightness / brightnessRoot.maxBrightness

@@ -1,0 +1,1 @@
+mv waybar.bak ~/.config/ 

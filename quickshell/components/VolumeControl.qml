@@ -65,7 +65,7 @@ Item {
             }
             return "󰝟";
         }
-        iconFamily: "Symbols Nerd Font"
+        iconFamily: "CaskaydiaCove NF"
         labelText: "Volume"
         valueText: volumeRoot.isMuted ? "Muted" : Math.round((sliderControl.isPressed ? sliderControl.value : volumeRoot.currentVolume) * 100) + "%"
         sliderValue: volumeRoot.currentVolume
