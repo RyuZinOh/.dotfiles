@@ -1,1 +1,1 @@
-mv waybar.bak ~/.config/ 
+mv waybar.bak ~/.config/waybar

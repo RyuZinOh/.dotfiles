@@ -79,7 +79,6 @@ Item {
     // Interactive area
     MouseArea {
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton
         hoverEnabled: true
         onEntered: root.entered()

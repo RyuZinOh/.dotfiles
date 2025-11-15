@@ -1,1 +1,1 @@
-mv mv mako.bak ~/.config/
+mv mako.bak ~/.config/mako

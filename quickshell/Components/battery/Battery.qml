@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import qs.Modules.Bar.battery
 
 Row {
     id: root
@@ -50,7 +49,7 @@ Row {
 
                     Pill {
                         id: pill
-                        bWidth: 35
+                        bWidth: 30
                         bHeight: 20
                         fillColor: batteryData.fillColor
                         emptyColor: "black"
@@ -60,14 +59,6 @@ Row {
                         borderWidth: 2
                         terminalWidth: 3
                         terminalHeight: 8
-
-                        onEntered: {
-                            batteryPopup.toggle(true);
-                        }
-                        onExited: {
-                            batteryPopup.hovered = false;
-                            batteryPopup.hideT.restart();
-                        }
                     }
 
                     Text {
@@ -75,7 +66,7 @@ Row {
                         anchors.horizontalCenterOffset: -2
                         text: batteryData.displayText
                         font.family: "0xProto Nerd Font"
-                        font.pixelSize: batteryData.isCharging ? 12 : 10
+                        font.pixelSize: batteryData.isCharging ? 16 : 10
                         font.bold: true
                         color: "black"
 
