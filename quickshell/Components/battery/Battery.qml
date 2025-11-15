@@ -49,7 +49,7 @@ Row {
 
                     Pill {
                         id: pill
-                        bWidth: 30
+                        bWidth: 35
                         bHeight: 20
                         fillColor: batteryData.fillColor
                         emptyColor: "black"

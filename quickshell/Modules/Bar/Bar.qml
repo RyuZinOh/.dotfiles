@@ -1,9 +1,9 @@
 import Quickshell
 import QtQuick
-import Quickshell.Hyprland
 import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Components.battery
+import qs.Services.Notifications as C
 
 Scope {
     Variants {
@@ -18,14 +18,11 @@ Scope {
             }
 
             //layouts
-            readonly property int barWidth: Math.min(1440, modelData.width - 40)
-            readonly property int centerOffset: (modelData.width - barWidth) / 2
             anchors {
                 top: true
                 left: true
                 right: true
             }
-            implicitWidth: barWidth
             implicitHeight: 40
 
             color: "transparent"
@@ -106,5 +103,8 @@ Scope {
                 }
             }
         }
+    }
+    C.NotificationPop {
+        id: notificationPopup
     }
 }
