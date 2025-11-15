@@ -61,7 +61,7 @@ PanelWindow {
         let scr = Quickshell.screens[0];
         let barW = Math.min(1440, scr.width - 40);
         let barR = (scr.width - barW) / 2;
-        return barR + 200;
+        return barR + 220;
     }
 
     PopoutShape {
@@ -139,33 +139,43 @@ PanelWindow {
                 Column {
                     anchors {
                         left: parent.left
-                        leftMargin: 12
+                        leftMargin: 16
                         verticalCenter: parent.verticalCenter
                     }
-                    spacing: 2
+
+                    spacing: 4
                     opacity: popup.expanded ? 1 : 0
+
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 150
-                            easing.type: Easing.OutQuad
+                            duration: 200
+                            easing.type: Easing.InOutQuad
                         }
                     }
 
                     Text {
                         text: batteryData.timeText
-                        visible: batteryData.timeText!==""
+                        visible: batteryData.timeText !== ""
+
                         font.family: "0xProto Nerd Font"
-                        font.pointSize: 11
+                        font.pointSize: 13
                         font.bold: true
+
                         color: "white"
+
+                        wrapMode: Text.WordWrap
                     }
 
                     Text {
                         text: batteryData.subText
-                        visible: batteryData.timeText!==""
+                        visible: batteryData.timeText !== ""
+
                         font.family: "0xProto Nerd Font"
-                        font.pointSize: 12
-                        color: "#bbbbbb"
+                        font.pointSize: 10
+
+                        color: "#aaaaaa"
+
+                        wrapMode: Text.WordWrap
                     }
                 }
             }

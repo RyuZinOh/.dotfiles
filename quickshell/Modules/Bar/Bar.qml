@@ -94,6 +94,7 @@ Scope {
                     ctx.fill();
                 }
             }
+
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
@@ -149,25 +150,28 @@ Scope {
                     spacing: 8
                     showNumbers: true
                 }
+
                 Rectangle {
+
                     color: "transparent"
                     height: workspaces.height
                     width: rightPanel.width + 20
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
                     anchors.rightMargin: 3
-
                     Row {
                         id: rightPanel
                         spacing: 20
                         anchors.right: parent.right
                         anchors.rightMargin: 15
                         anchors.verticalCenter: parent.verticalCenter
+                        // C.Wallski {
+                        //     anchors.verticalCenter: parent.verticalCenter
+                        // }
                         Battery {
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         DayWidget {
-
                             font.family: "0xProto Nerd Font"
                             font.pixelSize: 20
                             font.bold: true

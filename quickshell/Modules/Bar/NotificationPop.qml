@@ -79,8 +79,8 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     screen: Quickshell.screens[0]
 
-    implicitWidth: 350
-    implicitHeight: 120
+    implicitWidth: 300
+    implicitHeight: 60
 
     //top right corner according to the bar
     margins.top: 40
@@ -134,66 +134,8 @@ PanelWindow {
             }
             Row {
                 anchors.fill: parent
-                spacing: 12
-
-                Rectangle {
-                    width: 48
-                    height: 48
-                    color: "transparent"
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    Image {
-                        id: profileImage
-                        anchors.fill: parent
-                        source: "https://safallama.com.np/assets/sanatao.png"
-                        fillMode: Image.PreserveAspectCrop
-                        visible: false
-                        asynchronous: true
-                        cache: true
-
-                        onStatusChanged: {
-                            if (status === Image.Error) {
-                                fallbackText.visible = true;
-                                fallbackBg.visible = true;
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        id: mask
-                        anchors.fill: parent
-                        radius: width / 2
-                        visible: false
-                    }
-
-                    OpacityMask {
-                        anchors.fill: parent
-                        source: profileImage
-                        maskSource: mask
-                        visible: profileImage.status === Image.Ready
-                    }
-
-                    Rectangle {
-                        id: fallbackBg
-                        anchors.fill: parent
-                        radius: width / 2
-                        color: "black"
-                        visible: profileImage.status !== Image.Ready
-                    }
-
-                    Text {
-                        id: fallbackText
-                        anchors.centerIn: parent
-                        text: "N" //fall back
-                        font.family: "CaskaydiaCove NF"
-                        font.bold: true
-                        font.pixelSize: 20
-                        color: "white"
-                        visible: profileImage.status !== Image.Ready
-                    }
-                }
                 Column {
-                    width: parent.width - 60 - 32 - 24
+                    width: parent.width 
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
                         text: notifWindow.notifSummary
@@ -217,26 +159,6 @@ PanelWindow {
                         maximumLineCount: 1
                         elide: Text.ElideRight
                         visible: text !== ""
-                    }
-                }
-                Rectangle {
-                    width: 24
-                    height: 24
-                    color: "transparent"
-                    Text {
-                        anchors.centerIn: parent
-                        text: ""
-                        font.pixelSize: 18
-                        font.bold: true
-                        color: "white"
-                    }
-                    MouseArea {
-                        id: csm
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        z: 100
-                        onClicked: popup.closeImmediately()
                     }
                 }
             }
