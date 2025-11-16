@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import Quickshell.Io
@@ -215,6 +216,50 @@ Item {
 
                 flickDeceleration: 4000
                 maximumFlickVelocity: 3000
+                //scrollBar
+                ScrollBar.horizontal: ScrollBar {
+                    id: scrollBar
+                    policy: ScrollBar.AlwaysOn
+                    visible: wallpaperList.count > 0
+                    height: 10
+
+                    contentItem: Rectangle {
+                        implicitWidth: 10
+                        implicitHeight: 10
+                        radius: 5
+                        color: "white"
+                        opacity: scrollBar.hovered || scrollBar.pressed ? 1.0 : 0.6
+                        scale: scrollBar.pressed ? 0.95 : (scrollBar.hovered ? 1.1 : 1.0)
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutQuad
+                            }
+                        }
+
+                        Behavior on scale {
+                            NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 200
+                        implicitHeight: 10
+                        radius: 5
+                        color: "#2A2A2A"
+                        opacity: 0.4
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 200
+                            }
+                        }
+                    }
+                }
 
                 delegate: WallpaperThumbnail {
                     required property string fileName
@@ -234,8 +279,10 @@ Item {
 
                         Dat.WallpaperConfig.currentWallpaper = fileUrl;
                         Dat.WallpaperConfig.saveWallpaper(fileUrl);
-
-                        notifyProcess.command = ["/usr/bin/notify-send", "✓ Wallpaper Applied", fileName];
+                        copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/hyprlock-safal && cp "${fullPath}" /home/safal726/.cache/hyprlock-safal/bg.jpg`];
+                        copyProcess.running = true;
+                        const wallpaperName = fileName.replace(/\.[^/.]+$/, "");
+                        notifyProcess.command = ["/usr/bin/notify-send", "✓ Wallpaper Applied", wallpaperName];
                         notifyProcess.running = true;
 
                         root.wallpaperChanged(fullPath);
@@ -283,6 +330,10 @@ Item {
 
     Process {
         id: notifyProcess
+    }
+
+    Process {
+        id: copyProcess
     }
 
     // Enhanced thumbnail component

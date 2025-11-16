@@ -23,14 +23,14 @@ Scope {
                 left: true
                 right: true
             }
-            exclusiveZone: 40 // used for wallpaper and that bar so that bar can overlap and wallpaper never pushed none
+            exclusiveZone: 40
             color: "transparent"
 
             // scaling
             Item {
                 id: wallpaperContainer
                 anchors.fill: parent
-                scale: wallskiRef.isHovered ? 1.025 : 1.0 // when that wallski is opened zoom in the wallpaper here
+                scale: wallskiRef.isHovered ? 1.025 : 1.0
                 transformOrigin: Item.Center
                 clip: true
 
@@ -110,93 +110,93 @@ Scope {
                             source = Dat.WallpaperConfig.currentWallpaper;
 
                             Dat.WallpaperConfig.currentWallpaperChanged.connect(() => {
-                                if (walAnimation.running) {
-                                    walAnimation.complete();
+                                if (crossfadeAnimation.running) {
+                                    crossfadeAnimation.complete();
                                 }
                                 animatingWal.source = Dat.WallpaperConfig.currentWallpaper;
                             });
 
                             animatingWal.statusChanged.connect(() => {
                                 if (animatingWal.status === Image.Ready) {
-                                    walAnimation.start();
+                                    crossfadeAnimation.start();
                                 }
                             });
 
-                            walAnimation.finished.connect(() => {
+                            crossfadeAnimation.finished.connect(() => {
                                 wallpaper.source = animatingWal.source;
                                 animatingWal.source = "";
-                                animationRect.width = 0;
+                                animatingWal.opacity = 0;
+                                animatingWal.scale = 1.0;
                             });
                         }
                     }
-                }
 
-                // animation container
-                Rectangle {
-                    id: animationRect
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    clip: true
-                    color: "transparent"
-                    width: 0
+                    //crossfase zoom
+                    Image {
+                        id: animatingWal
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: parent.height
+                        source: ""
+                        cache: false
+                        fillMode: Image.PreserveAspectCrop
+                        opacity: 0
+                        scale: 1.1
 
-                    NumberAnimation {
-                        id: walAnimation
-                        duration: 800
-                        easing.type: Easing.OutCubic
-                        from: 0
-                        property: "width"
-                        target: animationRect
-                        to: homeLayer.width
-                    }
+                        property bool isPannable: false
+                        property real calculatedWidth: parent.width
 
-                    Item {
-                        anchors.fill: parent
-                        clip: true
+                        onStatusChanged: {
+                            if (status === Image.Ready) {
+                                const imgAspect = implicitWidth / implicitHeight;
+                                const screenAspect = parent.width / parent.height;
+                                const isWide = imgAspect > screenAspect * 1.1;
 
-                        Image {
-                            id: animatingWal
-                            anchors.verticalCenter: parent.verticalCenter
-                            height: parent.height
-                            source: ""
-                            cache: false
-                            fillMode: Image.PreserveAspectCrop
+                                isPannable = isWide;
 
-                            property bool isPannable: false
-                            property real calculatedWidth: parent.parent.parent.width
-
-                            onStatusChanged: {
-                                if (status === Image.Ready) {
-                                    const imgAspect = implicitWidth / implicitHeight;
-                                    const screenAspect = parent.parent.parent.width / parent.height;
-                                    const isWide = imgAspect > screenAspect * 1.1;
-
-                                    isPannable = isWide;
-
-                                    if (isWide) {
-                                        calculatedWidth = implicitWidth * (parent.height / implicitHeight);
-                                    } else {
-                                        calculatedWidth = parent.parent.parent.width;
-                                    }
+                                if (isWide) {
+                                    calculatedWidth = implicitWidth * (parent.height / implicitHeight);
+                                } else {
+                                    calculatedWidth = parent.width;
                                 }
                             }
+                        }
 
-                            width: calculatedWidth
+                        width: calculatedWidth
 
-                            x: {
-                                if (!isPannable)
-                                    return 0;
-                                const maxOffset = width - parent.parent.parent.width;
-                                return -maxOffset * wallpaper.mouseXNormalized;
+                        x: {
+                            if (!isPannable)
+                                return 0;
+                            const maxOffset = width - parent.width;
+                            return -maxOffset * wallpaper.mouseXNormalized;
+                        }
+
+                        Behavior on x {
+                            enabled: animatingWal.isPannable
+                            NumberAnimation {
+                                duration: 600
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        ParallelAnimation {
+                            id: crossfadeAnimation
+
+                            NumberAnimation {
+                                target: animatingWal
+                                property: "opacity"
+                                from: 0
+                                to: 1
+                                duration: 1000
+                                easing.type: Easing.InOutQuad
                             }
 
-                            Behavior on x {
-                                enabled: animatingWal.isPannable
-                                NumberAnimation {
-                                    duration: 600
-                                    easing.type: Easing.OutCubic
-                                }
+                            NumberAnimation {
+                                target: animatingWal
+                                property: "scale"
+                                from: 1.1
+                                to: 1.0
+                                duration: 1200
+                                easing.type: Easing.OutCubic
                             }
                         }
                     }
@@ -225,7 +225,7 @@ Scope {
                 id: wallskiRef
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: 1440
+                width: 960
             }
         }
     }
