@@ -3,7 +3,6 @@ import QtQuick
 import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Components.battery
-import qs.Services.Notifications as C
 
 Scope {
     Variants {
@@ -12,10 +11,6 @@ Scope {
             id: mainBar
             required property var modelData
             screen: modelData
-
-            visible: {
-                true;
-            }
 
             //layouts
             anchors {
@@ -57,6 +52,7 @@ Scope {
 
                 Workspace {
                     id: workspaces
+                    bgOva: "black"
                     height: 35
                     anchors.centerIn: parent
                     workspaceSize: 30
@@ -103,8 +99,5 @@ Scope {
                 }
             }
         }
-    }
-    C.NotificationPop {
-        id: notificationPopup
     }
 }

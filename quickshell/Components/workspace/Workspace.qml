@@ -11,7 +11,7 @@ Item {
     property color activeColor: "blue"
     property color occupiedColor: "whitesmoke"
     property bool showNumbers: true
-    property color bgOva: "black"
+    property color bgOva: "transparent"
 
     //japanese mapping
     readonly property var jpN: ({

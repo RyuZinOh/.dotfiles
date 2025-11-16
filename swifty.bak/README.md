@@ -1,3 +1,5 @@
+
+[I am not using this currently, due to the usage of my quickshell version of wallski] [will consider it using when I am not using quickshell]
 - ok u must be in qt6, also you must have layer-shell-qt
 - check the  ``modules/swifty.cpp`` and change the path configuration if you want to integrate it with hyprlock stuff and also change the wallpaper support from whatever u have used in this case I am using ``wallski``.
 - also, u must be populating your home directory with picture directory with bunch of images so that it can see the path to generate the thumbnails for the greater good.
