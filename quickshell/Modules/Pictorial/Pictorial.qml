@@ -43,7 +43,9 @@ Item {
     Process {
         id: launcher
     }
-
+    Process {
+        id: copyPfpProcess
+    }
     //read the cache
     Process {
         id: readProcess
@@ -55,6 +57,10 @@ Item {
                 const path = data.trim();
                 if (path) {
                     profileData.pfpPath = path;
+                    // copies pfp into hyprlock folder
+                    const dest = "/home/safal726/.cache/hyprlock-safal/pfp.jpeg";
+                    copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${path}" "${dest}"`];
+                    copyPfpProcess.running = true;
                 }
             }
         }
