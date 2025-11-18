@@ -5,6 +5,7 @@ import qs.Modules.Wallski
 import qs.Modules.Pictorial
 import qs.Services.Notification
 import qs.Services.WallpaperService
+import qs.Modules.Streaks
 
 Scope {
     // background layer [wallpaper]
@@ -68,6 +69,15 @@ Scope {
                 id: pictorialRef
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+            }
+
+            //right side streak
+            //github
+            Github {
+                id: gitSRef
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: 300
             }
         }
     }
