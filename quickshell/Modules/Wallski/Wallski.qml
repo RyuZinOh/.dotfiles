@@ -250,7 +250,7 @@ Item {
                         implicitWidth: 200
                         implicitHeight: 10
                         radius: 5
-                        color: "#2A2A2A"
+                        color: "transparent"
                         opacity: 0.4
 
                         Behavior on opacity {
@@ -444,7 +444,8 @@ Item {
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: thumb.name
+                        // remove thumbs extenstion
+                        text: thumb.name.replace(/\.[^/.]+$/, "")
                         color: "white"
                         font.pixelSize: 13
                         font.family: "CaskaydiaCove NF"

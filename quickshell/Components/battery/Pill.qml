@@ -6,7 +6,7 @@ Item {
     // Properties
     property real fill: 1.0
     property color fillColor: "white"
-    property color emptyColor: "#1a1a1a"
+    property color emptyColor: "black"
     property color borderColor: "white"
     property color textColor: "white"
     property int bWidth: 40
@@ -51,7 +51,7 @@ Item {
                     left: parent.left
                     top: parent.top
                     bottom: parent.bottom
-                    margins: root.borderWidth + 1
+                    margins: root.borderWidth +1
                 }
                 width: Math.max(0, (parent.width - (root.borderWidth + 1) * 2) * Math.min(1, root.fill))
                 radius: 2
