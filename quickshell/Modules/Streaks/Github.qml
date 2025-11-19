@@ -12,6 +12,8 @@ Item {
     property var githubContributions: []
     property int totalContributions: 0
     property string username: "ryuzinoh"
+    //check error
+    property bool hasError: false
 
     // monochrome color scheme
     readonly property color bg: "black"
@@ -98,18 +100,32 @@ Item {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const json = JSON.parse(text);
+                //checking offline
+                if (text.trim() == "") {
+                    root.hasError = true;
+                    return;
+                }
 
-                const oneYearAgo = new Date();
-                oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+                try {
+                    const json = JSON.parse(text);
 
-                root.totalContributions = json.contributions.filter(c => new Date(c.date) >= oneYearAgo).reduce((sum, c) => sum + c.count, 0);
+                    const oneYearAgo = new Date();
+                    oneYearAgo.setDate(oneYearAgo.getDate() - 365);
 
-                const today = new Date();
-                const cutoff = new Date(today);
-                cutoff.setDate(cutoff.getDate() - 280);
+                    root.totalContributions = json.contributions.filter(c => new Date(c.date) >= oneYearAgo).reduce((sum, c) => sum + c.count, 0);
 
-                root.githubContributions = json.contributions.filter(c => new Date(c.date) >= cutoff).sort((a, b) => new Date(a.date) - new Date(b.date));
+                    const today = new Date();
+                    const cutoff = new Date(today);
+                    cutoff.setDate(cutoff.getDate() - 280);
+
+                    root.githubContributions = json.contributions.filter(c => new Date(c.date) >= cutoff).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                    //success
+                    root.hasError = false;
+                } catch (e) {
+                    console.log(e);
+                    root.hasError = true;
+                }
             }
         }
     }
@@ -118,7 +134,7 @@ Item {
         id: content
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        width: root.isHovered ? 650 : 2
+        width: root.isHovered ? 650 : 0.1
         height: parent.height
         style: 1
         alignment: 2
@@ -144,10 +160,38 @@ Item {
                     easing.type: Easing.OutQuad
                 }
             }
+            ColumnLayout {
+                anchors.centerIn: parent
+                visible: root.hasError
+                spacing: 10
 
+                Text {
+                    text: "󰖪"
+                    font.family: "CaskaydiaCove NF"
+                    font.pixelSize: 40
+                    color: root.textSecondary
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                Text {
+                    text: "You are currently offline"
+                    font.family: "CaskaydiaCove NF"
+                    font.pixelSize: 14
+                    font.bold: true
+                    color: root.textPrimary
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                Text {
+                    text: "Unable to fetch GitHub data"
+                    font.family: "CaskaydiaCove NF"
+                    font.pixelSize: 12
+                    color: root.textSecondary
+                    Layout.alignment: Qt.AlignHCenter
+                }
+            }
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 20
+                visible: !root.hasError
 
                 // Header
                 Item {

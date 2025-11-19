@@ -22,14 +22,14 @@ Item {
     //applications
     property var appLaunchers: [
         {
-            icon: "",
-            name: "GitHub",
-            command: ["firefox", "https://github.com"]
-        },
-        {
             icon: "󰨞",
             name: "VSCodium",
             command: ["codium"]
+        },
+        {
+            icon: "󰻀",
+            name: "Qemu",
+            command: ["virt-manager"]
         }
     ]
 
@@ -70,7 +70,7 @@ Item {
         id: content
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        width: root.isHovered ? 200 : 2
+        width: root.isHovered ? 200 : 0.1
         height: parent.height
         style: 1
         alignment: 2

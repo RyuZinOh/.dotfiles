@@ -28,7 +28,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
-        height: root.isHovered ? 369 : 2
+        height: root.isHovered ? 369 : 0.1
         style: 1
         alignment: 3
         radius: 20
