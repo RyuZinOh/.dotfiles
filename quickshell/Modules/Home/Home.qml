@@ -26,7 +26,7 @@ Scope {
                 left: true
                 right: true
             }
-            exclusiveZone: 40
+            exclusiveZone: ExclusionMode.Ignore
             color: "transparent"
 
             //wallpaperService
@@ -40,6 +40,7 @@ Scope {
                 enableZoomEffect: true
                 crossfadeDuration: 1000
                 zoomDuration: 1200
+                transitionType: "crossfade"
             }
             // dim overlay when wallski is open
             Rectangle {
@@ -86,7 +87,7 @@ Scope {
                 id: aniRef
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: -300
+                anchors.verticalCenterOffset: -320
             }
         }
     }

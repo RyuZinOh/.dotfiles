@@ -28,7 +28,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
-        height: root.isHovered ? 369 : 0.1
+        height: root.isHovered ? 500 : 0.1
         style: 1
         alignment: 3
         radius: 20
@@ -91,6 +91,78 @@ Item {
                 }
             }
 
+            // Active preview for reference
+            // Rectangle {
+            //     Layout.fillWidth: true
+            //     Layout.preferredHeight: 100
+            //     color: "transparent"
+            //     border.color: "white"
+            //     visible: Dat.WallpaperConfig.currentWallpaper !== ""
+            //     radius: 14
+            //
+            //     RowLayout {
+            //         anchors.fill: parent
+            //         anchors.margins: 12
+            //         spacing: 16
+            //
+            //         // Active thumbnail
+            //         Rectangle {
+            //             Layout.preferredWidth: 140
+            //             Layout.fillHeight: true
+            //             color: "transparent"
+            //             Image {
+            //                 anchors.fill: parent
+            //                 source: {
+            //                     const currentWall = Dat.WallpaperConfig.currentWallpaper;
+            //                     if (!currentWall) {
+            //                         return "";
+            //                     }
+            //                     const fileName = currentWall.split('/').pop();
+            //                     return root.thumbsPath + fileName;
+            //                 }
+            //                 fillMode: Image.PreserveAspectCrop
+            //                 smooth: true
+            //                 asynchronous: true
+            //             }
+            //         }
+            //
+            //         // Info section
+            //         ColumnLayout {
+            //             Layout.fillWidth: true
+            //             Layout.fillHeight: true
+            //             spacing: 8
+            //
+            //             RowLayout {
+            //                 Layout.fillWidth: true
+            //                 spacing: 10
+            //                 Text {
+            //                     text: "CURRENTLY ACTIVE"
+            //                     color: "white"
+            //                     font.pixelSize: 14
+            //                     font.weight: Font.Bold
+            //                     font.family: "CaskaydiaCove NF"
+            //                 }
+            //             }
+            //
+            //             Text {
+            //                 Layout.fillWidth: true
+            //                 text: {
+            //                     const currentWall = Dat.WallpaperConfig.currentWallpaper;
+            //                     if (!currentWall) {
+            //                         return "None";
+            //                     }
+            //                     const fileName = currentWall.split('/').pop();
+            //                     return fileName.replace(/\.[^/.]+$/, "");
+            //                 }
+            //                 color: "white"
+            //                 font.pixelSize: 16
+            //                 font.family: "CaskaydiaCove NF"
+            //                 font.weight: Font.Medium
+            //                 elide: Text.ElideMiddle
+            //             }
+            //         }
+            //     }
+            // }
             // SEARCH BAR
             Rectangle {
                 Layout.fillWidth: true

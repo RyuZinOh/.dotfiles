@@ -4,4 +4,4 @@
 - check the  ``modules/swifty.cpp`` and change the path configuration if you want to integrate it with hyprlock stuff and also change the wallpaper support from whatever u have used in this case I am using ``wallski``.
 - also, u must be populating your home directory with picture directory with bunch of images so that it can see the path to generate the thumbnails for the greater good.
 - create a build qmake6 and then make
-- use them with hyprland keybinds and window rules for geater control like placing them below maintaining size and stuff 
+- use them with hyprland keybinds and window rules for greater control like placing them below maintaining size and stuff 

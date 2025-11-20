@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Widgets
 import qs.Data as Dat
 
 Item {
@@ -9,6 +10,9 @@ Item {
     property bool enableZoomEffect: true
     property int crossfadeDuration: 1000
     property int zoomDuration: 1200
+
+    //transition types
+    property string transitionType: "crossfade"
 
     // scaling
     property bool isHovered: false
@@ -65,8 +69,9 @@ Item {
             width: calculatedWidth
 
             x: {
-                if (!isPannable)
+                if (!isPannable) {
                     return 0;
+                }
                 const maxOffset = width - parent.width;
                 return -maxOffset * mouseXNormalized;
             }
@@ -95,10 +100,18 @@ Item {
                 source = Dat.WallpaperConfig.currentWallpaper;
 
                 Dat.WallpaperConfig.currentWallpaperChanged.connect(() => {
-                    if (crossfadeAnimation.running) {
-                        crossfadeAnimation.complete();
+                    if (transitionType === "crossfade") {
+                        if (crossfadeAnimation.running) {
+                            crossfadeAnimation.complete();
+                        }
+                        animatingWal.source = Dat.WallpaperConfig.currentWallpaper;
+                    } else if (transitionType === "bubble") {
+                        if (bubbleAnimation.running) {
+                            bubbleAnimation.complete();
+                        }
+                        bubbleWallpaper.source = Dat.WallpaperConfig.currentWallpaper;
+                        bubbleAnimation.start();
                     }
-                    animatingWal.source = Dat.WallpaperConfig.currentWallpaper;
                 });
 
                 animatingWal.statusChanged.connect(() => {
@@ -113,6 +126,12 @@ Item {
                     animatingWal.opacity = 0;
                     animatingWal.scale = 1.0;
                 });
+
+                bubbleAnimation.finished.connect(() => {
+                    wallpaper.source = bubbleWallpaper.source;
+                    bubbleWallpaper.source = "";
+                    bubbleClip.width = 0;
+                });
             }
         }
 
@@ -126,6 +145,7 @@ Item {
             fillMode: Image.PreserveAspectCrop
             opacity: 0
             scale: enableZoomEffect ? 1.1 : 1.0
+            visible: transitionType === "crossfade"
 
             property bool isPannable: false
             property real calculatedWidth: parent.width
@@ -183,6 +203,39 @@ Item {
                     duration: wallpaperService.zoomDuration
                     easing.type: Easing.OutCubic
                 }
+            }
+        }
+
+        //bubble transition
+        ClippingRectangle {
+            id: bubbleClip
+            anchors.centerIn: parent
+            width: 0
+            height: width
+            visible: transitionType === "bubble"
+            color: "transparent"
+            radius: width
+            layer.smooth: true
+
+            NumberAnimation {
+                id: bubbleAnimation
+                target: bubbleClip
+                property: "width"
+                from: 0
+                to: Math.max(wallpaperService.width, wallpaperService.height) * 1.5
+                duration: wallpaperService.crossfadeDuration
+                easing.type: Easing.Bezier
+                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+            }
+
+            Image {
+                id: bubbleWallpaper
+                anchors.centerIn: parent
+                width: wallpaperService.width
+                height: wallpaperService.height
+                source: ""
+                cache: false
+                fillMode: Image.PreserveAspectCrop
             }
         }
     }

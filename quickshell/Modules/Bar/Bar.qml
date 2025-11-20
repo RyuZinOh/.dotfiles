@@ -3,6 +3,7 @@ import QtQuick
 import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Components.battery
+import QtQuick.Effects
 
 Scope {
     Variants {
@@ -28,17 +29,28 @@ Scope {
                     id: logo
                     width: 35
                     height: 35
-                    color: "black"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 2
-                    Text {
-                        text: "\uF303"
-                        font.pixelSize: 24
-                        color: "blue"
-                        anchors.centerIn: parent
-                    }
 
+                    Rectangle {
+                        id: blackBackground
+                        anchors.fill: parent
+                        color: "black"
+                        Text {
+                            text: "\uF303"
+                            font.pixelSize: 24
+                            color: "blue"
+                            anchors.centerIn: parent
+                        }
+                    }
+                    // MultiEffect {
+                    //   source: blackBackground 
+                    //   anchors.fill: blackBackground
+                    //     blurEnabled: true
+                    //     blurMax: 64
+                    //     blur: 1.0
+                    // }
                     MouseArea {
                         width: logo.width
                         height: logo.height
