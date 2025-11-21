@@ -83,8 +83,25 @@ vim.lsp.config("qmlls", {
   root_dir = vim.fs.root(0, { "*.qmlproject", ".git", "qmldir" }),
 })
 
+-- for writing workflows
+vim.lsp.config("yamlls", {
+  cmd = { "yaml-language-server", "--stdio" },
+  filetypes = { "yaml", "yml" },
+  root_dir = vim.fs.root(0, { ".git", "package.json", "go.mod", "setup.py" }),
+  settings = {
+    yaml = {
+      schemas = {
+        ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+      },
+      validate = true,
+      keyOrdering = true,
+    },
+  },
+})
+
 vim.lsp.enable "rust_analyzer"
 vim.lsp.enable "clangd"
 vim.lsp.enable "jdtls"
 vim.lsp.enable "pyright"
 vim.lsp.enable "qmlls"
+vim.lsp.enable "yamlls"

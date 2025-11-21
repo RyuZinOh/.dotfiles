@@ -8,6 +8,7 @@ local options = {
     python = { "ruff_format", "ruff_organize_imports" },
     css = { "prettier" },
     qml = { "qmlformat" },
+    yml = { "prettier" },
     -- html = { "prettier" },
   },
 
