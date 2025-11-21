@@ -5,7 +5,7 @@ import qs.Modules.Wallski
 import qs.Modules.Pictorial
 import qs.Services.Notification
 import qs.Services.WallpaperService
-import qs.Modules.Streaks
+// import qs.Modules.Streaks
 import qs.Modules.MAL
 
 Scope {
@@ -74,20 +74,19 @@ Scope {
             }
 
             //right side streak
-            //github
-            Github {
-                id: gitSRef
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: 300
-            }
+            //github [not much of a use tbh]
+            // Github {
+            //     id: gitSRef
+            //     anchors.right: parent.right
+            //     anchors.verticalCenter: parent.verticalCenter
+            //     anchors.verticalCenterOffset: 300
+            // }
 
             //anilist but contains todolist as well
             Anilist {
                 id: aniRef
-                anchors.right: parent.right
+                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: -320
             }
         }
     }

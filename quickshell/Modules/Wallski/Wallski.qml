@@ -28,7 +28,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
-        height: root.isHovered ? 500 : 0.1
+        height: root.isHovered ? 369 : 0.1 //369 if commented else 500 [might forget]
         style: 1
         alignment: 3
         radius: 20
@@ -192,10 +192,10 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: ""
+                        text: ""
                         font.pixelSize: 18
                         font.family: "CaskaydiaCove NF"
-                        color: searchInput.activeFocus ? "blue" : "black"
+                        color: searchInput.activeFocus ? "blue" : "white"
 
                         Behavior on color {
                             ColorAnimation {
@@ -255,7 +255,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "x"
-                            color: "white"
+                            color: "blue"
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
                         }

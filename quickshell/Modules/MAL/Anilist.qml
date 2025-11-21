@@ -30,14 +30,14 @@ Item {
 
     PopoutShape {
         id: content
-        anchors.right: parent.right
+        anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
 
         width: root.isHovered ? 375 : 0.1
         height: parent.height
 
         style: 1
-        alignment: 2
+        alignment: 4
         radius: 20
         color: root.bg
 
