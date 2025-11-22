@@ -7,6 +7,7 @@ import qs.Services.Notification
 import qs.Services.WallpaperService
 // import qs.Modules.Streaks
 import qs.Modules.MAL
+import qs.Modules.KuruKuru
 
 Scope {
     // background layer [wallpaper]
@@ -66,7 +67,14 @@ Scope {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: 999
             }
-            // pictorial at right side
+            // kururin leftbottom
+            Kururin {
+                id: kuruRef
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+            }
+
+            // pictorial at right-bottom side
             Pictorial {
                 id: pictorialRef
                 anchors.right: parent.right

@@ -281,17 +281,8 @@ Item {
         }
     }
 
-    //only bottom-right corner
-    MouseArea {
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        width: root.isHovered ? content.width : 60
-        height: root.isHovered ? content.height : 60
-        hoverEnabled: true
-
-        onEntered: root.isHovered = true
-        onExited: root.isHovered = false
-
-        propagateComposedEvents: true
+    HoverHandler {
+        id: hoverHandler
+        onHoveredChanged: root.isHovered = hovered
     }
 }
