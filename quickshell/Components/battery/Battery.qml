@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell
 import Quickshell.Services.UPower
 
 Row {
@@ -12,8 +11,8 @@ Row {
         delegate: Item {
             required property UPowerDevice modelData
             visible: modelData.isLaptopBattery
-            width: batteryRow.width
-            height: batteryRow.height
+            width: batteryContainer.width
+            height: batteryContainer.height
 
             QtObject {
                 id: batteryData
@@ -24,66 +23,99 @@ Row {
                 property bool isDischarging: state === UPowerDeviceState.Discharging
                 property bool isFullyCharged: state === UPowerDeviceState.FullyCharged
 
-                property color fillColor: {
-                    if (isCharging) {
-                        return "green";
+                property color accentColor: {
+                    if (isCharging || isFullyCharged) {
+                        return "#4ade80";
                     }
                     if (percentInt <= 10) {
-                        return "red";
+                        return "#ff0000";
                     }
                     if (percentInt <= 20) {
-                        return "orange";
+                        return "#f99000";
                     }
-                    return "white";
+                    return "#ffffff";
                 }
-                property string displayText: isCharging ? "󱐋" : `${percentInt}%`//fancy seeing f0e7 not working
+
+                property string displayText: isCharging ? "󱐋" : `${percentInt}%`
             }
 
-            Row {
-                id: batteryRow
-                spacing: 5
+            Item {
+                id: batteryContainer
+                width: 42
+                height: 22
 
-                Item {
-                    width: pill.width
-                    height: pill.height
+                Rectangle {
+                    id: terminal
+                    width: 3
+                    height: 10
+                    radius: 2
+                    color: batteryData.accentColor
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-                    Pill {
-                        id: pill
-                        bWidth: 35
-                        bHeight: 20
-                        fillColor: batteryData.fillColor
-                        emptyColor: "black"
-                        borderColor: batteryData.fillColor
-                        textColor: "black"
-                        fill: batteryData.percentage
-                        borderWidth: 2
-                        terminalWidth: 3
-                        terminalHeight: 8
+                Rectangle {
+                    id: batteryBody
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 38
+                    height: 20
+                    radius: 4
+                    color: "transparent"
+                    border.color: batteryData.accentColor
+                    border.width: 1.5
+
+                    Rectangle {
+                        id: fillBar
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 2
+                        width: Math.max(0, (parent.width - 4) * batteryData.percentage)
+                        radius: 2
+                        color: batteryData.accentColor
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 300
+                            }
+                        }
                     }
 
                     Text {
                         anchors.centerIn: parent
-                        anchors.horizontalCenterOffset: -2
                         text: batteryData.displayText
                         font.family: "0xProto Nerd Font"
-                        font.pixelSize: batteryData.isCharging ? 16 : 10
+                        font.pixelSize: batteryData.isCharging ? 14 : 9
                         font.bold: true
-                        color: "black"
+                        color: batteryData.percentage > 0.5 ? "#000000" : batteryData.accentColor
 
                         SequentialAnimation on opacity {
                             running: batteryData.isCharging
                             loops: Animation.Infinite
                             NumberAnimation {
                                 to: 0.3
-                                duration: 1000
-                                easing.type: Easing.InOutQuad
+                                duration: 800
+                                easing.type: Easing.InOutSine
                             }
                             NumberAnimation {
                                 to: 1.0
-                                duration: 1000
-                                easing.type: Easing.InOutQuad
+                                duration: 800
+                                easing.type: Easing.InOutSine
                             }
                         }
+                    }
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
                     }
                 }
             }

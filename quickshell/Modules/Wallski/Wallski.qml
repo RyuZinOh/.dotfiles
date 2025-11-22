@@ -30,7 +30,7 @@ Item {
         width: parent.width
         height: root.isHovered ? 369 : 0.1 //369 if commented else 500 [might forget]
         style: 1
-        alignment: 3
+        alignment: 4 
         radius: 20
         color: "black"
 

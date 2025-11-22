@@ -70,7 +70,7 @@ Scope {
             Pictorial {
                 id: pictorialRef
                 anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
             }
 
             //right side streak

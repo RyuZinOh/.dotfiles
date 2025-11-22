@@ -69,17 +69,24 @@ Item {
     PopoutShape {
         id: content
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.bottom: parent.bottom
         width: root.isHovered ? 200 : 0.1
-        height: parent.height
+        height: root.isHovered ? parent.height : 0.1
         style: 1
-        alignment: 2
+        alignment: 3
         radius: 20
         color: "black"
 
         Behavior on width {
             NumberAnimation {
-                duration: 400
+                duration: 450
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 450
                 easing.type: Easing.OutCubic
             }
         }
@@ -89,11 +96,20 @@ Item {
             anchors.margins: 24
             opacity: root.isHovered ? 1 : 0
             visible: opacity > 0
+            scale: root.isHovered ? 1 : 0.85
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 300
+                    duration: 350
                     easing.type: Easing.OutQuad
+                }
+            }
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 450
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 1.2
                 }
             }
 
@@ -151,7 +167,8 @@ Item {
                         width: 28
                         height: 28
                         radius: width / 2
-                        color: "black"
+                        color: reloadButton.containsMouse ? "#2B2B2B" : "black"
+
                         Behavior on color {
                             ColorAnimation {
                                 duration: 150
@@ -211,7 +228,7 @@ Item {
                             Layout.preferredWidth: 48
                             Layout.preferredHeight: 48
                             radius: 100
-                            color: "#1B1212"
+                            color: appMouse.containsMouse ? "#2B1B1B" : "#1B1212"
 
                             Behavior on color {
                                 ColorAnimation {
@@ -264,7 +281,17 @@ Item {
         }
     }
 
-    HoverHandler {
-        onHoveredChanged: root.isHovered = hovered
+    //only bottom-right corner
+    MouseArea {
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        width: root.isHovered ? content.width : 60
+        height: root.isHovered ? content.height : 60
+        hoverEnabled: true
+
+        onEntered: root.isHovered = true
+        onExited: root.isHovered = false
+
+        propagateComposedEvents: true
     }
 }

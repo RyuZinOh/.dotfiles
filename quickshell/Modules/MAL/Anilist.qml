@@ -37,7 +37,7 @@ Item {
         height: parent.height
 
         style: 1
-        alignment: 4
+        alignment: 6
         radius: 20
         color: root.bg
 
