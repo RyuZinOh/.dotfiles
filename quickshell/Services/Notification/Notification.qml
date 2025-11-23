@@ -18,10 +18,10 @@ PanelWindow {
     }
     margins {
         right: 0
-        top: 10
+        top: 0
     }
 
-    implicitWidth: 300
+    implicitWidth: 250
 
     property int contentHeight: 100
     implicitHeight: isShowing ? contentHeight : 0
@@ -85,9 +85,9 @@ PanelWindow {
         id: notificationCard
         anchors.right: parent.right
         anchors.top: parent.top
-        implicitWidth: 280
+        implicitWidth: 250
         implicitHeight: notificationWindow.contentHeight
-        radius: 20
+        radius: 10
         color: "black"
         style: 1
         alignment: 2

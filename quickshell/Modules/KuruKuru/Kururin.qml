@@ -1,4 +1,5 @@
 import QtQuick
+// import QtMultimedia // ts backed wth gstreamer
 import qs.Services.Shapes
 
 Item {
@@ -6,6 +7,18 @@ Item {
     width: content.width
     height: 140
     property bool isHovered: false
+ // [uncomment to use, i dont want to use ts right now]
+    // MediaPlayer {
+    //     id: kuruSound
+    //     source: "../../Assets/KuruKuru/kururin.mp3"
+    //     audioOutput: AudioOutput {}
+    // }
+    //
+    // MediaPlayer {
+    //     id: kururinSound
+    //     source: "../../Assets/KuruKuru/kuru.mp3"
+    //     audioOutput: AudioOutput {}
+    // }
 
     PopoutShape {
         id: content
@@ -48,6 +61,7 @@ Item {
                     easing.type: Easing.OutQuad
                 }
             }
+
             Behavior on scale {
                 NumberAnimation {
                     duration: 450
@@ -102,6 +116,13 @@ Item {
                         if (gifContainer.switchable) {
                             gifSmoll.visible = !gifSmoll.visible;
                             gifBig.visible = !gifBig.visible;
+
+                            // sound corresponding
+                            // if (gifSmoll.visible) {
+                            //     kuruSound.play();
+                            // } else {
+                            //     kururinSound.play();
+                            // }
                         }
                     }
                     hoverEnabled: true

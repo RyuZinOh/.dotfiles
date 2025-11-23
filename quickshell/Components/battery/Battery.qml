@@ -25,7 +25,7 @@ Row {
 
                 property color accentColor: {
                     if (isCharging || isFullyCharged) {
-                        return "#4ade80";
+                        return "#00ff00";
                     }
                     if (percentInt <= 10) {
                         return "#ff0000";
