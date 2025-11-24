@@ -5,6 +5,7 @@ import qs.Modules.Wallski
 import qs.Modules.Pictorial
 import qs.Services.Notification
 import qs.Services.WallpaperService
+// import qs.Services.Music
 // import qs.Modules.Streaks
 import qs.Modules.MAL
 import qs.Modules.KuruKuru
@@ -56,6 +57,14 @@ Scope {
                     }
                 }
             }
+            // [just showcase stuff tbh, not really practical but yea uncomment to use it]
+            // Controller {
+            //     id: musicController
+            //     anchors {
+            //         right: parent.right
+            //         verticalCenter: parent.verticalCenter
+            //     }
+            // }
             //notifications service
             Notification {
                 id: notificationPopup
