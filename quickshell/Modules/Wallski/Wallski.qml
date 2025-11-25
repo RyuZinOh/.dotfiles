@@ -30,7 +30,7 @@ Item {
         width: parent.width
         height: root.isHovered ? 369 : 0.1 //369 if commented else 500 [might forget]
         style: 1
-        alignment: 4 
+        alignment: 4
         radius: 20
         color: "black"
 
@@ -350,8 +350,9 @@ Item {
                         const fileUrl = "file://" + fullPath;
 
                         Dat.WallpaperConfig.currentWallpaper = fileUrl;
-                        Dat.WallpaperConfig.saveWallpaper(fileUrl);
-                        copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/hyprlock-safal && cp "${fullPath}" /home/safal726/.cache/hyprlock-safal/bg.jpg`];
+                        Dat.WallpaperConfig.saveWallpaper(fileUrl); //qs ipc call wallpaper setWallpaper "path" equivalent for ref
+                        // copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/hyprlock-safal && cp "${fullPath}" /home/safal726/.cache/hyprlock-safal/bg.jpg`]; // hyprlock version
+                        copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fullPath}" /home/safal726/.cache/safalQuick/bg.jpg`]; // this one for quickshell
                         copyProcess.running = true;
                         const wallpaperName = fileName.replace(/\.[^/.]+$/, "");
                         notifyProcess.command = ["/usr/bin/notify-send", "✓ Wallpaper Applied", wallpaperName];

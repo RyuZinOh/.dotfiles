@@ -6,3 +6,22 @@ feel free to use this, I myself using others modules and stuffs with a lil bit o
 
 
 https://github.com/user-attachments/assets/83e5d2f4-a59c-4eb7-9926-80702c937a0a
+
+<table>
+  <thead>
+    <tr>
+      <th>Resource</th>
+      <th>Usage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CPU</td>
+      <td>Almost none</td>
+    </tr>
+    <tr>
+      <td>RAM</td>
+      <td>~320 MB</td>
+    </tr>
+  </tbody>
+</table>

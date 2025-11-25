@@ -58,7 +58,9 @@ Item {
                 if (path) {
                     profileData.pfpPath = path;
                     // copies pfp into hyprlock folder
-                    const dest = "/home/safal726/.cache/hyprlock-safal/pfp.jpeg";
+                    // const dest = "/home/safal726/.cache/hyprlock-safal/pfp.jpeg";// this is for hyprlock stuff, but i dont need it rn uncomment if you are using this hyprlock integration
+
+                    const dest = "/home/safal726/.cache/safalQuick/pfp.jpeg";
                     copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${path}" "${dest}"`];
                     copyPfpProcess.running = true;
                 }
