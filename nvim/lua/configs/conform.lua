@@ -9,6 +9,7 @@ local options = {
     css = { "prettier" },
     qml = { "qmlformat" },
     yml = { "prettier" },
+    bash = { "shfmt" },
     -- html = { "prettier" },
   },
 

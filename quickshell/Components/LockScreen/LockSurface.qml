@@ -18,7 +18,7 @@ Rectangle {
         Rectangle {
             anchors.fill: parent
             color: "black"
-            opacity: 0.5
+            opacity: 0.7
         }
     }
 
@@ -77,7 +77,7 @@ Rectangle {
                 width: 200
                 height: 200
 
-                // Outer ring 
+                // Outer ring
                 Rectangle {
                     anchors.centerIn: parent
                     width: parent.width + 20
@@ -125,9 +125,9 @@ Rectangle {
 
                         font.pointSize: 18 + (index % 2) * 4
                         color: "white"
-                        // opacity: 0.3 - (index % 2) * 0.05
-                        // style: Text.Outline
-                        // styleColor: "black"
+                        opacity: 0.3 - (index % 2) * 0.05
+                        style: Text.Outline
+                        styleColor: "black"
 
                         transform: Rotation {
                             origin.x: 0

@@ -99,9 +99,22 @@ vim.lsp.config("yamlls", {
   },
 })
 
+-- bash scripting
+vim.lsp.config("bashls", {
+  cmd = { "bash-language-server", "start" },
+  filetypes = { "sh", "bash", "zsh" },
+  root_dir = vim.fs.root(0, { ".git" }),
+  settings = {
+    bashIde = {
+      globPattern = "*@(.sh|.bash|.zsh)",
+    },
+  },
+})
+
 vim.lsp.enable "rust_analyzer"
 vim.lsp.enable "clangd"
 vim.lsp.enable "jdtls"
 vim.lsp.enable "pyright"
 vim.lsp.enable "qmlls"
 vim.lsp.enable "yamlls"
+vim.lsp.enable "bashls"
