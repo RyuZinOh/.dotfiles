@@ -39,7 +39,7 @@ Rectangle {
         color: "white"
         opacity: 0.9
 
-        text: passwordBox.text.length > 0 ? "Fuck Do I care..." : "Do they know what u doing?"
+        text: passwordBox.text.length > 0 ? "fuck yea!!" : "Do you love red panda?"
 
         Behavior on text {
             SequentialAnimation {

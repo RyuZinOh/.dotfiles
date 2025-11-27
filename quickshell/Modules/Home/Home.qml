@@ -3,7 +3,6 @@ import QtQuick
 import Quickshell.Wayland
 import qs.Modules.Wallski
 import qs.Modules.Pictorial
-import qs.Services.Notification
 import qs.Services.WallpaperService
 // import qs.Services.Music
 // import qs.Modules.Streaks
@@ -65,10 +64,7 @@ Scope {
             //         verticalCenter: parent.verticalCenter
             //     }
             // }
-            //notifications service
-            Notification {
-                id: notificationPopup
-            }
+
             // wallski
             Wallski {
                 id: wallskiRef

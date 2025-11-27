@@ -2,9 +2,17 @@ import Quickshell
 import qs.Modules.Home
 import qs.Modules.Bar
 import qs.Services.Lock
+import qs.Services.Notification
 
-Scope {
-    Bar {}
-    Home {}
-    Locker {}//Lock service
+ShellRoot {
+    Scope {
+        Bar {}
+        Home {}
+        Locker {}//Lock service
+
+    }
+    // Notification system
+    NotificationWindow {
+        id: notifWindow
+    }
 }
