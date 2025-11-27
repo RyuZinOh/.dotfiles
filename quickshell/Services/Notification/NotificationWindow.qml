@@ -18,7 +18,7 @@ PanelWindow {
     visible: column.children.length > 0
     color: "transparent"
 
-    //addnig notifications
+    //addin' notifications
     function addNotification(notification) {
         if (!notification) {
             return;
@@ -32,6 +32,7 @@ PanelWindow {
             summary: notification.summary || "Notification",
             body: notification.body || "",
             appName: notification.appName || "",
+            appIcon: notification.appIcon || notification.icon || "",
             actions: notification.actions || [],
             notification: notification
         };
@@ -52,9 +53,11 @@ PanelWindow {
             summary: data.summary,
             body: data.body,
             appName: data.appName,
+            appIcon: data.appIcon,
             actions: data.actions
         });
         if (!card) {
+            console.log("Failed to create notification card");
             return;
         }
         card.dismissed.connect(() => {
