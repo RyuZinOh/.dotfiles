@@ -89,8 +89,8 @@ Rectangle {
             //icon thingy
             Rectangle {
                 id: iconContainer
-                width: 28
-                height: 28
+                width: 40 
+                height: 40
                 radius: 6
                 color: NotificationColors.primary
                 visible: appIcon !== "" || appName !== ""
@@ -117,7 +117,7 @@ Rectangle {
                     visible: appName !== "" && (!appIconImage.visible || appIconImage.status !== Image.Ready)
                     text: appName.charAt(0).toUpperCase()
                     font.family: "Poppins"
-                    font.pixelSize: 16
+                    font.pixelSize: 40
                     font.weight: Font.Bold
                     color: NotificationColors.tertiary
                 }
