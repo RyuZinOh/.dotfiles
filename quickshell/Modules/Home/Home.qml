@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Modules.Wallski
+import qs.Modules.Setski
 import qs.Modules.Pictorial
 import qs.Services.WallpaperService
 // import qs.Services.Music
@@ -34,7 +34,7 @@ Scope {
             WallpaperService {
                 id: wallpaperService
                 anchors.fill: parent
-                isHovered: wallskiRef.isHovered
+                isHovered: setskiRef.isHovered
 
                 //customs
                 enablePanning: true
@@ -43,11 +43,11 @@ Scope {
                 zoomDuration: 1200
                 transitionType: "crossfade"
             }
-            // dim overlay when wallski is open
+            // dim overlay when setski is open
             Rectangle {
                 anchors.fill: parent
                 color: "black"
-                opacity: wallskiRef.isHovered ? 0.3 : 0.0
+                opacity: setskiRef.isHovered ? 0.3 : 0.0
 
                 Behavior on opacity {
                     NumberAnimation {
@@ -65,9 +65,9 @@ Scope {
             //     }
             // }
 
-            // wallski
-            Wallski {
-                id: wallskiRef
+            // setski
+            Setski {
+                id: setskiRef
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: 999
