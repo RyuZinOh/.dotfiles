@@ -4,8 +4,7 @@
 
 feel free to use this, I myself using others modules and stuffs with a lil bit of tweaks
 
-
-https://github.com/user-attachments/assets/83e5d2f4-a59c-4eb7-9926-80702c937a0a
+https://github.com/user-attachments/assets/fc9a6651-5ad0-4bb7-a837-be603a759a8c
 
 <table>
   <thead>
