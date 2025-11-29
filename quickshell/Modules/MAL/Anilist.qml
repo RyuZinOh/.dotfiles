@@ -9,9 +9,7 @@ Item {
     width: content.width
     height: 350
     property bool isHovered: false
-
-    // anime or to_do
-    property string currentTab: "anime"
+    property int currentTab: 0 //tabbing method
 
     readonly property color bg: "black"
     readonly property color textPrimary: "white"
@@ -64,6 +62,7 @@ Item {
 
             ColumnLayout {
                 anchors.fill: parent
+                spacing: 8
 
                 // Header Row
                 RowLayout {
@@ -107,174 +106,111 @@ Item {
                     }
                 }
 
-                // Tabs (Anime / To-Do)
-                RowLayout {
+                Item {
                     Layout.fillWidth: true
-                    spacing: 10
+                    Layout.preferredHeight: 40
 
-                    // Anime Tab
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        color: root.currentTab === "anime" ? root.accent : "#202020"
-                        radius: 100
+                    Row {
+                        id: tabRow
+                        anchors.fill: parent
+                        spacing: 25
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "Anime List"
-                            color: root.currentTab === "anime" ? "black" : "white"
-                            font.family: "CaskaydiaCove NF"
-                            font.pixelSize: 14
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.currentTab = "anime"
-                        }
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-                    }
+                        Repeater {
+                            id: tabRepeater
+                            model: ["Anime List", "To-Do"]
 
-                    // to_do Tab
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        color: root.currentTab === "todo" ? root.accent : "#202020"
-                        radius: 100
+                            Item {
+                                id: tabItem
+                                width: tabText.width + 10
+                                height: 28
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "To-Do"
-                            color: root.currentTab === "todo" ? "black" : "white"
-                            font.family: "CaskaydiaCove NF"
-                            font.pixelSize: 14
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.currentTab = "todo"
-                        }
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-                    }
-                }
-
-                // List View
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    ListView {
-                        id: mainListView
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        clip: true
-
-                        model: root.currentTab === "anime" ? animeModel : todoModel
-
-                        delegate: Rectangle {
-                            width: ListView.view.width
-                            height: 32
-                            color: "transparent"
-
-                            RowLayout {
-                                anchors.fill: parent
+                                property bool isActive: currentTab === index
 
                                 Text {
-                                    text: model.name
-                                    color: root.textPrimary
-                                    font.pixelSize: 14
+                                    id: tabText
+                                    anchors.centerIn: parent
+                                    text: modelData
+                                    color: tabItem.isActive ? "white" : "gray"
+                                    font.pixelSize: 13
+                                    font.weight: tabItem.isActive ? Font.Medium : Font.Normal
                                     font.family: "CaskaydiaCove NF"
-                                    Layout.fillWidth: true
-                                    elide: Text.ElideRight
-                                }
+                                    opacity: tabItem.isActive ? 1.0 : 0.5
 
-                                Button {
-                                    text: ""
-                                    Layout.preferredWidth: 30
-                                    Layout.preferredHeight: 26
-
-                                    contentItem: Text {
-                                        text: parent.text
-                                        color: "red"
-                                        font.pixelSize: 14
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    background: Rectangle {
-                                        color: "transparent"
-                                    }
-
-                                    onClicked: {
-                                        if (root.currentTab === "anime") {
-                                            animeModel.remove(index);
-                                        } else {
-                                            todoModel.remove(index);
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
                                         }
-                                        saveData();
                                     }
-
-                                    HoverHandler {
-                                        cursorShape: Qt.PointingHandCursor
+                                    Behavior on opacity {
+                                        NumberAnimation {
+                                            duration: 200
+                                        }
                                     }
                                 }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: currentTab = index
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        id: activeIndicator
+                        height: 2
+                        color: "white"
+
+                        property Item activeTab: tabRepeater.count > 0 ? tabRepeater.itemAt(currentTab) : null
+
+                        x: activeTab ? activeTab.x + (activeTab.width - width) / 2 : 0
+                        width: activeTab ? activeTab.width : 0
+
+                        Behavior on x {
+                            NumberAnimation {
+                                duration: 100
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 100
+                                easing.type: Easing.OutCubic
                             }
                         }
                     }
                 }
 
-                // Input Area
-                RowLayout {
+                // Content Area
+                Item {
                     Layout.fillWidth: true
-                    spacing: 8
+                    Layout.fillHeight: true
 
-                    TextField {
-                        id: inputField
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 32
-                        placeholderText: root.currentTab === "anime" ? "Add anime..." : "Add task..."
-                        placeholderTextColor: "white"
-                        color: root.textPrimary
-                        font.pixelSize: 13
-                        font.family: "CaskaydiaCove NF"
-                        leftPadding: 10
-                        rightPadding: 10
-
-                        background: Rectangle {
-                            color: "#202020"
-                            radius: 100
+                    Loader {
+                        id: contentLoader
+                        anchors.fill: parent
+                        opacity: 0
+                        sourceComponent: {
+                            switch (currentTab) {
+                            case 0:
+                                return animeComponent;
+                            case 1:
+                                return todoComponent;
+                            default:
+                                return null;
+                            }
                         }
+                        onLoaded: fadeInAnimation.restart()
 
-                        Keys.onReturnPressed: addItem()
-                    }
-
-                    Button {
-                        text: "Add"
-                        Layout.preferredWidth: 60
-                        Layout.preferredHeight: 32
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "white"
-                            font.pixelSize: 13
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        background: Rectangle {
-                            color: "blue"
-                            radius: 100
-                        }
-
-                        onClicked: addItem()
-                        HoverHandler {
-                            cursorShape: Qt.PointingHandCursor
+                        NumberAnimation {
+                            id: fadeInAnimation
+                            target: contentLoader
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: 250
+                            easing.type: Easing.OutQuad
                         }
                     }
                 }
@@ -286,20 +222,268 @@ Item {
         onHoveredChanged: root.isHovered = hovered
     }
 
-    function addItem() {
-        const text = inputField.text.trim();
-        if (text.length > 0) {
-            if (root.currentTab === "anime") {
-                animeModel.append({
-                    "name": text
-                });
-            } else {
-                todoModel.append({
-                    "name": text
-                });
+    // Anime List Component
+    Component {
+        id: animeComponent
+
+        ColumnLayout {
+            spacing: 8
+
+            ListView {
+                id: animeListView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+                model: animeModel
+
+                delegate: Rectangle {
+                    width: ListView.view.width
+                    height: 32
+                    color: "#100C08"
+                    radius: 10
+
+                    RowLayout {
+                        anchors.fill: parent
+
+                        Text {
+                            text:" "+model.name
+                            color: root.textPrimary
+                            font.pixelSize: 14
+                            font.family: "CaskaydiaCove NF"
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                        }
+
+                        Button {
+                            text: ""
+                            Layout.preferredWidth: 30
+                            Layout.preferredHeight: 26
+
+                            contentItem: Text {
+                                text: parent.text
+                                color: "red"
+                                font.pixelSize: 14
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            background: Rectangle {
+                                color: "transparent"
+                            }
+
+                            onClicked: {
+                                animeModel.remove(index);
+                                saveData();
+                            }
+
+                            HoverHandler {
+                                cursorShape: Qt.PointingHandCursor
+                            }
+                        }
+                    }
+                }
             }
-            inputField.text = "";
-            saveData();
+
+            // Input Area
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                TextField {
+                    id: animeInputField
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 32
+                    placeholderText: "Add anime..."
+                    placeholderTextColor: "silver"
+                    color: root.textPrimary
+                    font.pixelSize: 13
+                    font.family: "CaskaydiaCove NF"
+                    leftPadding: 10
+                    rightPadding: 10
+
+                    background: Rectangle {
+                        color: "#100C08"
+                        radius: 100
+                    }
+
+                    Keys.onReturnPressed: {
+                        const text = animeInputField.text.trim();
+                        if (text.length > 0) {
+                            animeModel.append({
+                                "name": text
+                            });
+                            animeInputField.text = "";
+                            saveData();
+                        }
+                    }
+                }
+
+                Button {
+                    text: "Add"
+                    Layout.preferredWidth: 60
+                    Layout.preferredHeight: 32
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "black"
+                        font.pixelSize: 13
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        color: "white"
+                        radius: 100
+                    }
+
+                    onClicked: {
+                        const text = animeInputField.text.trim();
+                        if (text.length > 0) {
+                            animeModel.append({
+                                "name": text
+                            });
+                            animeInputField.text = "";
+                            saveData();
+                        }
+                    }
+
+                    HoverHandler {
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                }
+            }
+        }
+    }
+
+    // To-Do Component
+    Component {
+        id: todoComponent
+
+        ColumnLayout {
+            spacing: 8
+
+            ListView {
+                id: todoListView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+                model: todoModel
+
+                delegate: Rectangle {
+                    width: ListView.view.width
+                    height: 32
+                    color: "#100C08"
+                    radius: 10
+
+                    RowLayout {
+                        anchors.fill: parent
+                        Text {
+                            text:" "+model.name
+                            color: root.textPrimary
+                            font.pixelSize: 14
+                            font.family: "CaskaydiaCove NF"
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                        }
+
+                        Button {
+                            text: ""
+                            Layout.preferredWidth: 30
+                            Layout.preferredHeight: 26
+
+                            contentItem: Text {
+                                text: parent.text
+                                color: "red"
+                                font.pixelSize: 14
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            background: Rectangle {
+                                color: "transparent"
+                            }
+
+                            onClicked: {
+                                todoModel.remove(index);
+                                saveData();
+                            }
+
+                            HoverHandler {
+                                cursorShape: Qt.PointingHandCursor
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Input Area
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                TextField {
+                    id: todoInputField
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 32
+                    placeholderText: "Add task..."
+                    placeholderTextColor: "silver"
+                    color: root.textPrimary
+                    font.pixelSize: 13
+                    font.family: "CaskaydiaCove NF"
+                    leftPadding: 10
+                    rightPadding: 10
+
+                    background: Rectangle {
+                        color: "#100C08"
+                        radius: 100
+                    }
+
+                    Keys.onReturnPressed: {
+                        const text = todoInputField.text.trim();
+                        if (text.length > 0) {
+                            todoModel.append({
+                                "name": text
+                            });
+                            todoInputField.text = "";
+                            saveData();
+                        }
+                    }
+                }
+
+                Button {
+                    text: "Add"
+                    Layout.preferredWidth: 60
+                    Layout.preferredHeight: 32
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "black"
+                        font.pixelSize: 13
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        color: "white"
+                        radius: 100
+                    }
+
+                    onClicked: {
+                        const text = todoInputField.text.trim();
+                        if (text.length > 0) {
+                            todoModel.append({
+                                "name": text
+                            });
+                            todoInputField.text = "";
+                            saveData();
+                        }
+                    }
+
+                    HoverHandler {
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                }
+            }
         }
     }
 

@@ -14,11 +14,11 @@ Rectangle {
     signal dismissed
     signal actionInvoked(actionId: string)
 
-    width: parent.width
-    height: contentColumn.height + 40
-    color: NotificationColors.tertiary
+    width: parent ? parent.width : 360
+    height: contentColumn.height + 32
+    color: "transparent"
+    radius: 12
 
-    //resolve icon from desktop entry or icon name
     function getIconSource() {
         if (appIcon !== "" && (appIcon.startsWith("/") || appIcon.startsWith("file://") || appIcon.startsWith("http://") || appIcon.startsWith("https://"))) {
             return appIcon;
@@ -34,7 +34,7 @@ Rectangle {
 
     Component.onCompleted: {
         showAnimation.start();
-        }
+    }
 
     ParallelAnimation {
         id: showAnimation
@@ -56,7 +56,10 @@ Rectangle {
             }
         }
         ScriptAction {
-            script: card.dismissed()
+            script: {
+                NotificationService.dismiss(card.notifId);
+                card.dismissed();
+            }
         }
     }
 
@@ -64,7 +67,6 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-
 
         onClicked: function (mouse) {
             if (mouse.button === Qt.RightButton) {
@@ -89,11 +91,29 @@ Rectangle {
             //icon thingy
             Rectangle {
                 id: iconContainer
-                width: 40 
-                height: 40
+                width: 50
+                height: 50
                 radius: 6
-                color: NotificationColors.primary
+                color: "transparent"
                 visible: appIcon !== "" || appName !== ""
+
+                AnimatedImage {
+                    id: appIconAnimated
+                    anchors.fill: parent
+
+                    source: getIconSource()
+                    fillMode: Image.PreserveAspectFit
+                    visible: source !== "" && status === Image.Ready && source.toString().toLowerCase().endsWith(".gif")
+                    asynchronous: true
+                    cache: false
+                    playing: true
+
+                    onStatusChanged: {
+                        if (status === Image.Error) {
+                            console.log("Failed to load animated icon from:", source);
+                        }
+                    }
+                }
 
                 Image {
                     id: appIconImage
@@ -101,9 +121,9 @@ Rectangle {
                     anchors.margins: 4
                     source: getIconSource()
                     fillMode: Image.PreserveAspectFit
-                    visible: source !== "" && status === Image.Ready
-                    asynchronous: true
-                    cache: false
+                    visible: source !== "" && status === Image.Ready && !source.toString().toLowerCase().endsWith(".gif")
+                    asynchronous: false
+                    cache: true
 
                     onStatusChanged: {
                         if (status === Image.Error) {
@@ -114,12 +134,12 @@ Rectangle {
 
                 Text {
                     anchors.centerIn: parent
-                    visible: appName !== "" && (!appIconImage.visible || appIconImage.status !== Image.Ready)
+                    visible: appName !== "" && (!appIconImage.visible && !appIconAnimated.visible)
                     text: appName.charAt(0).toUpperCase()
                     font.family: "Poppins"
                     font.pixelSize: 40
                     font.weight: Font.Bold
-                    color: NotificationColors.tertiary
+                    color: NotificationColors.secondary
                 }
             }
 
@@ -153,7 +173,7 @@ Rectangle {
                     font.family: "CaskaydiaCove Nerd Font"
                     font.pixelSize: 16
                     color: NotificationColors.primary
-                text: ""
+                    text: ""
                 }
 
                 MouseArea {

@@ -1,10 +1,11 @@
 import Quickshell
 import QtQuick
+import qs.Services.Shapes
 
 PanelWindow {
     id: window
     property var queue: []
-    property int maxVisible: 15
+    property int maxVisible: 5
     anchors {
         right: true
         top: true
@@ -14,7 +15,7 @@ PanelWindow {
         top: 0
     }
     implicitWidth: 360
-    implicitHeight: column.height
+    implicitHeight: column.height + 32
     visible: column.children.length > 0
     color: "transparent"
 
@@ -73,7 +74,20 @@ PanelWindow {
             }
             removeCard(data.id);
         });
+
+        card.parent = column;
+
+        //index 0 as to show priority
+        var childCount = column.children.length;
+        for (var i = 0; i < childCount - 1; i++) {
+            var child = column.children[0];
+            if (child !== card) {
+                child.parent = null;
+                child.parent = column;
+            }
+        }
     }
+
     function removeCard(id) {
         for (var i = 0; i < column.children.length; i++) {
             if (column.children[i].notifId === id) {
@@ -94,8 +108,20 @@ PanelWindow {
             window.removeCard(id);
         }
     }
-    Column {
-        id: column
+
+    PopoutShape {
+        id: backgroundShape
         width: parent.width
+        height: parent.height
+        style: 1
+        alignment: 2
+        radius: 12
+        color: NotificationColors.tertiary
+
+        Column {
+            id: column
+            width: parent.width
+            spacing: 9
+        }
     }
 }

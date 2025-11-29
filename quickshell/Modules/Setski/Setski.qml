@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Services.Shapes
 import qs.Modules.Setski.Wallski
-import qs.Modules.Setski.Hll
+import qs.Modules.Setski.Timerchan
 import qs.Modules.Setski.Wow
 
 Item {
@@ -58,7 +58,7 @@ Item {
 
                     Repeater {
                         id: tabRepeater
-                        model: ["Wallpapers", "Hello", "Wow"]
+                        model: ["Wallpapers", "Timer", "Wow"]
 
                         Item {
                             id: tabItem
@@ -132,7 +132,7 @@ Item {
                 Loader {
                     id: contentLoader
                     anchors.fill: parent
-
+                    opacity: 0
                     sourceComponent: {
                         switch (currentTab) {
                         case 0:
@@ -145,18 +145,26 @@ Item {
                             return null;
                         }
                     }
-
                     onLoaded: {
+                        fadeInAnimation.restart();
                         if (currentTab === 0 && item) {
                             item.isHovered = Qt.binding(() => root.isHovered && currentTab === 0);
                             item.wallpaperChanged.connect(root.wallpaperChanged);
                         }
                     }
+                    NumberAnimation {
+                        id: fadeInAnimation
+                        target: contentLoader
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 250
+                        easing.type: Easing.OutQuad
+                    }
                 }
             }
         }
     }
-
     HoverHandler {
         onHoveredChanged: root.isHovered = hovered
     }
@@ -168,7 +176,7 @@ Item {
 
     Component {
         id: hllComponent
-        Hll {}
+        Timerchan {}
     }
 
     Component {

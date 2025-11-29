@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import Quickshell.Io
 import qs.Data as Dat
+import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
@@ -24,6 +25,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
+        anchors.topMargin: 8
 
         // HEADER
         // RowLayout {
@@ -137,10 +139,10 @@ Item {
         // SEARCH BAR
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            radius: 14
+            Layout.preferredHeight: 40
+            radius: 10
             color: "black"
-            border.width: searchInput.activeFocus ? 2 : 1
+            border.width: 2
             border.color: searchInput.activeFocus ? "blue" : "white"
 
             Behavior on border.width {
@@ -189,7 +191,7 @@ Item {
                     Text {
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
-                        text: "find wallpapers..."
+                        text: "Search among " + folderModel.count + " images"
                         color: "white"
                         visible: !searchInput.text && !searchInput.activeFocus
                         font.pixelSize: 15
@@ -251,7 +253,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             orientation: ListView.Horizontal
-            spacing: 18
+            spacing: 10
             clip: true
             cacheBuffer: 600
 
@@ -326,7 +328,7 @@ Item {
                     copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fullPath}" /home/safal726/.cache/safalQuick/bg.jpg`]; // this one for quickshell
                     copyProcess.running = true;
                     const wallpaperName = fileName.replace(/\.[^/.]+$/, "");
-                    notifyProcess.command = ["/usr/bin/notify-send", "✓ Wallpaper Applied", wallpaperName];
+                    notifyProcess.command = ["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", wallpaperName];
                     notifyProcess.running = true;
 
                     root.wallpaperChanged(fullPath);
@@ -449,8 +451,15 @@ Item {
                 smooth: true
                 asynchronous: true
                 cache: true
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: Rectangle {
+                        width: img.width
+                        height: img.height
+                        radius: 10
+                    }
+                }
             }
-
             // Hover overlay
             Rectangle {
                 anchors.fill: parent
@@ -513,4 +522,3 @@ Item {
         }
     }
 }
-
