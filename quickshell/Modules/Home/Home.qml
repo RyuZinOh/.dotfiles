@@ -8,6 +8,7 @@ import qs.Services.WallpaperService
 // import qs.Modules.Streaks
 import qs.Modules.MAL
 import qs.Modules.KuruKuru
+// import qs.Modules.Clipstory
 
 Scope {
     // background layer [wallpaper]
@@ -65,6 +66,10 @@ Scope {
             //     }
             // }
 
+            // clip history [planned- for storing the copied stuff as clipboarding]
+            // Clipstory {
+            //     id: clipstoryRef
+            // }
             // setski
             Setski {
                 id: setskiRef

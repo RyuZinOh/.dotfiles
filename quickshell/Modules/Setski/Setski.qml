@@ -133,6 +133,8 @@ Item {
                     id: contentLoader
                     anchors.fill: parent
                     opacity: 0
+                    //unload inactive tabs to save memory
+                    active: root.isHovered
                     sourceComponent: {
                         switch (currentTab) {
                         case 0:
@@ -181,6 +183,8 @@ Item {
 
     Component {
         id: wowComponent
-        Wow {}
+        Wow {
+            useScreencopyLivePreview: false
+        }
     }
 }

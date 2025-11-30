@@ -3,7 +3,6 @@ import QtQuick
 import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Components.battery
-import QtQuick.Effects
 import Quickshell.Io
 import QtQuick.Controls
 
@@ -66,6 +65,24 @@ Scope {
             implicitHeight: 40
 
             color: "transparent"
+
+            // MASKING: capturing only UI Elemetns
+            // in this case transparents stuffs are passthrough
+            // mask: Region {
+            //     Region {
+            //         item: logo
+            //     }
+            //     Region {
+            //         item: serviceStatus
+            //     }
+            //     Region {
+            //         item: workspaces
+            //     }
+            //     Region {
+            //         item: rightPanelBg
+            //     }
+            // }
+
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
@@ -89,7 +106,7 @@ Scope {
                         }
                     }
                     // MultiEffect {
-                    //   source: blackBackground 
+                    //   source: blackBackground
                     //   anchors.fill: blackBackground
                     //     blurEnabled: true
                     //     blurMax: 64
@@ -235,7 +252,7 @@ Scope {
                 }
 
                 Rectangle {
-
+                    id: rightPanelBg
                     color: "black"
                     height: workspaces.height
                     width: rightPanel.width + 20

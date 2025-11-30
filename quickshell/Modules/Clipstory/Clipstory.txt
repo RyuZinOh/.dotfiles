@@ -1,0 +1,62 @@
+import QtQuick
+import QtQuick.Layouts
+import qs.Services.Shapes
+
+
+/* 
+testing the top with the bar as masking to see if I can actually access it 
+- this is the base concept to began to use masking so that i can eliminate my dependancy to background layer for everything
+*/
+Item {
+    id: root
+    x: parent.width * 0.6
+    width: 350
+    height: content.height
+    property bool isHovered: false
+    readonly property color bg: "black"
+    readonly property color textPrimary: "white"
+    focus: true
+    PopoutShape {
+        id: content
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width
+        height: root.isHovered ? 100 : 0.1
+        style: 1
+        alignment: 0
+        radius: 20
+        color: root.bg
+        Behavior on height {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutCubic
+            }
+        }
+        Item {
+            anchors.fill: parent
+            anchors.margins: 20
+            opacity: root.isHovered ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutQuad
+                }
+            }
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 8
+                Text {
+                    text: "Hello World"
+                    color: root.textPrimary
+                    font.pixelSize: 24
+                    font.family: "CaskaydiaCove NF"
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                }
+            }
+        }
+    }
+    HoverHandler {
+        onHoveredChanged: root.isHovered = hovered
+    }
+}
