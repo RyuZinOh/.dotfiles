@@ -22,7 +22,7 @@ Item {
     //applications
     property var appLaunchers: [
         {
-            icon: "󰨞",
+            icon: "\uf372",
             name: "VSCodium",
             command: ["codium"]
         },

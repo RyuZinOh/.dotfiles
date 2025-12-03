@@ -24,6 +24,19 @@ Item {
     property real workspaceHeight: 90
     property real workspaceSpacing: 8
 
+    //japanese mapping
+    readonly property var jpN: ({
+            1: "一",
+            2: "二",
+            3: "三",
+            4: "四",
+            5: "五",
+            6: "六",
+            7: "七",
+            8: "八",
+            9: "九",
+            10: "十"
+        })
     // getting monitor dimensions
     property var monitorInfo: Hyprland.focusedMonitor
     property real monitorWidth: monitorInfo?.width ?? 1920
@@ -82,7 +95,7 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: parent.workspaceId
+                        text: root.jpN[parent.workspaceId] ?? parent.workspaceId
                         color: root.primaryColor
                         font.pixelSize: 32
                         font.weight: Font.DemiBold

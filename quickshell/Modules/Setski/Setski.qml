@@ -8,6 +8,7 @@ import qs.Modules.Setski.Wow
 Item {
     id: root
     height: content.height
+    width: 999
 
     property bool isHovered: false
     property int currentTab: 0

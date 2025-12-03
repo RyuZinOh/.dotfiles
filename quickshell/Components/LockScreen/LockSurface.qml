@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Fusion
 import Qt5Compat.GraphicalEffects
 import Quickshell
+// import QtQuick.Effects
 
 Rectangle {
     id: root
@@ -14,7 +15,23 @@ Rectangle {
         anchors.fill: parent
         source: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/bg.jpg"
         fillMode: Image.PreserveAspectCrop
-
+        // scale: 1.0
+        //
+        // transformOrigin: Item.Center
+        // PropertyAnimation on scale {
+        //     from: 1.0
+        //     to: 1.033
+        //     duration: 300
+        //     easing.type: Easing.InOutQuad
+        // }
+        // layer.enabled: true
+        // layer.effect: MultiEffect {
+        //     blurEnabled: true
+        //     blur: 0.7
+        //     blurMultiplier: 0.2
+        //     blurMax: 26
+        // }
+        //
         Rectangle {
             anchors.fill: parent
             color: "black"

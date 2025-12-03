@@ -3,6 +3,7 @@ import QtQuick
 import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Components.battery
+// import QtQuick.Effects
 import Quickshell.Io
 import QtQuick.Controls
 
@@ -10,6 +11,7 @@ Scope {
     property bool dockerRunning: false
     property bool mariadbRunning: false
     property bool nginxRunning: false
+    property bool apacheRunning: false
 
     Process {
         id: dockerCheck
@@ -37,7 +39,14 @@ Scope {
             nginxRunning = (code === 0);
         }
     }
-
+    Process {
+        id: apacheCheck
+        command: ["systemctl", "is-active", "httpd"]
+        running: true
+        onExited: (code, status) => {
+            apacheRunning = (code === 0);
+        }
+    }
     Timer {
         interval: 5000
         running: true
@@ -46,6 +55,7 @@ Scope {
             dockerCheck.running = true;
             mariadbCheck.running = true;
             nginxCheck.running = true;
+            apacheCheck.running  = true;
         }
     }
 
@@ -234,6 +244,40 @@ Scope {
 
                             MouseArea {
                                 id: nginxMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                            }
+                        }
+
+                        //apache-httpd indicator
+                        Text {
+                            id: apacheIcon
+                            text: "\ue72b"
+                            font.pixelSize: 24
+                            font.family: "0xProto Nerd Font"
+                            color: apacheRunning ? "#00ff00" : "red"
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            ToolTip {
+                                id: apacheTooltip
+                                visible: apacheMouseArea.containsMouse
+                                text: apacheRunning ? "Apache is running" : "Apache is not running"
+                                delay: 300
+
+                                background: Rectangle {
+                                    color: "black"
+                                    radius: 4
+                                }
+
+                                contentItem: Text {
+                                    text: apacheTooltip.text
+                                    color: "white"
+                                    font.pixelSize: 12
+                                }
+                            }
+
+                            MouseArea {
+                                id: apacheMouseArea
                                 anchors.fill: parent
                                 hoverEnabled: true
                             }

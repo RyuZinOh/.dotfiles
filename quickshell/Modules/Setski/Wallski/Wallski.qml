@@ -9,6 +9,8 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: root
     anchors.fill: parent
+    implicitWidth: 999
+    implicitHeight: 200
 
     property bool isHovered: true
     readonly property string thumbsPath: "file:///home/safal726/thumbs/"
@@ -165,7 +167,8 @@ Item {
                 spacing: 12
 
                 Text {
-                    text: ""
+                    // text: "" // this on is too basic and cliche
+                    text: "\uedfb"
                     font.pixelSize: 18
                     font.family: "CaskaydiaCove NF"
                     color: searchInput.activeFocus ? "blue" : "white"

@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
-import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
@@ -56,7 +55,7 @@ Item {
     }
 
     Component.onCompleted: updtateWWW()
-    //emit the signal whenever the changes occue
+    //emit the signal whenever the changes occur
     Connections {
         target: Hyprland.workspaces
         function onValuesChanged() {

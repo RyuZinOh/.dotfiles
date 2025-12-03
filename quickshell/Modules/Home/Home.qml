@@ -75,7 +75,6 @@ Scope {
                 id: setskiRef
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: 999
             }
             // kururin leftbottom
             Kururin {
