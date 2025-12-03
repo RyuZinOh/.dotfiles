@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository [main branch for source]
+      - name: Checkout repository [main branch for source ]
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -39,12 +39,12 @@ jobs:
           for img in Pictures/*.jpg Pictures/*.jpeg; do
             [ -f "$img" ] || continue
             base=$(basename "$img")
+            
             if git show thumbs:thumbnails/"$base" > /dev/null 2>&1; then
               echo "Skip: $base (thumbnail already exists)"
             else
               echo "Generate: $base"
-              ## wow magick isnt a relevant command pretty outdated stuff
-              convert "$img" -resize 320x200^ -gravity center -extent 320x200 "/tmp/new_thumbs/$base"
+              magick "$img" -resize 320x200^ -gravity center -extent 320x200 "/tmp/new_thumbs/$base"
             fi
           done
           echo ""
@@ -77,6 +77,7 @@ jobs:
           for thumb in thumbnails/*.jpg thumbnails/*.jpeg; do
             [ -f "$thumb" ] || continue
             base=$(basename "$thumb")
+            
             # Check if source image exists in main branch
             if [ ! -f "/tmp/source_list/$base" ]; then
               echo "Delete: $base (source image missing)"
