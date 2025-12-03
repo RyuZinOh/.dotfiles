@@ -9,8 +9,8 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: root
     anchors.fill: parent
-    implicitWidth: 999
-    implicitHeight: 200
+    implicitWidth: 999 
+    implicitHeight: 269
 
     property bool isHovered: true
     readonly property string thumbsPath: "file:///home/safal726/thumbs/"

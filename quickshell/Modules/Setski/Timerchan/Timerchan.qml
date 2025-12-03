@@ -7,7 +7,8 @@ import qs.Services.Notification as Services
 Item {
     id: root
     anchors.fill: parent
-
+    implicitWidth: 800
+    implicitHeight: 269
     property int remainingSeconds: 0
     property bool isPaused: false
     property int notifId: -1

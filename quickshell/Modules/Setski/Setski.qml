@@ -7,10 +7,18 @@ import qs.Modules.Setski.Wow
 
 Item {
     id: root
-    height: content.height
-    width: 999
+
+    //dynamic dimensions based on content
+    implicitWidth: content.implicitWidth
+    implicitHeight: content.implicitHeight
+    width: implicitWidth
+    height: implicitHeight
 
     property bool isHovered: false
+    /*
+    [0 => wallski] Never Increase the default size greater than the other else
+    It might auto hide when switching to lesser width one!!
+    */
     property int currentTab: 0
 
     signal wallpaperChanged(string path)
@@ -27,8 +35,27 @@ Item {
         id: content
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width
-        height: root.isHovered ? 330 : 0.1
+
+        //width based on active component
+        implicitWidth: {
+            if (!contentLoader.item)
+                return 999; // fallback
+            return contentLoader.item.implicitWidth || 999;
+        }
+
+        //height based on hover state and content
+        implicitHeight: {
+            if (!root.isHovered) {
+                return 0.1;
+            }
+            const tabsHeight = 28;
+            const spacing = 8;
+            const margins = 30;
+            const contentHeight = contentLoader.item ? (contentLoader.item.implicitHeight || 200) : 200;
+            return tabsHeight + spacing + contentHeight + margins;
+        }
+        width: implicitWidth
+        height: implicitHeight
         style: 1
         alignment: 4
         radius: 20
@@ -37,6 +64,12 @@ Item {
         Behavior on height {
             NumberAnimation {
                 duration: 400
+                easing.type: Easing.OutQuad
+            }
+        }
+        Behavior on width {
+            NumberAnimation {
+                duration: 300
                 easing.type: Easing.OutQuad
             }
         }
@@ -129,6 +162,7 @@ Item {
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.preferredHeight: contentLoader.item ? contentLoader.item.implicitHeight : 200
 
                 Loader {
                     id: contentLoader
