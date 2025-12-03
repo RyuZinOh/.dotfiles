@@ -43,7 +43,8 @@ jobs:
               echo "Skip: $base (thumbnail already exists)"
             else
               echo "Generate: $base"
-              magick "$img" -resize 320x200^ -gravity center -extent 320x200 "/tmp/new_thumbs/$base"
+              ## wow magick isnt a relevant command pretty outdated stuff
+              convert "$img" -resize 320x200^ -gravity center -extent 320x200 "/tmp/new_thumbs/$base"
             fi
           done
           echo ""
