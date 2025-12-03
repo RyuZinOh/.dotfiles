@@ -1,0 +1,95 @@
+name: Generate & Upload Thumbnails
+on:
+  push:
+    paths:
+      - "Pictures/**.jpg"
+      - "Pictures/**.jpeg"
+  schedule:
+    - cron: "*/5 * * * *" # every 5 minutes
+  workflow_dispatch: # manual trigger
+jobs:
+  generate-thumbs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository [main branch for source]
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: main
+      - name: Install ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Check for images
+        id: check
+        run: |
+          if ls Pictures/*.jpg Pictures/*.jpeg 1> /dev/null 2>&1; then
+            echo "has_images=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_images=false" >> $GITHUB_OUTPUT
+            echo "No images found to process"
+          fi
+      - name: Generate thumbnails in main branch
+        if: steps.check.outputs.has_images == 'true'
+        run: |
+          mkdir -p /tmp/new_thumbs
+          git fetch origin thumbs:thumbs 2>/dev/null || echo "thumbs branch doesn't exist."
+          shopt -s nullglob
+          echo "=== Processing thumbnails ==="
+          for img in Pictures/*.jpg Pictures/*.jpeg; do
+            [ -f "$img" ] || continue
+            base=$(basename "$img")
+            if git show thumbs:thumbnails/"$base" > /dev/null 2>&1; then
+              echo "Skip: $base (thumbnail already exists)"
+            else
+              echo "Generate: $base"
+              magick "$img" -resize 320x200^ -gravity center -extent 320x200 "/tmp/new_thumbs/$base"
+            fi
+          done
+          echo ""
+          echo "=== New thumbnails generated ==="
+          ls -lh /tmp/new_thumbs/ 2>/dev/null || echo "No new thumbs"
+      - name: Switch to thumbs branch and sync
+        if: steps.check.outputs.has_images == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          shopt -s nullglob
+          mkdir -p /tmp/source_list
+          for img in Pictures/*.jpg Pictures/*.jpeg; do
+            [ -f "$img" ] && touch "/tmp/source_list/$(basename "$img")"
+          done
+          if git show-ref --verify --quiet refs/remotes/origin/thumbs; then
+            git checkout thumbs
+          else
+            git checkout --orphan thumbs
+            git rm -rf . 2>/dev/null || true
+            mkdir -p thumbnails
+            git commit --allow-empty -m "Initialize thumbs branch"
+          fi
+          mkdir -p thumbnails
+          if [ -d "/tmp/new_thumbs" ] && [ "$(ls -A /tmp/new_thumbs)" ]; then
+            cp /tmp/new_thumbs/* thumbnails/
+          fi
+          echo ""
+          echo "=== Cleaning orphaned thumbnails ==="
+          for thumb in thumbnails/*.jpg thumbnails/*.jpeg; do
+            [ -f "$thumb" ] || continue
+            base=$(basename "$thumb")
+            # Check if source image exists in main branch
+            if [ ! -f "/tmp/source_list/$base" ]; then
+              echo "Delete: $base (source image missing)"
+              rm "$thumb"
+            fi
+          done
+          echo ""
+          echo "=== Current thumbnails ==="
+          ls -lh thumbnails/ || echo "No thumbnails"
+          git add thumbnails/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-sync thumbnails [skip ci]"
+            git push origin thumbs
+            echo "Thumbnails synced to thumbs branch"
+          fi
