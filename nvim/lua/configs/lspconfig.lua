@@ -36,7 +36,10 @@ vim.lsp.config("clangd", {
 
 -- ##java configuration
 vim.lsp.config("jdtls", {
-  cmd = { "jdtls" },
+  cmd = {
+    "jdtls",
+    "--jvm-arg=-javaagent:" .. vim.fn.expand "~/.local/share/lombok.jar", --  also fix lsp warnings for lomboks usage
+  },
   filetypes = { "java" },
   root_dir = vim.fs.root(0, { "pom.xml", "build.gradle", "mvnw", ".git" }),
   settings = {
@@ -58,6 +61,23 @@ vim.lsp.config("jdtls", {
       },
     },
   },
+})
+
+-- Lombok hot auto reload problem fix- Recompiling
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = "*.java",
+  callback = function()
+    vim.notify("Recompiling...", vim.log.levels.INFO)
+    vim.fn.jobstart("./mvnw compile", {
+      on_exit = function(_, code)
+        if code == 0 then
+          vim.notify("Compilation successful!", vim.log.levels.INFO)
+        else
+          vim.notify("Compilation failed!", vim.log.levels.ERROR)
+        end
+      end,
+    })
+  end,
 })
 
 -- ##python

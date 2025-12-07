@@ -21,6 +21,9 @@ Item {
     */
     property int currentTab: 0
 
+    //storing last known width
+    property real currentContentWidth: parent.width
+
     signal wallpaperChanged(string path)
 
     onIsHoveredChanged: {
@@ -38,9 +41,15 @@ Item {
 
         //width based on active component
         implicitWidth: {
-            if (!contentLoader.item)
-                return 999; // fallback
-            return contentLoader.item.implicitWidth || 999;
+            if (!root.isHovered) {
+                return currentContentWidth;
+            }
+            if (!contentLoader.item) {
+                return 999; //fallback
+            }
+            const newW = contentLoader.item.implicitWidth || 999;
+            currentContentWidth = newW;
+            return newW;
         }
 
         //height based on hover state and content
@@ -68,6 +77,7 @@ Item {
             }
         }
         Behavior on width {
+            enabled: root.isHovered // only animate width when hovered
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.OutQuad
@@ -169,7 +179,7 @@ Item {
                     anchors.fill: parent
                     opacity: 0
                     //unload inactive tabs to save memory
-                    active: root.isHovered
+                    active: root.isHovered // probably make it true so that timerchan stays active but ye [i dont need it for some reason]
                     sourceComponent: {
                         switch (currentTab) {
                         case 0:

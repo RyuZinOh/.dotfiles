@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Fusion
 import Qt5Compat.GraphicalEffects
 import Quickshell
+
 // import QtQuick.Effects
 
 Rectangle {
@@ -272,4 +273,30 @@ Rectangle {
             }
         }
     }
+
+    /*
+     might be useful for someone IDK
+    */
+    // Item {
+    //     anchors {
+    //         right: parent.right
+    //         bottom: parent.bottom
+    //         margins: 40
+    //     }
+    //     width: 150
+    //     height: 150
+    //     AnimatedImage {
+    //         id: spinningGif
+    //         anchors {
+    //             right: parent.right
+    //             bottom: parent.bottom
+    //             margins: 40
+    //         }
+    //         width: 150
+    //         height: 150
+    //         source: "../../Assets/KuruKuru/seseren.gif"
+    //         playing: true
+    //         speed: 1.0 + (passwordBox.text.length * 0.07)
+    //     }
+    // }
 }

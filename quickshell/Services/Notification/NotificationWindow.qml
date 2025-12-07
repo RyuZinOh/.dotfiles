@@ -41,7 +41,6 @@ PanelWindow {
         createCard(data);
     }
 
-
     //creating cards here
     function createCard(data) {
         var component = Qt.createComponent("NotificationCard.qml");
@@ -109,13 +108,13 @@ PanelWindow {
         }
     }
 
-    PopoutShape {
+    Rectangle {
         id: backgroundShape
         width: parent.width
         height: parent.height
-        style: 1
-        alignment: 2
-        radius: 12
+        // style: 1
+        // alignment: 2
+        // radius: 12
         color: NotificationColors.tertiary
 
         Column {

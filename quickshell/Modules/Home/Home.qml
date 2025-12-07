@@ -9,6 +9,7 @@ import qs.Services.WallpaperService
 import qs.Modules.MAL
 import qs.Modules.KuruKuru
 // import qs.Modules.Clipstory
+import qs.Modules.ContextMenu
 
 Scope {
     // background layer [wallpaper]
@@ -44,6 +45,9 @@ Scope {
                 zoomDuration: 1200
                 transitionType: "crossfade"
             }
+
+            //touchpad gestured right click contextmenu [Just like Windows]
+            ContextMenu {}
             // dim overlay when setski is open
             Rectangle {
                 anchors.fill: parent
