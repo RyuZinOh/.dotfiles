@@ -1,4 +1,4 @@
-// qs/Modules/Hyperixon/Hyperixon.qml
+import qs.Services.Notification
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
@@ -38,6 +38,18 @@ Scope {
                     width: 400
                     height: controlRoomRef.isHovered ? 340 : 1   // will work with 0.1 smh later for now
                 }
+                
+                /*
+                notification area -> full height when notifications exist, minimal when empty 
+                [I should be making 
+                it card based dynamic tbh!, but animation becomes funky...]
+                */
+                Region {
+                    x: hyperixonLayer.width - 400
+                    y: 0
+                    width: 400
+                    height: notifWindow.hasNotifications ? 650 : 1
+                }
             }
 
             //content container
@@ -65,6 +77,15 @@ Scope {
                     id: controlRoomRef
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
+                }
+
+                //notification
+                NotificationWindow {
+                    id: notifWindow
+                    anchors.topMargin: 20
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    property bool hasNotifications: queue.length > 0
                 }
             }
         }

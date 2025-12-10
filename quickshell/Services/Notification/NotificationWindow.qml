@@ -1,24 +1,14 @@
-import Quickshell
 import QtQuick
 import qs.Services.Shapes
 
-PanelWindow {
-    id: window
+Item {
+    id: root
+    width: content.width
+    height: 220
+
     property var queue: []
     property int maxVisible: 5
-    anchors {
-        right: true
-        top: true
-    }
-    margins {
-        right: 0
-        top: 0
-    }
-    implicitWidth: 360
-    implicitHeight: column.height + 32
-    visible: column.children.length > 0
-    color: "transparent"
-
+    property real actualHeight: content.height
     //addin' notifications
     function addNotification(notification) {
         if (!notification) {
@@ -38,6 +28,7 @@ PanelWindow {
             notification: notification
         };
         queue.push(data);
+        queueChanged();
         createCard(data);
     }
 
@@ -95,32 +86,66 @@ PanelWindow {
             }
         }
         queue = queue.filter(n => n.id !== id);
+        queueChanged();
     }
 
     Connections {
         target: NotificationService
         function onShowNotification(notification) {
-            window.addNotification(notification);
+            root.addNotification(notification);
         }
 
         function onHideNotification(id) {
-            window.removeCard(id);
+            root.removeCard(id);
         }
     }
 
-    Rectangle {
-        id: backgroundShape
-        width: parent.width
+    PopoutShape {
+        id: content
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+
+        width: queue.length > 0 ? 375 : 0.1
         height: parent.height
-        // style: 1
-        // alignment: 2
-        // radius: 12
+
+        style: 1
+        alignment: 2
+        radius: 20
         color: NotificationColors.tertiary
 
-        Column {
-            id: column
-            width: parent.width
-            spacing: 9
+        Behavior on width {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Item {
+            anchors.fill: parent
+            anchors.margins: 20
+
+            opacity: queue.length > 0 ? 1 : 0
+            visible: opacity > 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutQuad
+                }
+            }
+
+            Flickable {
+                anchors.fill: parent
+                contentHeight: column.implicitHeight
+                boundsBehavior: Flickable.StopAtBounds
+                clip: true
+
+                Column {
+                    id: column
+                    width: parent.width
+                    spacing: 9
+                }
+            }
         }
     }
 }
