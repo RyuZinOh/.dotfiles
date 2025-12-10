@@ -9,7 +9,7 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: root
     anchors.fill: parent
-    implicitWidth: 999 
+    implicitWidth: 999
     implicitHeight: 269
 
     property bool isHovered: true
@@ -318,7 +318,12 @@ Item {
                 name: fileName
                 isCurrentWallpaper: {
                     const currentWall = Dat.WallpaperConfig.currentWallpaper;
-                    return currentWall.includes(fileName);
+                    if (!currentWall) {
+                        return false;
+                    }
+                    //extract filename from the path instead of matching substring
+                    const currentFilename = currentWall.split('/').pop();
+                    return currentFilename === fileName;
                 }
 
                 onClicked: {
@@ -421,29 +426,32 @@ Item {
                 }
             }
 
-            // Current wallpaper badge
-            Rectangle {
-                anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.topMargin: 10
-                anchors.rightMargin: 10
-                width: badgeText.width + 16
-                height: 26
-                radius: 13
-                color: "blue"
-                visible: thumb.isCurrentWallpaper
-                z: 10
-
-                Text {
-                    id: badgeText
-                    anchors.centerIn: parent
-                    text: " Active"
-                    color: "white"
-                    font.pixelSize: 11
-                    font.family: "CaskaydiaCove NF"
-                    font.weight: Font.Bold
-                }
-            }
+            /* Current wallpaper badge
+             [not much of a use unless some genius use this as a
+             seperate fixed compartment or give it as a priority to always so at first or something]
+            */
+            // Rectangle {
+            //     anchors.top: parent.top
+            //     anchors.right: parent.right
+            //     anchors.topMargin: 10
+            //     anchors.rightMargin: 10
+            //     width: badgeText.width + 16
+            //     height: 26
+            //     radius: 13
+            //     color: "blue"
+            //     visible: thumb.isCurrentWallpaper
+            //     z: 10
+            //
+            //     Text {
+            //         id: badgeText
+            //         anchors.centerIn: parent
+            //         text: " Active"
+            //         color: "white"
+            //         font.pixelSize: 11
+            //         font.family: "CaskaydiaCove NF"
+            //         font.weight: Font.Bold
+            //     }
+            // }
 
             Image {
                 id: img

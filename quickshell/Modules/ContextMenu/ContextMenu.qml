@@ -42,13 +42,13 @@ Item {
                     color: primaryColor
                     font.pixelSize: 16
                     font.family: "CaskaydiaCove NF"
-                    rotation: refreshMouse.containsMouse ? 360 : 0
-                    Behavior on rotation {
-                        NumberAnimation {
-                            duration: 500
-                            easing.type: Easing.InOutQuad
-                        }
-                    }
+                    // rotation: refreshMouse.containsMouse ? 360 : 0
+                    // Behavior on rotation {
+                    //     NumberAnimation {
+                    //         duration: 500
+                    //         easing.type: Easing.InOutQuad
+                    //     }
+                    // }
                 }
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
