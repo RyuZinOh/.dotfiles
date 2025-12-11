@@ -36,12 +36,12 @@ Scope {
                     x: (hyperixonLayer.width / 2) - 200
                     y: 0
                     width: 400
-                    height: controlRoomRef.isHovered ? 340 : 1   // will work with 0.1 smh later for now
+                    height: controlRoomRef.isHovered ? controlRoomRef.actualHeight + 20 : 1
                 }
-                
+
                 /*
-                notification area -> full height when notifications exist, minimal when empty 
-                [I should be making 
+                notification area -> full height when notifications exist, minimal when empty
+                [I should be making
                 it card based dynamic tbh!, but animation becomes funky...]
                 */
                 Region {

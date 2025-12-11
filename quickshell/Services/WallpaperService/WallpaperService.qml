@@ -16,7 +16,7 @@ Item {
 
     // scaling
     property bool isHovered: false
-    property real hoverScale: isHovered ? 1.10 : 1
+    property real hoverScale: isHovered ? 1.06 : 1
 
     anchors.fill: parent
     scale: hoverScale
