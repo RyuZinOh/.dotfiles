@@ -48,7 +48,7 @@ Scope {
                     x: hyperixonLayer.width - 400
                     y: 0
                     width: 400
-                    height: notifWindow.hasNotifications ? 650 : 1
+                    height: notifWindow.hasNotifications ? 200 : 1
                 }
             }
 

@@ -7,6 +7,8 @@ import qs.Components.battery
 import Quickshell.Io
 import QtQuick.Controls
 
+// import qs.Components.bongo [enable if you want]
+
 Scope {
     property bool dockerRunning: false
     property bool mariadbRunning: false
@@ -55,7 +57,7 @@ Scope {
             dockerCheck.running = true;
             mariadbCheck.running = true;
             nginxCheck.running = true;
-            apacheCheck.running  = true;
+            apacheCheck.running = true;
         }
     }
 
@@ -284,6 +286,21 @@ Scope {
                         }
                     }
                 }
+
+                // BONGO neko [uncomment if you want to use, I don't see anytPoint using it beside showcasing]
+                // Rectangle {
+                //     id: bongoCatContainer
+                //     color: "black"
+                //     height: 35
+                //     width: 45
+                //     anchors.verticalCenter: parent.verticalCenter
+                //     anchors.left: serviceStatus.right
+                //     anchors.leftMargin: 8
+                //     BongoCat {
+                //         anchors.centerIn: parent
+                //         size: 45
+                //     }
+                // }
 
                 Workspace {
                     id: workspaces

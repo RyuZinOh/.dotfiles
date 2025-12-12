@@ -10,13 +10,19 @@ Rectangle {
     property string appIcon: ""
     property string desktopEntry: ""
     property var actions: []
+    
+    // timer properties
+    property int autoCloseDuration: 5000 // 5 sec
+    property bool isHovered: false
+    property real progress: 0
+    property bool isActiveCard: false // only active card runs timer
 
     signal dismissed
     signal actionInvoked(actionId: string)
 
-    width: parent ? parent.width : 360
+    width: parent ? parent.width : 360 
     height: contentColumn.height + 32
-    color: "transparent"
+    color:  "#100C08"
     radius: 12
 
     function getIconSource() {
@@ -32,8 +38,49 @@ Rectangle {
         return "";
     }
 
+    function startTimer() {
+        card.progress = 0;
+        autoCloseTimer.start();
+    }
+
+    function stopTimer() {
+        autoCloseTimer.stop();
+    }
+
+    onIsActiveCardChanged: {
+        if (isActiveCard) {
+            startTimer();
+        } else {
+            stopTimer();
+            card.progress = 0;
+        }
+    }
+
     Component.onCompleted: {
         showAnimation.start();
+    }
+
+    // only run when card is active
+    Timer {
+        id: autoCloseTimer
+        interval: 50
+        repeat: true
+        running: false
+        
+        onTriggered: {
+            if (!card.isActiveCard) {
+                stop();
+                return;
+            }
+            
+            if (!card.isHovered) {
+                card.progress += 50 / card.autoCloseDuration;
+                if (card.progress >= 1.0) {
+                    autoCloseTimer.stop();
+                    hideAnimation.start();
+                }
+            }
+        }
     }
 
     ParallelAnimation {
@@ -68,8 +115,17 @@ Rectangle {
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
+        onEntered: {
+            card.isHovered = true;
+        }
+
+        onExited: {
+            card.isHovered = false;
+        }
+
         onClicked: function (mouse) {
             if (mouse.button === Qt.RightButton) {
+                autoCloseTimer.stop();
                 hideAnimation.start();
             }
         }
@@ -82,6 +138,29 @@ Rectangle {
         anchors.top: parent.top
         anchors.margins: 16
         spacing: 12
+
+        // also only visible for active card
+        Rectangle {
+            width: parent.width
+            height: 3
+            color: NotificationColors.tertiary
+            radius: 1.5
+            visible: card.isActiveCard
+
+            Rectangle {
+                width: parent.width * card.progress
+                height: parent.height
+                color: NotificationColors.primary
+                radius: 1.5
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 50
+                        easing.type: Easing.Linear
+                    }
+                }
+            }
+        }
 
         //header
         Row {
@@ -155,35 +234,6 @@ Rectangle {
                 visible: appName !== ""
                 anchors.verticalCenter: parent.verticalCenter
             }
-
-            Item {
-                width: parent.width - iconContainer.width - appNameText.width - closeButton.width - 36
-                height: 1
-            }
-
-            //close button
-            Rectangle {
-                id: closeButton
-                width: 20
-                height: 20
-                color: "transparent"
-
-                Text {
-                    anchors.centerIn: parent
-                    font.family: "CaskaydiaCove Nerd Font"
-                    font.pixelSize: 16
-                    color: NotificationColors.primary
-                    text: ""
-                }
-
-                MouseArea {
-                    id: closeArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: hideAnimation.start()
-                    cursorShape: Qt.PointingHandCursor
-                }
-            }
         }
 
         //summary
@@ -200,16 +250,116 @@ Rectangle {
             width: parent.width
         }
         //body
-        Text {
-            text: body
-            font.family: "Poppins"
-            font.pixelSize: 12
-            color: NotificationColors.secondary
-            wrapMode: Text.Wrap
-            maximumLineCount: 3
-            elide: Text.ElideRight
+        Item {
+            id: bodyCarouselContainer
             width: parent.width
+            height: {
+                if (body === "") return 0;
+                var baseHeight = expanded ? bodyText.contentHeight : Math.min(bodyText.contentHeight, bodyText.font.pixelSize * 3.5);
+                var needsArrows = bodyText.implicitHeight > bodyText.font.pixelSize * 3.5;
+                return baseHeight + (needsArrows ? 34 : 0);
+            }
             visible: body !== ""
+
+            property bool expanded: false
+
+            Rectangle {
+                id: bodyContainer
+                width: parent.width
+                height: parent.expanded ? bodyText.contentHeight : Math.min(bodyText.contentHeight, bodyText.font.pixelSize * 3.5)
+                clip: true
+                color: "transparent"
+
+                Behavior on height {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Text {
+                    id: bodyText
+                    text: body
+                    font.family: "Poppins"
+                    font.pixelSize: 12
+                    color: NotificationColors.secondary
+                    wrapMode: Text.Wrap
+                    width: parent.width
+                    maximumLineCount: parent.parent.expanded ? -1 : 3
+                    elide: parent.parent.expanded ? Text.ElideNone : Text.ElideRight
+                }
+            }
+
+            // carousal
+            Row {
+                anchors.top: bodyContainer.bottom
+                anchors.topMargin: 6
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 8
+                visible: bodyText.implicitHeight > bodyText.font.pixelSize * 3.5
+
+                // collapse
+                Rectangle {
+                    width: 26
+                    height: 26
+                    radius: 13
+                    color: upMouseArea.containsMouse ? NotificationColors.primary : NotificationColors.tertiary
+                    visible: parent.parent.expanded
+
+                    Behavior on color {
+                        ColorAnimation { duration: 150 }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        font.family: "CaskaydiaCove Nerd Font"
+                        font.pixelSize: 14
+                        color: NotificationColors.secondary
+                        text: ""
+                    }
+
+                    MouseArea {
+                        id: upMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            bodyCarouselContainer.expanded = false;
+                        }
+                    }
+                }
+
+                // expansion
+                Rectangle {
+                    width: 26
+                    height: 26
+                    radius: 13
+                    color: downMouseArea.containsMouse ? NotificationColors.primary : NotificationColors.tertiary
+                    visible: !parent.parent.expanded
+
+                    Behavior on color {
+                        ColorAnimation { duration: 150 }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        font.family: "CaskaydiaCove Nerd Font"
+                        font.pixelSize: 14
+                        color: NotificationColors.secondary
+                        text: ""
+                    }
+
+                    MouseArea {
+                        id: downMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            bodyCarouselContainer.expanded = true;
+                        }
+                    }
+                }
+            }
         }
     }
 }

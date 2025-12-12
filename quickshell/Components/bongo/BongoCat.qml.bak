@@ -1,0 +1,116 @@
+import QtQuick
+import Quickshell.Io
+
+Item {
+    id: root
+
+    property int size: 40
+    property string assetPath: "../../Assets/bongo"
+
+    width: size
+    height: size
+
+    property bool leftHandActive: false
+    property bool rightHandActive: false
+    property int keypressCount: 0
+
+    Process {
+        id: keyboardMonitor
+        running: true
+        /*
+         python can read binary data in small chunks without buffering
+        */
+        command: ["python3", Qt.resolvedUrl("../../Scripts/keyboard_monitor.py").toString().replace("file://", "")]
+        stdout: SplitParser {
+            onRead: data => {
+                root.handleKeyPress();
+            }
+        }
+
+        stderr: SplitParser {
+            onRead: data => {
+                var err = data.toString().trim();
+                if (err && err.includes("Permission denied")) {
+                    console.log("[BongoCat] permission denied");
+                    console.log("[BongoCat] run: sudo usermod -a -G input $USER");
+                } else if (err) {
+                    console.log("[BongoCat]", err);
+                }
+            }
+        }
+
+        // onExited: (code, status) => {
+        //     if (code !== 0) {
+        //         console.log("[BongoCat] Monitor stopped:", code);
+        //     }
+        // }
+    }
+
+    function handleKeyPress() {
+        keypressCount++;
+
+        if (Math.random() > 0.5) {
+            leftHandActive = true;
+            leftHandTimer.restart();
+        } else {
+            rightHandActive = true;
+            rightHandTimer.restart();
+        }
+    }
+
+    Timer {
+        id: leftHandTimer
+        interval: 120
+        onTriggered: root.leftHandActive = false
+    }
+
+    Timer {
+        id: rightHandTimer
+        interval: 120
+        onTriggered: root.rightHandActive = false
+    }
+
+    function getCurrentImage() {
+        if (leftHandActive && rightHandActive) {
+            return assetPath + "/bongo-cat-both-up.png";
+        } else if (leftHandActive) {
+            return assetPath + "/bongo-cat-left-down.png";
+        } else if (rightHandActive) {
+            return assetPath + "/bongo-cat-right-down.png";
+        } else {
+            return assetPath + "/bongo-cat-both-down.png";
+        }
+    }
+
+    Image {
+        id: bongoImage
+        anchors.fill: parent
+        source: root.getCurrentImage()
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        cache: true
+    }
+
+    Rectangle {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        // width: statusText.width + 4
+        // height: statusText.height + 2
+        color: "black"
+        opacity: 0.8
+        // visible: keypressCount > 0
+
+        // Text {
+        //     id: statusText
+        //     anchors.centerIn: parent
+        //     text: keypressCount
+        //     color: (leftHandActive || rightHandActive) ? "blue" : "white"
+        //     font.pixelSize: 8
+        // }
+    }
+
+    Component.onCompleted: {
+        console.log("[BongoCat] initiated.");
+        console.log("[BongoCat] begin fingering...");
+    }
+}

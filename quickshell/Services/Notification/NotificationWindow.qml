@@ -9,6 +9,18 @@ Item {
     property var queue: []
     property int maxVisible: 5
     property real actualHeight: content.height
+
+    //update active card whenever queue changes
+    function updateActiveCard() {
+        for (var i = 0; i < column.children.length; i++) {
+            var child = column.children[i];
+            if (child && child.notifId !== undefined) {
+                //first card (index => 0) is active, others are not
+                child.isActiveCard = (i === 0);
+            }
+        }
+    }
+
     //addin' notifications
     function addNotification(notification) {
         if (!notification) {
@@ -45,7 +57,8 @@ Item {
             body: data.body,
             appName: data.appName,
             appIcon: data.appIcon,
-            actions: data.actions
+            actions: data.actions,
+            isActiveCard: false // activation
         });
         if (!card) {
             console.log("Failed to create notification card");
@@ -76,6 +89,7 @@ Item {
                 child.parent = column;
             }
         }
+        Qt.callLater(updateActiveCard);
     }
 
     function removeCard(id) {
@@ -87,6 +101,7 @@ Item {
         }
         queue = queue.filter(n => n.id !== id);
         queueChanged();
+        Qt.callLater(updateActiveCard);
     }
 
     Connections {
