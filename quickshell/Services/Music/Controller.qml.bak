@@ -1,0 +1,324 @@
+import QtQuick
+import Qt5Compat.GraphicalEffects
+import Quickshell.Services.Mpris
+
+Item {
+    id: root
+    implicitWidth: 520
+    implicitHeight: 200
+
+    property MprisPlayer player: null
+
+    //detect everything out there available
+    Repeater {
+        model: Mpris.players
+        Item {
+            Component.onCompleted: {
+                if (!root.player) {
+                    root.player = modelData;
+                }
+            }
+        }
+    }
+
+    Timer {
+        running: root.player?.playbackState === MprisPlaybackState.Playing
+        interval: 500
+        repeat: true
+        onTriggered: {
+            if (root.player) {
+                progressBar.currentPosition = root.player.position || 0;
+            }
+        }
+    }
+
+    //background blur image
+    Image {
+        id: bgImage
+        anchors.fill: parent
+        source: root.player?.trackArtUrl ?? ""
+        fillMode: Image.PreserveAspectCrop
+        smooth: true
+        asynchronous: true
+        cache: true
+        visible: false
+    }
+
+    FastBlur {
+        anchors.fill: parent
+        source: bgImage
+        radius: 80
+        visible: root.player?.trackArtUrl
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: root.player?.trackArtUrl ? "#cc000000" : "#000000"
+    }
+
+    Text {
+        anchors.centerIn: parent
+        text: "Nothing playing..."
+        font.family: "CaskaydiaCove NF"
+        font.pixelSize: 14
+        color: "#666666"
+        visible: !root.player
+    }
+
+    Item {
+        anchors {
+            fill: parent
+            margins: 16
+            topMargin: 12
+            bottomMargin: 35
+        }
+        visible: root.player
+
+        // album art
+        Rectangle {
+            id: albumArtContainer
+            anchors {
+                left: parent.left
+                top: parent.top
+                bottom: parent.bottom
+            }
+            width: height
+            radius: 6
+            color: "transparent"
+
+            Image {
+                id: albumArt
+                anchors.fill: parent
+                source: root.player?.trackArtUrl ?? ""
+                fillMode: Image.PreserveAspectCrop
+                smooth: true
+                asynchronous: true
+                cache: true
+                visible: false
+            }
+
+            Rectangle {
+                id: mask
+                anchors.fill: parent
+                radius: parent.radius
+                visible: false
+            }
+
+            OpacityMask {
+                anchors.fill: parent
+                source: albumArt
+                maskSource: mask
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: "#1a1a1a"
+                visible: !root.player?.trackArtUrl
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "󰝚"
+                    font.family: "CaskaydiaCove NF"
+                    font.pixelSize: 56
+                    color: "white"
+                }
+            }
+        }
+
+        //Content area
+        Item {
+            anchors {
+                left: albumArtContainer.right
+                leftMargin: 18
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+            }
+
+            // Track title
+            Text {
+                id: trackTitle
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+                text: root.player?.trackTitle ?? "Unknown Title"
+                font.family: "CaskaydiaCove NF"
+                font.pixelSize: 17
+                font.weight: Font.Bold
+                color: "white"
+                elide: Text.ElideRight
+                maximumLineCount: 2
+                wrapMode: Text.WordWrap
+            }
+
+            //artist
+            Text {
+                id: trackArtist
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: trackTitle.bottom
+                    topMargin: 6
+                }
+                text: root.player?.trackArtist ?? "Unknown Artist"
+                font.family: "CaskaydiaCove NF"
+                font.pixelSize: 13
+                color: "#b0b0b0"
+                elide: Text.ElideRight
+            }
+
+            //time display
+            /*
+              - elapsed
+              - total
+            */
+            Text {
+                id: timeDisplay
+                anchors {
+                    right: parent.right
+                    bottom: progressBarBg.top
+                    bottomMargin: 5
+                }
+                text: formatTime(progressBar.currentPosition) + " / " + formatTime(progressBar.trackLength)
+                font.family: "CaskaydiaCove NF"
+                font.pixelSize: 10
+                color: "#c0c0c0"
+            }
+
+            //progress bar
+            Rectangle {
+                id: progressBarBg
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    bottom: controlsRow.top
+                    bottomMargin: 10
+                }
+                height: 4
+                radius: 2
+                color: "#404040"
+                opacity: 1
+
+                Rectangle {
+                    id: progressBar
+                    anchors {
+                        left: parent.left
+                        top: parent.top
+                        bottom: parent.bottom
+                    }
+                    radius: parent.radius
+                    color: "white"
+
+                    property real currentPosition: root.player?.position ?? 0
+                    property real trackLength: root.player?.length ?? 1
+
+                    width: trackLength > 0 ? Math.min((currentPosition / trackLength) * parent.width, parent.width) : 0
+
+                    Behavior on width {
+                        SmoothedAnimation {
+                            duration: 500
+                            velocity: -1
+                        }
+                    }
+                }
+            }
+
+            //controllers
+            Row {
+                id: controlsRow
+                anchors {
+                    left: parent.left
+                    bottom: parent.bottom
+                }
+                spacing: 10
+
+                Rectangle {
+                    width: 32
+                    height: 32
+                    radius: 16
+                    color: prevMouse.containsMouse ? "#ffffff20" : "transparent"
+                    border.color: "white"
+                    border.width: 1
+                    visible: root.player?.canGoPrevious ?? false
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "󰒮"
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 16
+                        color: "white"
+                    }
+
+                    MouseArea {
+                        id: prevMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.player?.previous()
+                    }
+                }
+
+                Rectangle {
+                    width: 42
+                    height: 42
+                    radius: 21
+                    color: playMouse.containsMouse ? "white" : "#f0f0f0"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: (root.player?.playbackState === MprisPlaybackState.Playing) ? "󰏤" : "󰐊"
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 20
+                        color: "black"
+                    }
+
+                    MouseArea {
+                        id: playMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.player?.togglePlaying()
+                    }
+                }
+
+                Rectangle {
+                    width: 32
+                    height: 32
+                    radius: 16
+                    color: nextMouse.containsMouse ? "#ffffff20" : "transparent"
+                    border.color: "white"
+                    border.width: 1
+                    visible: root.player?.canGoNext ?? false
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "󰒭"
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 16
+                        color: "white"
+                    }
+
+                    MouseArea {
+                        id: nextMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.player?.next()
+                    }
+                }
+            }
+        }
+    }
+
+    function formatTime(seconds) {
+        if (!seconds || seconds < 0) {
+            return "0:00";
+        }
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return mins + ":" + (secs < 10 ? "0" : "") + secs;
+    }
+}

@@ -2,7 +2,7 @@ import qs.Services.Notification
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Modules.ControlRoom
+import qs.Modules.TopJesus
 
 Scope {
     Variants {
@@ -33,10 +33,10 @@ Scope {
             */
             mask: Region {
                 Region {
-                    x: (hyperixonLayer.width / 2) - 200
+                    x: (hyperixonLayer.width / 2) - (topJesusRef.width / 2) //now supporting width cause component lke wow has width factor so..
                     y: 0
-                    width: 400
-                    height: controlRoomRef.isHovered ? controlRoomRef.actualHeight + 20 : 1
+                    width: topJesusRef.width
+                    height: topJesusRef.isHovered ? topJesusRef.height + 20 : 1
                 }
 
                 /*
@@ -57,24 +57,9 @@ Scope {
                 id: hyperixonContent
                 anchors.fill: parent
 
-                Rectangle {
-                    id: topTrigger
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    width: 400
-                    height: 1
-                    color: "transparent"
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onEntered: controlRoomRef.isHovered = true
-                    }
-                }
-
-                //controlroom
-                ControlRoom {
-                    id: controlRoomRef
+                //topJesus
+                TopJesus {
+                    id: topJesusRef
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                 }

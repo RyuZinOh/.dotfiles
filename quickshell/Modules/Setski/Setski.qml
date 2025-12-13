@@ -2,8 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Services.Shapes
 import qs.Modules.Setski.Wallski
-import qs.Modules.Setski.Timerchan
-import qs.Modules.Setski.Wow
 
 Item {
     id: root
@@ -102,7 +100,7 @@ Item {
 
                     Repeater {
                         id: tabRepeater
-                        model: ["Wallpapers", "Timer", "Wow"]
+                        model: ["Wallpapers"]
 
                         Item {
                             id: tabItem
@@ -184,10 +182,10 @@ Item {
                         switch (currentTab) {
                         case 0:
                             return wallskiComponent;
-                        case 1:
-                            return hllComponent;
-                        case 2:
-                            return wowComponent;
+                        // case 1:
+                        // return hllComponent;
+                        // case 2:
+                        //     return wowComponent;
                         default:
                             return null;
                         }
@@ -219,17 +217,5 @@ Item {
     Component {
         id: wallskiComponent
         Wallski {}
-    }
-
-    Component {
-        id: hllComponent
-        Timerchan {}
-    }
-
-    Component {
-        id: wowComponent
-        Wow {
-            useScreencopyLivePreview: false
-        }
     }
 }

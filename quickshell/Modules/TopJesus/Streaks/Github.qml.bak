@@ -1,0 +1,277 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell.Io
+
+Item {
+    id: root
+    implicitWidth: 750
+    implicitHeight: 180
+
+    property var githubContributions: []
+    property int totalContributions: 0
+    property string username: "ryuzinoh"
+    property bool hasError: false
+
+    //notMonochrome color scheme
+    readonly property color bg: "#100C08"
+    readonly property color textPrimary: "#ffffff"
+    readonly property color textSecondary: "#ffffff"
+    readonly property color layer1: "#100C08"
+    readonly property color layer2: "#2a1f18"
+    readonly property color accent: "#ffffff"
+
+    function getContributionColor(level) {
+        if (level === 0)
+            return root.layer1;
+        if (level === 1) {
+            return root.layer2;
+        }
+        if (level === 2) {
+            return "#4a3528";
+        }
+        if (level === 3) {
+            return "#6a4b38";
+        }
+        return root.accent;
+    }
+
+    //global layer
+    Item {
+        id: tooltipLayer
+        anchors.fill: parent
+        z: 9999
+
+        Rectangle {
+            id: tooltip
+            visible: false
+            radius: 8
+            border.color: "#2a1f18"
+            border.width: 1
+            color: root.bg
+            z: 10000
+            opacity: 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 120
+                }
+            }
+
+            Text {
+                id: tooltipText
+                anchors.centerIn: parent
+                color: root.textPrimary
+                font.pixelSize: 10
+                font.family: "CaskaydiaCove NF"
+            }
+        }
+
+        function show(data, posX, posY) {
+            tooltip.visible = true;
+            tooltip.opacity = 1;
+            tooltipText.text = `${data.count} contribution${data.count !== 1 ? "s" : ""} on ${data.date}`;
+            tooltip.width = tooltipText.width + 14;
+            tooltip.height = tooltipText.height + 10;
+            tooltip.x = posX - tooltip.width - 10;
+            tooltip.y = posY - tooltip.height - 5;
+        }
+        function hide() {
+            tooltip.opacity = 0;
+            tooltip.visible = false;
+        }
+    }
+
+    Timer {
+        interval: 600000
+        running: true
+        repeat: true
+        onTriggered: getContributions.running = true
+    }
+
+    Process {
+        id: getContributions
+        running: true
+        command: ["curl", `https://github-contributions-api.jogruber.de/v4/${root.username}`]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                //checking offline
+                if (text.trim() == "") {
+                    root.hasError = true;
+                    return;
+                }
+
+                try {
+                    const json = JSON.parse(text);
+                    const oneYearAgo = new Date();
+                    oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+                    root.totalContributions = json.contributions.filter(c => new Date(c.date) >= oneYearAgo).reduce((sum, c) => sum + c.count, 0);
+
+                    const today = new Date();
+                    const cutoff = new Date(today);
+                    cutoff.setDate(cutoff.getDate() - 280);
+
+                    root.githubContributions = json.contributions.filter(c => new Date(c.date) >= cutoff).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                    //success
+                    root.hasError = false;
+                } catch (e) {
+                    console.log(e);
+                    root.hasError = true;
+                }
+            }
+        }
+    }
+
+    ColumnLayout {
+        anchors.centerIn: parent
+        visible: root.hasError
+        spacing: 8
+
+        Text {
+            text: "󰖪"
+            font.family: "CaskaydiaCove NF"
+            font.pixelSize: 36
+            color: root.textSecondary
+            Layout.alignment: Qt.AlignHCenter
+        }
+        Text {
+            text: "You are currently offline"
+            font.family: "CaskaydiaCove NF"
+            font.pixelSize: 13
+            font.bold: true
+            color: root.textPrimary
+            Layout.alignment: Qt.AlignHCenter
+        }
+        Text {
+            text: "Unable to fetch GitHub data"
+            font.family: "CaskaydiaCove NF"
+            font.pixelSize: 11
+            color: root.textSecondary
+            Layout.alignment: Qt.AlignHCenter
+        }
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 16
+        visible: !root.hasError
+
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 4
+
+                Text {
+                    text: ` ${root.username} - ${root.totalContributions.toLocaleString()} contributions in the last year`
+                    color: root.textPrimary
+                    font.pixelSize: 16
+                    font.weight: Font.DemiBold
+                    font.family: "CaskaydiaCove NF"
+                    Layout.alignment: Qt.AlignHCenter
+                }
+            }
+        }
+
+        //contributions grid
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            GridLayout {
+                anchors.centerIn: parent
+                rows: 7
+                columns: 40
+                rowSpacing: 3
+                columnSpacing: 3
+
+                Repeater {
+                    model: 40
+                    delegate: ColumnLayout {
+                        spacing: 3
+                        property int weekIndex: index
+
+                        Repeater {
+                            model: 7
+                            delegate: Rectangle {
+                                width: 12
+                                height: 12
+                                radius: 4
+                                property int realIndex: weekIndex * 7 + index
+                                property var contribData: root.githubContributions[realIndex]
+                                color: root.getContributionColor(contribData?.level || 0)
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutQuad
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: area
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    onExited: tooltipLayer.hide()
+                                    onHoveredChanged: if (contribData) {
+                                        tooltipLayer.show(contribData, mapToItem(root, width / 2, height / 2).x, mapToItem(root, width / 2, height / 2).y);
+                                    }
+
+                                    onClicked: if (contribData) {
+                                        tooltipLayer.show(contribData, mapToItem(root, width / 2, height / 2).x, mapToItem(root, width / 2, height / 2).y);
+                                    }
+                                }
+
+                                scale: area.containsMouse ? 1.4 : 1.0
+                                Behavior on scale {
+                                    NumberAnimation {
+                                        duration: 150
+                                        easing.type: Easing.OutQuad
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // legends -> [I think I have issue showing here due to clipping, well I forgor, u wanna change somehow]
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 8
+            Layout.topMargin: 18
+
+            RowLayout {
+                anchors.centerIn: parent
+                spacing: 4
+
+                Text {
+                    text: "Less"
+                    color: root.textSecondary
+                    font.pixelSize: 10
+                    font.family: "CaskaydiaCove NF"
+                }
+
+                Repeater {
+                    model: 5
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        radius: 3
+                        color: root.getContributionColor(index)
+                    }
+                }
+
+                Text {
+                    text: "More"
+                    color: root.textSecondary
+                    font.pixelSize: 10
+                    font.family: "CaskaydiaCove NF"
+                }
+            }
+        }
+    }
+}

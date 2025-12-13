@@ -7,7 +7,7 @@ Item {
     id: root
     anchors.fill: parent
     implicitWidth: 900
-    implicitHeight: 269
+    implicitHeight: 250 
     readonly property string surfaceColor: "#100C08"
     readonly property string primaryColor: "#ffffff"
     readonly property string activeWorkspaceColor: "#FFD700"

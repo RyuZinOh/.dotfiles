@@ -4,11 +4,8 @@ import Quickshell.Wayland
 import qs.Modules.Setski
 import qs.Modules.Pictorial
 import qs.Services.WallpaperService
-// import qs.Services.Music
-// import qs.Modules.Streaks
 import qs.Modules.MAL
 import qs.Modules.KuruKuru
-// import qs.Modules.Clipstory
 import qs.Modules.ContextMenu
 
 Scope {
@@ -61,19 +58,6 @@ Scope {
                     }
                 }
             }
-            // [just showcase stuff tbh, not really practical but yea uncomment to use it]
-            // Controller {
-            //     id: musicController
-            //     anchors {
-            //         right: parent.right
-            //         verticalCenter: parent.verticalCenter
-            //     }
-            // }
-
-            // clip history [planned- for storing the copied stuff as clipboarding]
-            // Clipstory {
-            //     id: clipstoryRef
-            // }
             // setski
             Setski {
                 id: setskiRef
@@ -93,15 +77,6 @@ Scope {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
             }
-
-            //right side streak
-            //github [not much of a use tbh]
-            // Github {
-            //     id: gitSRef
-            //     anchors.right: parent.right
-            //     anchors.verticalCenter: parent.verticalCenter
-            //     anchors.verticalCenterOffset: 300
-            // }
 
             //anilist but contains todolist as well
             Anilist {

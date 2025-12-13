@@ -188,8 +188,8 @@ Rectangle {
             font.pixelSize: 11
             font.family: "CaskaydiaCove NF"
             font.bold: true
+            Layout.topMargin: 10
             Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: 4
         }
 
         Text {
