@@ -5,8 +5,7 @@ require "nvchad.mappings"
 local map = vim.keymap.set
 local api = require "nvim-tree.api"
 map("n", ";", ":", { desc = "CMD enter command mode" })
-
+map("i", "jk", "<ESC>")
 map("n", "+", api.tree.change_root_to_node)
-
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
