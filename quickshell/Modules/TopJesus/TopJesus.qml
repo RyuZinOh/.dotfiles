@@ -1,7 +1,9 @@
 import QtQuick
+// import Qt5Compat.GraphicalEffects
 import qs.Services.Shapes
 import qs.Modules.TopJesus.Wow
 import qs.Modules.TopJesus.ControlRoom
+import qs.Modules.TopJesus.Statuski
 
 //[If you to use these go to respected Modules and Backup those .bak files according to readme]
 // import qs.Modules.TopJesus.Timerchan
@@ -17,13 +19,17 @@ Item {
     height: implicitHeight
 
     property bool isHovered: false
-    property int activeTab: 1 // default is 1 -> Wow/Overview component
+    property int activeTab: 1 // default is 1 -> Status component
     property real targetWidth: 400
 
     readonly property var tabs: [
         {
             name: "Control",
             component: controlRoomComponent
+        },
+        {
+            name: "Status",
+            component: statusComponent
         },
         {
             name: "Wow",
@@ -43,7 +49,13 @@ Item {
         // }
         ,
     ]
-
+    // was testing but creates a good background dropshadow somehow lol
+    // FastBlur {
+    //     anchors.fill: popout
+    //     source: popout
+    //     radius: 24
+    //     transparentBorder: true
+    // }
     PopoutShape {
         id: popout
         anchors.top: parent.top
@@ -261,7 +273,10 @@ Item {
             useScreencopyLivePreview: false
         }
     }
-
+    Component {
+        id: statusComponent
+        Statuski {}
+    }
     // Component {
     //     id: timerComponent
     //     Timerchan {}

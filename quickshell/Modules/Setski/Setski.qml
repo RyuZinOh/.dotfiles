@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Services.Shapes
 import qs.Modules.Setski.Wallski
+// import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
@@ -31,7 +32,12 @@ Item {
             }
         }
     }
-
+    // FastBlur {
+    //     anchors.fill: content
+    //     source: popout
+    //     radius: 24
+    //     transparentBorder: true
+    // }
     PopoutShape {
         id: content
         anchors.bottom: parent.bottom
