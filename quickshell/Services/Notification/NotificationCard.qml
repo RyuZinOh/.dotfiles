@@ -10,20 +10,41 @@ Rectangle {
     property string appIcon: ""
     property string desktopEntry: ""
     property var actions: []
-    
+
     // timer properties
     property int autoCloseDuration: 5000 // 5 sec
     property bool isHovered: false
     property real progress: 0
     property bool isActiveCard: false // only active card runs timer
 
+    // swipe properties
+    property real swipeThreshold: 80
+    property bool isDragging: false
+
     signal dismissed
     signal actionInvoked(actionId: string)
 
-    width: parent ? parent.width : 360 
+    width: parent ? parent.width : 360
     height: contentColumn.height + 32
-    color:  "#100C08"
+    color: "#100C08"
     radius: 12
+    x: 0
+
+    Behavior on x {
+        enabled: !isDragging
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    Behavior on opacity {
+        enabled: !isDragging
+        NumberAnimation {
+            duration: 250
+            easing.type: Easing.OutQuad
+        }
+    }
 
     function getIconSource() {
         if (appIcon !== "" && (appIcon.startsWith("/") || appIcon.startsWith("file://") || appIcon.startsWith("http://") || appIcon.startsWith("https://"))) {
@@ -66,14 +87,14 @@ Rectangle {
         interval: 50
         repeat: true
         running: false
-        
+
         onTriggered: {
             if (!card.isActiveCard) {
                 stop();
                 return;
             }
-            
-            if (!card.isHovered) {
+
+            if (!card.isHovered && !card.isDragging) {
                 card.progress += 50 / card.autoCloseDuration;
                 if (card.progress >= 1.0) {
                     autoCloseTimer.stop();
@@ -87,7 +108,19 @@ Rectangle {
         id: showAnimation
         NumberAnimation {
             target: card
-            easing.type: Easing.Linear
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 300
+            easing.type: Easing.OutQuad
+        }
+        NumberAnimation {
+            target: card
+            property: "scale"
+            from: 0.9
+            to: 1.0
+            duration: 350
+            easing.type: Easing.OutCubic
         }
     }
 
@@ -97,9 +130,16 @@ Rectangle {
             NumberAnimation {
                 target: card
                 property: "x"
-                to: 600
-                duration: 450
-                easing.type: Easing.Linear
+                to: card.x < 0 ? -600 : 600
+                duration: 300
+                easing.type: Easing.InCubic
+            }
+            NumberAnimation {
+                target: card
+                property: "opacity"
+                to: 0
+                duration: 300
+                easing.type: Easing.InCubic
             }
         }
         ScriptAction {
@@ -111,9 +151,15 @@ Rectangle {
     }
 
     MouseArea {
+        id: dragArea
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
+        cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+        preventStealing: true
+
+        property real pressX: 0
+        property real startX: 0
 
         onEntered: {
             card.isHovered = true;
@@ -121,6 +167,40 @@ Rectangle {
 
         onExited: {
             card.isHovered = false;
+        }
+
+        onPressed: function (mouse) {
+            if (mouse.button === Qt.LeftButton) {
+                pressX = mouse.x;
+                startX = card.x;
+                card.isDragging = true;
+            }
+        }
+
+        onPositionChanged: function (mouse) {
+            if (card.isDragging && (mouse.buttons & Qt.LeftButton)) {
+                var delta = mouse.x - pressX;
+                card.x = startX + delta;
+
+                var swipeDistance = Math.abs(card.x);
+                var normalizedDistance = Math.min(swipeDistance / 150, 1.0);
+                card.opacity = 1 - (normalizedDistance * 0.7);
+            }
+        }
+
+        onReleased: function (mouse) {
+            if (mouse.button === Qt.LeftButton && card.isDragging) {
+                card.isDragging = false;
+
+                var swipeDistance = Math.abs(card.x);
+
+                if (swipeDistance > swipeThreshold) {
+                    hideAnimation.start();
+                } else {
+                    card.x = 0;
+                    card.opacity = 1;
+                }
+            }
         }
 
         onClicked: function (mouse) {
@@ -163,76 +243,157 @@ Rectangle {
         }
 
         //header
-        Row {
+        Item {
             width: parent.width
-            spacing: 12
+            height: Math.max(iconContainer.height, appNameText.height)
 
-            //icon thingy
-            Rectangle {
-                id: iconContainer
-                width: 50
-                height: 50
-                radius: 6
-                color: "transparent"
-                visible: appIcon !== "" || appName !== ""
+            Row {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 12
 
-                AnimatedImage {
-                    id: appIconAnimated
-                    anchors.fill: parent
+                //icon thingy
+                Rectangle {
+                    id: iconContainer
+                    width: 50
+                    height: 50
+                    radius: 6
+                    color: "transparent"
+                    visible: appIcon !== "" || appName !== ""
 
-                    source: getIconSource()
-                    fillMode: Image.PreserveAspectFit
-                    visible: source !== "" && status === Image.Ready && source.toString().toLowerCase().endsWith(".gif")
-                    asynchronous: true
-                    cache: false
-                    playing: true
+                    AnimatedImage {
+                        id: appIconAnimated
+                        anchors.fill: parent
 
-                    onStatusChanged: {
-                        if (status === Image.Error) {
-                            console.log("Failed to load animated icon from:", source);
+                        source: getIconSource()
+                        fillMode: Image.PreserveAspectFit
+                        visible: source !== "" && status === Image.Ready && source.toString().toLowerCase().endsWith(".gif")
+                        asynchronous: true
+                        cache: false
+                        playing: true
+
+                        onStatusChanged: {
+                            if (status === Image.Error) {
+                                console.log("Failed to load animated icon from:", source);
+                            }
                         }
+                    }
+
+                    Image {
+                        id: appIconImage
+                        anchors.fill: parent
+                        anchors.margins: 4
+                        source: getIconSource()
+                        fillMode: Image.PreserveAspectFit
+                        visible: source !== "" && status === Image.Ready && !source.toString().toLowerCase().endsWith(".gif")
+                        asynchronous: false
+                        cache: true
+
+                        onStatusChanged: {
+                            if (status === Image.Error) {
+                                console.log("Failed to load icon from:", source);
+                            }
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        visible: appName !== "" && (!appIconImage.visible && !appIconAnimated.visible)
+                        text: appName.charAt(0).toUpperCase()
+                        font.family: "Poppins"
+                        font.pixelSize: 40
+                        font.weight: Font.Bold
+                        color: NotificationColors.secondary
                     }
                 }
 
-                Image {
-                    id: appIconImage
-                    anchors.fill: parent
-                    anchors.margins: 4
-                    source: getIconSource()
-                    fillMode: Image.PreserveAspectFit
-                    visible: source !== "" && status === Image.Ready && !source.toString().toLowerCase().endsWith(".gif")
-                    asynchronous: false
-                    cache: true
-
-                    onStatusChanged: {
-                        if (status === Image.Error) {
-                            console.log("Failed to load icon from:", source);
-                        }
-                    }
-                }
-
+                //appName
                 Text {
-                    anchors.centerIn: parent
-                    visible: appName !== "" && (!appIconImage.visible && !appIconAnimated.visible)
-                    text: appName.charAt(0).toUpperCase()
+                    id: appNameText
+                    text: appName
                     font.family: "Poppins"
-                    font.pixelSize: 40
-                    font.weight: Font.Bold
+                    font.pixelSize: 12
+                    font.weight: Font.Medium
                     color: NotificationColors.secondary
+                    opacity: 0.8
+                    visible: appName !== ""
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
 
-            //appName
-            Text {
-                id: appNameText
-                text: appName
-                font.family: "Poppins"
-                font.pixelSize: 12
-                font.weight: Font.Medium
-                color: NotificationColors.secondary
-                opacity: 0.8
-                visible: appName !== ""
+            // carousel controls in header
+            Row {
+                anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                spacing: 6
+                visible: body !== "" && bodyText.implicitHeight > bodyText.font.pixelSize * 2.5
+                z: 100
+
+                // collapse button
+                Rectangle {
+                    width: 22
+                    height: 22
+                    radius: 11
+                    visible: bodyCarouselContainer.expanded
+                    color: "transparent"
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        font.family: "CaskaydiaCove Nerd Font"
+                        font.pixelSize: 11
+                        color: downMouseArea.containsMouse ? "blue": "white"
+                        text: ""
+                    }
+
+                    MouseArea {
+                        id: upMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            bodyCarouselContainer.expanded = false;
+                        }
+                    }
+                }
+
+                // expand button
+                Rectangle {
+                    width: 22
+                    height: 22
+                    radius: 11
+                    color: "transparent"
+                    visible: !bodyCarouselContainer.expanded
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        font.family: "CaskaydiaCove Nerd Font"
+                        font.pixelSize: 11
+                        color: downMouseArea.containsMouse ? "blue": "white"
+                        text: ""
+                    }
+
+                    MouseArea {
+                        id: downMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            bodyCarouselContainer.expanded = true;
+                        }
+                    }
+                }
             }
         }
 
@@ -249,24 +410,19 @@ Rectangle {
             elide: Text.ElideRight
             width: parent.width
         }
+
         //body
         Item {
             id: bodyCarouselContainer
             width: parent.width
-            height: {
-                if (body === "") return 0;
-                var baseHeight = expanded ? bodyText.contentHeight : Math.min(bodyText.contentHeight, bodyText.font.pixelSize * 3.5);
-                var needsArrows = bodyText.implicitHeight > bodyText.font.pixelSize * 3.5;
-                return baseHeight + (needsArrows ? 34 : 0);
-            }
+            height: body === "" ? 0 : (expanded ? bodyText.contentHeight : Math.min(bodyText.contentHeight, bodyText.font.pixelSize * 2.5))
             visible: body !== ""
 
             property bool expanded: false
 
             Rectangle {
                 id: bodyContainer
-                width: parent.width
-                height: parent.expanded ? bodyText.contentHeight : Math.min(bodyText.contentHeight, bodyText.font.pixelSize * 3.5)
+                anchors.fill: parent
                 clip: true
                 color: "transparent"
 
@@ -285,81 +441,11 @@ Rectangle {
                     color: NotificationColors.secondary
                     wrapMode: Text.Wrap
                     width: parent.width
-                    maximumLineCount: parent.parent.expanded ? -1 : 3
+                    maximumLineCount: parent.parent.expanded ? -1 : 2
                     elide: parent.parent.expanded ? Text.ElideNone : Text.ElideRight
-                }
-            }
-
-            // carousal
-            Row {
-                anchors.top: bodyContainer.bottom
-                anchors.topMargin: 6
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 8
-                visible: bodyText.implicitHeight > bodyText.font.pixelSize * 3.5
-
-                // collapse
-                Rectangle {
-                    width: 26
-                    height: 26
-                    radius: 13
-                    color: upMouseArea.containsMouse ? NotificationColors.primary : NotificationColors.tertiary
-                    visible: parent.parent.expanded
-
-                    Behavior on color {
-                        ColorAnimation { duration: 150 }
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-                        font.family: "CaskaydiaCove Nerd Font"
-                        font.pixelSize: 14
-                        color: NotificationColors.secondary
-                        text: ""
-                    }
-
-                    MouseArea {
-                        id: upMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            bodyCarouselContainer.expanded = false;
-                        }
-                    }
-                }
-
-                // expansion
-                Rectangle {
-                    width: 26
-                    height: 26
-                    radius: 13
-                    color: downMouseArea.containsMouse ? NotificationColors.primary : NotificationColors.tertiary
-                    visible: !parent.parent.expanded
-
-                    Behavior on color {
-                        ColorAnimation { duration: 150 }
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-                        font.family: "CaskaydiaCove Nerd Font"
-                        font.pixelSize: 14
-                        color: NotificationColors.secondary
-                        text: ""
-                    }
-
-                    MouseArea {
-                        id: downMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            bodyCarouselContainer.expanded = true;
-                        }
-                    }
                 }
             }
         }
     }
 }
+

@@ -7,7 +7,7 @@ Item {
     width: content.width
     height: 140
     property bool isHovered: false
- // [uncomment to use, i dont want to use ts right now]
+    // [uncomment to use, i dont want to use ts right now]
     // MediaPlayer {
     //     id: kuruSound
     //     source: "../../Assets/KuruKuru/kururin.mp3"
@@ -24,20 +24,20 @@ Item {
         id: content
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        width: root.isHovered ? 200 : 0.1
+        width: 200
         height: root.isHovered ? parent.height : 0.1
         style: 1
         alignment: 5
-        radius: 20
+        radius: root.isHovered ? 20 : 5
         color: "black"
 
-        Behavior on width {
+        Behavior on height {
             NumberAnimation {
                 duration: 450
                 easing.type: Easing.OutCubic
             }
         }
-        Behavior on height {
+        Behavior on radius {
             NumberAnimation {
                 duration: 450
                 easing.type: Easing.OutCubic

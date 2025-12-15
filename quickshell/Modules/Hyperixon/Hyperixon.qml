@@ -40,15 +40,15 @@ Scope {
                 }
 
                 /*
-                notification area -> full height when notifications exist, minimal when empty
-                [I should be making
-                it card based dynamic tbh!, but animation becomes funky...]
+                notification area -> dynamically
+                sized based on actual content height
+                grows as more cards are added
                 */
                 Region {
                     x: hyperixonLayer.width - 400
                     y: 0
                     width: 400
-                    height: notifWindow.hasNotifications ? 200 : 1
+                    height: notifWindow.hasNotifications ? notifWindow.height : 1
                 }
             }
 
@@ -67,7 +67,7 @@ Scope {
                 //notification
                 NotificationWindow {
                     id: notifWindow
-                    anchors.topMargin: 20
+                    //anchors.topMargin: 20
                     anchors.right: parent.right
                     anchors.top: parent.top
                     property bool hasNotifications: queue.length > 0

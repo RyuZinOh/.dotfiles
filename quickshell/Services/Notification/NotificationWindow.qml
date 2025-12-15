@@ -4,7 +4,7 @@ import qs.Services.Shapes
 Item {
     id: root
     width: content.width
-    height: 220
+    height: content.height
 
     property var queue: []
     property int maxVisible: 5
@@ -118,20 +118,26 @@ Item {
     PopoutShape {
         id: content
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
 
-        width: queue.length > 0 ? 375 : 0.1
-        height: parent.height
-
+        width: 375
+        height: queue.length > 0 ? Math.min(column.implicitHeight + 100, 800) : 0
         style: 1
-        alignment: 2
-        radius: 20
+        alignment: 1
+        radius: queue.length > 0 ? 20 : 5
         color: NotificationColors.tertiary
 
-        Behavior on width {
+        Behavior on height {
             NumberAnimation {
                 duration: 400
-                easing.type: Easing.OutCubic
+                easing.type: Easing.InOutCubic
+            }
+        }
+
+        Behavior on radius {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.InOutCubic
             }
         }
 
@@ -141,6 +147,7 @@ Item {
 
             opacity: queue.length > 0 ? 1 : 0
             visible: opacity > 0
+            scale: queue.length > 0 ? 1 : 0.95
 
             Behavior on opacity {
                 NumberAnimation {
@@ -149,11 +156,30 @@ Item {
                 }
             }
 
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 400
+                    easing.type: Easing.OutCubic
+                }
+            }
+
             Flickable {
+                id: flickable
                 anchors.fill: parent
                 contentHeight: column.implicitHeight
                 boundsBehavior: Flickable.StopAtBounds
                 clip: true
+                interactive: !anyCardDragging()
+
+                function anyCardDragging() {
+                    for (var i = 0; i < column.children.length; i++) {
+                        var child = column.children[i];
+                        if (child && child.isDragging !== undefined && child.isDragging) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
 
                 Column {
                     id: column

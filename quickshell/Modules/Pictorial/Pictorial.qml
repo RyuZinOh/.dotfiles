@@ -71,12 +71,12 @@ Item {
     PopoutShape {
         id: content
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        width: root.isHovered ? 200 : 0.1
-        height: root.isHovered ? parent.height : 0.1
+        anchors.verticalCenter: parent.verticalCenter
+        width: root.isHovered ? 200 : 10
+        height: parent.height
         style: 1
         alignment: 3
-        radius: 20
+        radius: root.isHovered ? 20 : 5
         color: "black"
 
         Behavior on width {
@@ -86,7 +86,7 @@ Item {
             }
         }
 
-        Behavior on height {
+        Behavior on radius {
             NumberAnimation {
                 duration: 450
                 easing.type: Easing.OutCubic
