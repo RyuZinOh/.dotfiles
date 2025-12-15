@@ -1,0 +1,2 @@
+- [x] Anilist
+- [x] Kururin

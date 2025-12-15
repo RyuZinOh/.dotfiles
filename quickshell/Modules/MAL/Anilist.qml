@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import qs.Services.Shapes
+import qs.Services.Theme
 import Quickshell.Io
 
 Item {
@@ -11,9 +12,6 @@ Item {
     property bool isHovered: false
     property int currentTab: 0 //tabbing method
 
-    readonly property color bg: "black"
-    readonly property color textPrimary: "white"
-    readonly property color accent: "blue"
     readonly property string malFile: "/home/safal726/.cache/safalQuick/mal.json"
 
     // anime and todomodel
@@ -37,7 +35,7 @@ Item {
         style: 1
         alignment: 6
         radius: 20
-        color: root.bg
+        color: Theme.colors.surface_container
 
         Behavior on width {
             NumberAnimation {
@@ -82,7 +80,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "󰑐"
-                            color: "white"
+                            color: Theme.colors.on_surface
                             font.pixelSize: 16
                             font.family: "CaskaydiaCove NF"
                             RotationAnimator on rotation {
@@ -130,7 +128,7 @@ Item {
                                     id: tabText
                                     anchors.centerIn: parent
                                     text: modelData
-                                    color: tabItem.isActive ? "white" : "gray"
+                                    color: tabItem.isActive ? Theme.colors.on_surface : Theme.colors.outline
                                     font.pixelSize: 13
                                     font.weight: tabItem.isActive ? Font.Medium : Font.Normal
                                     font.family: "CaskaydiaCove NF"
@@ -160,7 +158,7 @@ Item {
                     Rectangle {
                         id: activeIndicator
                         height: 2
-                        color: "white"
+                        color: Theme.colors.primary
 
                         property Item activeTab: tabRepeater.count > 0 ? tabRepeater.itemAt(currentTab) : null
 
@@ -239,15 +237,15 @@ Item {
                 delegate: Rectangle {
                     width: ListView.view.width
                     height: 32
-                    color: "#100C08"
+                    color: Theme.colors.surface
                     radius: 10
 
                     RowLayout {
                         anchors.fill: parent
 
                         Text {
-                            text:" "+model.name
-                            color: root.textPrimary
+                            text: " " + model.name
+                            color: Theme.colors.on_surface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
                             Layout.fillWidth: true
@@ -261,7 +259,7 @@ Item {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: "red"
+                                color: Theme.colors.tertiary
                                 font.pixelSize: 14
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -294,15 +292,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
                     placeholderText: "Add anime..."
-                    placeholderTextColor: "silver"
-                    color: root.textPrimary
+                    placeholderTextColor: Theme.colors.outline
+                    color: Theme.colors.on_surface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
                     leftPadding: 10
                     rightPadding: 10
 
                     background: Rectangle {
-                        color: "#100C08"
+                        color: Theme.colors.surface
                         radius: 100
                     }
 
@@ -325,14 +323,14 @@ Item {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "black"
+                        color: Theme.colors.on_primary
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     background: Rectangle {
-                        color: "white"
+                        color: Theme.colors.primary
                         radius: 100
                     }
 
@@ -372,14 +370,14 @@ Item {
                 delegate: Rectangle {
                     width: ListView.view.width
                     height: 32
-                    color: "#100C08"
+                    color: Theme.colors.surface
                     radius: 10
 
                     RowLayout {
                         anchors.fill: parent
                         Text {
-                            text:" "+model.name
-                            color: root.textPrimary
+                            text: " " + model.name
+                            color: Theme.colors.on_surface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
                             Layout.fillWidth: true
@@ -393,7 +391,7 @@ Item {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: "red"
+                                color: Theme.colors.tertiary
                                 font.pixelSize: 14
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -426,15 +424,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
                     placeholderText: "Add task..."
-                    placeholderTextColor: "silver"
-                    color: root.textPrimary
+                    placeholderTextColor: Theme.colors.outline
+                    color: Theme.colors.on_surface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
                     leftPadding: 10
                     rightPadding: 10
 
                     background: Rectangle {
-                        color: "#100C08"
+                        color: Theme.colors.surface
                         radius: 100
                     }
 
@@ -457,14 +455,14 @@ Item {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "black"
+                        color: Theme.colors.on_primary
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     background: Rectangle {
-                        color: "white"
+                        color: Theme.colors.primary
                         radius: 100
                     }
 

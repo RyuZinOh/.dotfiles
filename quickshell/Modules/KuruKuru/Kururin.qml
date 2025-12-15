@@ -1,6 +1,7 @@
 import QtQuick
 // import QtMultimedia // ts backed wth gstreamer
 import qs.Services.Shapes
+import qs.Services.Theme
 
 Item {
     id: root
@@ -29,7 +30,7 @@ Item {
         style: 1
         alignment: 5
         radius: root.isHovered ? 20 : 5
-        color: "black"
+        color: Theme.colors.primary
 
         Behavior on height {
             NumberAnimation {
