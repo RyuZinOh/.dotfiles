@@ -3,6 +3,7 @@ import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
 import qs.Services.Shapes
 import Quickshell.Io
+import qs.Services.Theme
 
 Item {
     id: root
@@ -72,12 +73,12 @@ Item {
         id: content
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        width: root.isHovered ? 200 : 10
+        width: root.isHovered ? 200 : 0.1
         height: parent.height
         style: 1
         alignment: 3
-        radius: root.isHovered ? 20 : 5
-        color: "black"
+        radius: root.isHovered ? 20 : 1
+        color: Theme.surfaceContainer
 
         Behavior on width {
             NumberAnimation {
@@ -130,7 +131,7 @@ Item {
                         id: pfpContainer
                         anchors.fill: parent
                         radius: width / 2
-                        color: "white"
+                        color: Theme.primaryColor
                         clip: true
 
                         Image {
@@ -155,7 +156,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "󰀄"
-                            color: "white"
+                            color: Theme.onPrimary
                             font.pixelSize: 56
                             font.family: "CaskaydiaCove NF"
                             visible: !profileData.pfpPath
@@ -169,7 +170,7 @@ Item {
                         width: 28
                         height: 28
                         radius: width / 2
-                        color: reloadButton.containsMouse ? "#2B2B2B" : "black"
+                        color: reloadButton.containsMouse ? Theme.surfaceBright : Theme.surfaceColor
 
                         Behavior on color {
                             ColorAnimation {
@@ -180,7 +181,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "󰑐"
-                            color: "white"
+                            color: Theme.onSurface
                             font.pixelSize: 16
                             font.family: "CaskaydiaCove NF"
 
@@ -212,7 +213,7 @@ Item {
                 Text {
                     Layout.alignment: Qt.AlignHCenter
                     text: profileData.name
-                    color: "white"
+                    color: Theme.onSurface
                     font.pixelSize: 24
                     font.weight: Font.Bold
                     font.family: "CaskaydiaCove NF"
@@ -230,7 +231,7 @@ Item {
                             Layout.preferredWidth: 48
                             Layout.preferredHeight: 48
                             radius: 100
-                            color: appMouse.containsMouse ? "#2B1B1B" : "#1B1212"
+                            color: appMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceColor
 
                             Behavior on color {
                                 ColorAnimation {
@@ -241,7 +242,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: modelData.icon
-                                color: "white"
+                                color: Theme.onSurface
                                 font.pixelSize: 32
                                 font.family: "CaskaydiaCove NF"
                             }
@@ -263,7 +264,9 @@ Item {
                                 width: tooltipText.width + 16
                                 height: 24
                                 radius: 4
-                                color: "black"
+                                color: Theme.surfaceColor
+                                border.width: 1
+                                border.color: Theme.dimColor
                                 visible: appMouse.containsMouse
                                 opacity: 0.95
 
@@ -271,7 +274,7 @@ Item {
                                     id: tooltipText
                                     anchors.centerIn: parent
                                     text: modelData.name
-                                    color: "white"
+                                    color: Theme.onSurface
                                     font.pixelSize: 12
                                     font.family: "CaskaydiaCove NF"
                                 }

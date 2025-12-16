@@ -1,34 +1,34 @@
 import QtQuick
 import Quickshell.Io
+import qs.Services.Theme
 
 Item {
     id: root
     anchors.fill: parent
-    readonly property string surfaceColor: "#100C08"
-    readonly property string primaryColor: "#ffffff"
+
     Process {
         id: cleanupProcess
         command: ["bash", Qt.resolvedUrl("../../Scripts/refresh.sh").toString().replace("file://", "")]
-        onExited: (code, status) => {
-            if (code === 0) {
-                console.log("Cache cleanup success");
-            } else {
-                console.error("Cleanup failed", code);
-            }
-        }
+        // onExited: (code, status) => {
+        //     if (code === 0) {
+        //         console.log("Cache cleanup success");
+        //     } else {
+        //         console.error("Cleanup failed", code);
+        //     }
+        // }
     }
     Rectangle {
         id: contextMenu
         width: 180
         height: 52
-        color: surfaceColor
+        color: Theme.surfaceContainer
         radius: 8
         visible: false
         z: 1000
         Rectangle {
             anchors.fill: parent
             anchors.margins: 4
-            color: refreshMouse.containsMouse ? Qt.lighter(surfaceColor, 1.2) : surfaceColor
+            color: refreshMouse.containsMouse ? Theme.surfaceBright : Theme.surfaceColor
             radius: 6
             Row {
                 anchors.left: parent.left
@@ -39,7 +39,7 @@ Item {
                     id: iconText
                     anchors.verticalCenter: parent.verticalCenter
                     text: "󰑐"
-                    color: primaryColor
+                    color: Theme.primaryColor
                     font.pixelSize: 16
                     font.family: "CaskaydiaCove NF"
                     // rotation: refreshMouse.containsMouse ? 360 : 0
@@ -53,7 +53,7 @@ Item {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Refresh"
-                    color: primaryColor
+                    color: Theme.onSurface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
                 }

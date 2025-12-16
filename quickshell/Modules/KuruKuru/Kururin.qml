@@ -8,6 +8,7 @@ Item {
     width: content.width
     height: 140
     property bool isHovered: false
+
     // [uncomment to use, i dont want to use ts right now]
     // MediaPlayer {
     //     id: kuruSound
@@ -30,7 +31,7 @@ Item {
         style: 1
         alignment: 5
         radius: root.isHovered ? 20 : 5
-        color: Theme.colors.primary
+        color: Theme.surfaceContainer
 
         Behavior on height {
             NumberAnimation {
@@ -78,7 +79,7 @@ Item {
                 anchors.bottom: parent.bottom
                 height: parent.height
 
-                property bool playing: true
+                property bool shouldPlay: root.isHovered
                 property real speed: 0.8
                 property bool switchable: true
 
@@ -89,11 +90,19 @@ Item {
                     anchors.bottom: parent.bottom
                     fillMode: Image.PreserveAspectFit
 
-                    playing: gifContainer.playing && gifSmoll.visible
+                    playing: gifContainer.shouldPlay && gifSmoll.visible
+                    paused: !gifContainer.shouldPlay
                     source: "../../Assets/KuruKuru/hertaa1.gif"
                     smooth: true
-                    cache: true
+                    cache: false
                     speed: gifContainer.speed
+
+                    //reset to first frame when not visible/playing
+                    onVisibleChanged: {
+                        if (!visible && !playing) {
+                            currentFrame = 0;
+                        }
+                    }
                 }
 
                 AnimatedImage {
@@ -103,12 +112,19 @@ Item {
                     anchors.bottom: parent.bottom
                     fillMode: Image.PreserveAspectFit
 
-                    playing: gifContainer.playing && gifBig.visible
+                    playing: gifContainer.shouldPlay && gifBig.visible
+                    paused: !gifContainer.shouldPlay
                     source: "../../Assets/KuruKuru/seseren.gif"
                     smooth: true
-                    cache: true
+                    cache: false
                     speed: gifContainer.speed
                     visible: false
+
+                    onVisibleChanged: {
+                        if (!visible && !playing) {
+                            currentFrame = 0;
+                        }
+                    }
                 }
 
                 MouseArea {

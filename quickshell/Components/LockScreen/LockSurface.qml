@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Fusion
 import Qt5Compat.GraphicalEffects
 import Quickshell
+import qs.Services.Theme
 
 // import QtQuick.Effects
 
@@ -54,7 +55,7 @@ Rectangle {
 
         font.pointSize: 18
         font.italic: true
-        color: "white"
+        color: Theme.onSurface
         opacity: 0.9
 
         text: passwordBox.text.length > 0 ? "fuck yea!!" : "Do you love red panda?"
@@ -102,7 +103,7 @@ Rectangle {
                     height: parent.height + 20
                     radius: width / 2
                     color: "transparent"
-                    border.color: root.context.showFailure ? "#ff0000" : "white"
+                    border.color: root.context.showFailure ? Theme.tertiaryColor : Theme.dimColor
                     border.width: 1
                     opacity: 0.2
                 }
@@ -142,10 +143,10 @@ Rectangle {
                         }
 
                         font.pointSize: 18 + (index % 2) * 4
-                        color: "white"
+                        color: Theme.onSurface
                         opacity: 0.3 - (index % 2) * 0.05
                         style: Text.Outline
-                        styleColor: "black"
+                        styleColor: Theme.backgroundColor
 
                         transform: Rotation {
                             origin.x: 0
@@ -168,7 +169,7 @@ Rectangle {
                     id: pfpContainer
                     anchors.fill: parent
                     radius: width / 2
-                    color: root.context.showFailure ? "#ff0000" : "#00008B"
+                    color: root.context.showFailure ? Theme.tertiaryColor : Theme.primaryColor
 
                     Image {
                         id: pfpImage
@@ -203,7 +204,7 @@ Rectangle {
                         text: "?"
                         font.pointSize: 64
                         font.weight: Font.Light
-                        color: "white"
+                        color: Theme.onPrimary
                         visible: pfpImage.status === Image.Error
                     }
 
@@ -221,7 +222,7 @@ Rectangle {
                     anchors.fill: parent
                     radius: width / 2
                     color: "transparent"
-                    border.color: root.context.showFailure ? "#ff0000" : "#00008B"
+                    border.color: root.context.showFailure ? Theme.tertiaryColor : Theme.primaryColor
                     border.width: 3
                 }
             }
@@ -264,7 +265,7 @@ Rectangle {
         text: "Press Enter to unlock"
         font.pointSize: 11
         font.weight: Font.Light
-        color: "white"
+        color: Theme.onSurface
         opacity: passwordBox.text.length > 0 ? 0.6 : 0
 
         Behavior on opacity {

@@ -43,7 +43,8 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
             source: ""
-            cache: false
+            cache: true
+            asynchronous: true //block prevention
             fillMode: Image.PreserveAspectCrop
 
             property real mouseXNormalized: 0.5
@@ -97,19 +98,32 @@ Item {
             }
 
             Component.onCompleted: {
-                source = Dat.WallpaperConfig.currentWallpaper;
+                const initialWallpaper = Dat.WallpaperConfig.currentWallpaper;
+                if (initialWallpaper) {
+                    source = initialWallpaper;
+                }
 
                 Dat.WallpaperConfig.currentWallpaperChanged.connect(() => {
+                    const newWallpaper = Dat.WallpaperConfig.currentWallpaper;
+
+                    //skipping if same wallpaper
+                    if (newWallpaper === wallpaper.source) {
+                        return;
+                    }
+
                     if (transitionType === "crossfade") {
                         if (crossfadeAnimation.running) {
                             crossfadeAnimation.complete();
                         }
-                        animatingWal.source = Dat.WallpaperConfig.currentWallpaper;
+                        animatingWal.source = newWallpaper;
                     } else if (transitionType === "bubble") {
                         if (bubbleAnimation.running) {
                             bubbleAnimation.complete();
                         }
-                        bubbleWallpaper.source = Dat.WallpaperConfig.currentWallpaper;
+                        // randomize bubble origin
+                        bubbleClip.originX = Math.random() * wallpaperService.width;
+                        bubbleClip.originY = Math.random() * wallpaperService.height;
+                        bubbleWallpaper.source = newWallpaper;
                         bubbleAnimation.start();
                     }
                 });
@@ -130,7 +144,7 @@ Item {
                 bubbleAnimation.finished.connect(() => {
                     wallpaper.source = bubbleWallpaper.source;
                     bubbleWallpaper.source = "";
-                    bubbleClip.width = 0;
+                    bubbleClip.diameter = 0;
                 });
             }
         }
@@ -141,11 +155,12 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
             source: ""
-            cache: false
+            cache: true
+            asynchronous: true
             fillMode: Image.PreserveAspectCrop
             opacity: 0
             scale: enableZoomEffect ? 1.1 : 1.0
-            visible: transitionType === "crossfade"
+            visible: transitionType === "crossfade" && source !== ""
 
             property bool isPannable: false
             property real calculatedWidth: parent.width
@@ -207,35 +222,58 @@ Item {
         }
 
         //bubble transition
-        ClippingRectangle {
-            id: bubbleClip
-            anchors.centerIn: parent
-            width: 0
-            height: width
-            visible: transitionType === "bubble"
-            color: "transparent"
-            radius: width
-            layer.smooth: true
+        Item {
+            anchors.fill: parent
+            visible: transitionType === "bubble" && bubbleWallpaper.source !== ""
+            clip: true
 
-            NumberAnimation {
-                id: bubbleAnimation
-                target: bubbleClip
-                property: "width"
-                from: 0
-                to: Math.max(wallpaperService.width, wallpaperService.height) * 1.5
-                duration: wallpaperService.crossfadeDuration
-                easing.type: Easing.Bezier
-                easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
-            }
+            ClippingRectangle {
+                id: bubbleClip
+                property real originX: 0
+                property real originY: 0
+                property real diameter: 0
 
-            Image {
-                id: bubbleWallpaper
-                anchors.centerIn: parent
-                width: wallpaperService.width
-                height: wallpaperService.height
-                source: ""
-                cache: false
-                fillMode: Image.PreserveAspectCrop
+                x: originX - diameter / 2
+                y: originY - diameter / 2
+                width: diameter
+                height: diameter
+                color: "transparent"
+                radius: diameter / 2
+                layer.smooth: true
+
+                NumberAnimation {
+                    id: bubbleAnimation
+                    target: bubbleClip
+                    property: "diameter"
+                    from: 0
+                    to: {
+                        // Calculate the maximum distance from the random origin to any corner
+                        const dx1 = bubbleClip.originX;
+                        const dx2 = wallpaperService.width - bubbleClip.originX;
+                        const dy1 = bubbleClip.originY;
+                        const dy2 = wallpaperService.height - bubbleClip.originY;
+
+                        const maxDx = Math.max(dx1, dx2);
+                        const maxDy = Math.max(dy1, dy2);
+
+                        return Math.sqrt(maxDx * maxDx + maxDy * maxDy) * 2.2;
+                    }
+                    duration: wallpaperService.crossfadeDuration
+                    easing.type: Easing.Bezier
+                    easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
+                }
+
+                Image {
+                    id: bubbleWallpaper
+                    x: -bubbleClip.originX + bubbleClip.diameter / 2
+                    y: -bubbleClip.originY + bubbleClip.diameter / 2
+                    width: wallpaperService.width
+                    height: wallpaperService.height
+                    source: ""
+                    cache: true
+                    asynchronous: true
+                    fillMode: Image.PreserveAspectCrop
+                }
             }
         }
     }

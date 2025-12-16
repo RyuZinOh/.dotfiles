@@ -2,3 +2,6 @@
 - [x] Kururin
 - [x] Setski [Wallski] 
 - [x] Notification system
+- [x] Pictorial
+- [x] LockSurface
+- [x] ContextMenu [Window Like Refresh]

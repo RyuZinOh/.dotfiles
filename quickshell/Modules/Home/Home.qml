@@ -40,7 +40,7 @@ Scope {
                 enableZoomEffect: true
                 crossfadeDuration: 1000
                 zoomDuration: 1200
-                transitionType: "crossfade"
+                transitionType: "bubble"
             }
 
             //touchpad gestured right click contextmenu [Just like Windows]
