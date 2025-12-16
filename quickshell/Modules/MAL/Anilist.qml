@@ -35,7 +35,7 @@ Item {
         style: 1
         alignment: 6
         radius: 20
-        color: Theme.colors.surface_container
+        color: Theme.surfaceContainer
 
         Behavior on width {
             NumberAnimation {
@@ -63,54 +63,14 @@ Item {
                 spacing: 8
 
                 // Header Row
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Item {
-                        Layout.fillWidth: true
-                    }
-
-                    // Refresh Button
-                    Rectangle {
-                        Layout.preferredWidth: 28
-                        Layout.preferredHeight: 28
-                        radius: width / 2
-                        color: "transparent"
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "󰑐"
-                            color: Theme.colors.on_surface
-                            font.pixelSize: 16
-                            font.family: "CaskaydiaCove NF"
-                            RotationAnimator on rotation {
-                                id: spinAnimation
-                                from: 0
-                                to: 360
-                                duration: 600
-                                loops: 1
-                            }
-                        }
-                        MouseArea {
-                            id: reloadMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                spinAnimation.start();
-                                readProcess.running = true;
-                            }
-                        }
-                    }
-                }
-
                 Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
 
                     Row {
                         id: tabRow
-                        anchors.fill: parent
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
                         spacing: 25
 
                         Repeater {
@@ -128,7 +88,7 @@ Item {
                                     id: tabText
                                     anchors.centerIn: parent
                                     text: modelData
-                                    color: tabItem.isActive ? Theme.colors.on_surface : Theme.colors.outline
+                                    color: tabItem.isActive ? Theme.onSurface : Theme.dimColor
                                     font.pixelSize: 13
                                     font.weight: tabItem.isActive ? Font.Medium : Font.Normal
                                     font.family: "CaskaydiaCove NF"
@@ -155,10 +115,45 @@ Item {
                         }
                     }
 
+                    // Refresh Button
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 28
+                        height: 28
+                        radius: width / 2
+                        color: "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "󰑐"
+                            color: Theme.onSurface
+                            font.pixelSize: 16
+                            font.family: "CaskaydiaCove NF"
+                            RotationAnimator on rotation {
+                                id: spinAnimation
+                                from: 0
+                                to: 360
+                                duration: 600
+                                loops: 1
+                            }
+                        }
+                        MouseArea {
+                            id: reloadMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                spinAnimation.start();
+                                readProcess.running = true;
+                            }
+                        }
+                    }
+
                     Rectangle {
                         id: activeIndicator
                         height: 2
-                        color: Theme.colors.primary
+                        color: Theme.primaryColor
 
                         property Item activeTab: tabRepeater.count > 0 ? tabRepeater.itemAt(currentTab) : null
 
@@ -237,7 +232,7 @@ Item {
                 delegate: Rectangle {
                     width: ListView.view.width
                     height: 32
-                    color: Theme.colors.surface
+                    color: Theme.surfaceColor
                     radius: 10
 
                     RowLayout {
@@ -245,7 +240,7 @@ Item {
 
                         Text {
                             text: " " + model.name
-                            color: Theme.colors.on_surface
+                            color: Theme.onSurface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
                             Layout.fillWidth: true
@@ -259,7 +254,7 @@ Item {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: Theme.colors.tertiary
+                                color: Theme.tertiaryColor
                                 font.pixelSize: 14
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -292,15 +287,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
                     placeholderText: "Add anime..."
-                    placeholderTextColor: Theme.colors.outline
-                    color: Theme.colors.on_surface
+                    placeholderTextColor: Theme.dimColor
+                    color: Theme.onSurface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
                     leftPadding: 10
                     rightPadding: 10
 
                     background: Rectangle {
-                        color: Theme.colors.surface
+                        color: Theme.surfaceColor
                         radius: 100
                     }
 
@@ -323,14 +318,14 @@ Item {
 
                     contentItem: Text {
                         text: parent.text
-                        color: Theme.colors.on_primary
+                        color: Theme.onPrimary
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     background: Rectangle {
-                        color: Theme.colors.primary
+                        color: Theme.primaryColor
                         radius: 100
                     }
 
@@ -370,14 +365,14 @@ Item {
                 delegate: Rectangle {
                     width: ListView.view.width
                     height: 32
-                    color: Theme.colors.surface
+                    color: Theme.surfaceColor
                     radius: 10
 
                     RowLayout {
                         anchors.fill: parent
                         Text {
                             text: " " + model.name
-                            color: Theme.colors.on_surface
+                            color: Theme.onSurface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
                             Layout.fillWidth: true
@@ -391,7 +386,7 @@ Item {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: Theme.colors.tertiary
+                                color: Theme.tertiaryColor
                                 font.pixelSize: 14
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -424,15 +419,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
                     placeholderText: "Add task..."
-                    placeholderTextColor: Theme.colors.outline
-                    color: Theme.colors.on_surface
+                    placeholderTextColor: Theme.dimColor
+                    color: Theme.onSurface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
                     leftPadding: 10
                     rightPadding: 10
 
                     background: Rectangle {
-                        color: Theme.colors.surface
+                        color: Theme.surfaceColor
                         radius: 100
                     }
 
@@ -455,14 +450,14 @@ Item {
 
                     contentItem: Text {
                         text: parent.text
-                        color: Theme.colors.on_primary
+                        color: Theme.onPrimary
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     background: Rectangle {
-                        color: Theme.colors.primary
+                        color: Theme.primaryColor
                         radius: 100
                     }
 

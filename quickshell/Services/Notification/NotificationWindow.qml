@@ -1,5 +1,6 @@
 import QtQuick
 import qs.Services.Shapes
+import qs.Services.Theme
 
 Item {
     id: root
@@ -120,12 +121,12 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
 
-        width: 375
-        height: queue.length > 0 ? Math.min(column.implicitHeight + 100, 800) : 0
+        width: 420
+        height: queue.length > 0 ? Math.min(column.implicitHeight + 60, 800) : 0
         style: 1
         alignment: 1
         radius: queue.length > 0 ? 20 : 5
-        color: NotificationColors.tertiary
+        color: Theme.surfaceContainer
 
         Behavior on height {
             NumberAnimation {
@@ -143,7 +144,10 @@ Item {
 
         Item {
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.leftMargin: 20
+            anchors.topMargin: 0
+            anchors.bottomMargin: 0
+            anchors.rightMargin: 0
 
             opacity: queue.length > 0 ? 1 : 0
             visible: opacity > 0

@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Services.Shapes
 import qs.Modules.Setski.Wallski
+import qs.Services.Theme
+
 // import Qt5Compat.GraphicalEffects
 
 Item {
@@ -72,7 +74,7 @@ Item {
         style: 1
         alignment: 4
         radius: 20
-        color: "black"
+        color: Theme.surfaceContainer
 
         Behavior on height {
             NumberAnimation {
@@ -119,7 +121,7 @@ Item {
                                 id: tabText
                                 anchors.centerIn: parent
                                 text: modelData
-                                color: tabItem.isActive ? "white" : "gray"
+                                color: tabItem.isActive ? Theme.onSurface : Theme.dimColor
                                 font.pixelSize: 13
                                 font.weight: tabItem.isActive ? Font.Medium : Font.Normal
                                 font.family: "CaskaydiaCove NF"
@@ -149,7 +151,7 @@ Item {
                 Rectangle {
                     id: activeIndicator
                     height: 2
-                    color: "white"
+                    color: Theme.primaryColor
 
                     property Item activeTab: tabRepeater.count > 0 ? tabRepeater.itemAt(currentTab) : null
 

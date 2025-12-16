@@ -37,7 +37,7 @@ Item {
         //
         //     Text {
         //         text: "WALLPAPERS"
-        //         color: "white"
+        //         color: Theme.onSurface
         //         font.pixelSize: 20
         //         font.weight: Font.Bold
         //         font.family: "CaskaydiaCove NF"
@@ -52,15 +52,15 @@ Item {
         //         Layout.preferredWidth: countText.width + 20
         //         Layout.preferredHeight: 28
         //         radius: 10
-        //         color: "#1E1E1E"
+        //         color: Theme.surfaceColor
         //         border.width: 1
-        //         border.color: "white"
+        //         border.color: Theme.primaryColor
         //
         //         Text {
         //             id: countText
         //             anchors.centerIn: parent
         //             text: folderModel.count + " images"
-        //             color: "white"
+        //             color: Theme.onSurface
         //             font.pixelSize: 13
         //             font.family: "CaskaydiaCove NF"
         //         }
@@ -72,7 +72,7 @@ Item {
         //     Layout.fillWidth: true
         //     Layout.preferredHeight: 100
         //     color: "transparent"
-        //     border.color: "white"
+        //     border.color: Theme.primaryColor
         //     visible: Dat.WallpaperConfig.currentWallpaper !== ""
         //     radius: 14
         //
@@ -113,7 +113,7 @@ Item {
         //                 spacing: 10
         //                 Text {
         //                     text: "CURRENTLY ACTIVE"
-        //                     color: "white"
+        //                     color: Theme.onSurface
         //                     font.pixelSize: 14
         //                     font.weight: Font.Bold
         //                     font.family: "CaskaydiaCove NF"
@@ -130,7 +130,7 @@ Item {
         //                     const fileName = currentWall.split('/').pop();
         //                     return fileName.replace(/\.[^/.]+$/, "");
         //                 }
-        //                 color: "white"
+        //                 color: Theme.onSurface
         //                 font.pixelSize: 16
         //                 font.family: "CaskaydiaCove NF"
         //                 font.weight: Font.Medium
@@ -144,9 +144,9 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 40
             radius: 10
-            color: "black"
+            color: Theme.surfaceColor
             border.width: 2
-            border.color: searchInput.activeFocus ? "blue" : "white"
+            border.color: searchInput.activeFocus ? Theme.primaryColor : Theme.dimColor
 
             Behavior on border.width {
                 NumberAnimation {
@@ -172,7 +172,7 @@ Item {
                     text: "\uedfb"
                     font.pixelSize: 18
                     font.family: "CaskaydiaCove NF"
-                    color: searchInput.activeFocus ? "blue" : "white"
+                    color: searchInput.activeFocus ? Theme.primaryColor : Theme.onSurface
 
                     Behavior on color {
                         ColorAnimation {
@@ -185,18 +185,18 @@ Item {
                     id: searchInput
                     Layout.fillWidth: true
                     verticalAlignment: TextInput.AlignVCenter
-                    color: "white"
+                    color: Theme.onSurface
                     font.pixelSize: 15
                     font.family: "CaskaydiaCove NF"
                     clip: true
                     selectByMouse: true
-                    selectionColor: "black"
+                    selectionColor: Theme.primaryColor
 
                     Text {
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
                         text: "Search among " + folderModel.count + " images"
-                        color: "white"
+                        color: Theme.dimColor
                         visible: !searchInput.text && !searchInput.activeFocus
                         font.pixelSize: 15
                         font.family: "CaskaydiaCove NF"
@@ -212,7 +212,7 @@ Item {
                     width: 28
                     height: 28
                     radius: 14
-                    color: clearMouseArea.containsMouse ? "" : "black"
+                    color: clearMouseArea.containsMouse ? Theme.primaryContainer : "transparent"
                     visible: searchInput.text !== ""
                     scale: clearMouseArea.containsMouse ? 1.1 : 1.0
 
@@ -232,7 +232,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: "x"
-                        color: "blue"
+                        color: Theme.primaryColor
                         font.pixelSize: 14
                         font.family: "CaskaydiaCove NF"
                     }
@@ -276,7 +276,7 @@ Item {
                     implicitWidth: 10
                     implicitHeight: 10
                     radius: 5
-                    color: "white"
+                    color: Theme.primaryColor
                     opacity: scrollBar.hovered || scrollBar.pressed ? 1.0 : 0.6
                     scale: scrollBar.pressed ? 0.95 : (scrollBar.hovered ? 1.1 : 1.0)
 
@@ -354,7 +354,7 @@ Item {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: searchInput.text ? `No results for "${searchInput.text}"` : "No wallpapers found"
-                    color: "white"
+                    color: Theme.onSurface
                     font.pixelSize: 15
                     font.family: "CaskaydiaCove NF"
                     font.weight: Font.Medium
@@ -363,7 +363,7 @@ Item {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: searchInput.text ? "Try a different search term" : "Add images to ~/Pictures/"
-                    color: "gray"
+                    color: Theme.dimColor
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
                     visible: true
@@ -415,7 +415,7 @@ Item {
                     easing.type: Easing.OutCubic
                 }
             }
-
+            /*
             Behavior on border.width {
                 NumberAnimation {
                     duration: 200
@@ -427,7 +427,7 @@ Item {
                     duration: 200
                 }
             }
-
+            */
             /* Current wallpaper badge
              [not much of a use unless some genius use this as a
              seperate fixed compartment or give it as a priority to always so at first or something]
@@ -440,7 +440,7 @@ Item {
             //     width: badgeText.width + 16
             //     height: 26
             //     radius: 13
-            //     color: "blue"
+            //     color: Theme.primaryColor
             //     visible: thumb.isCurrentWallpaper
             //     z: 10
             //
@@ -448,7 +448,7 @@ Item {
             //         id: badgeText
             //         anchors.centerIn: parent
             //         text: " Active"
-            //         color: "white"
+            //         color: Theme.onPrimary
             //         font.pixelSize: 11
             //         font.family: "CaskaydiaCove NF"
             //         font.weight: Font.Bold
@@ -477,7 +477,7 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: 4
-                color: "black"
+                color: Theme.surfaceColor
                 opacity: mouseArea.containsMouse ? 0.5 : 0.0
 
                 Behavior on opacity {
@@ -502,7 +502,7 @@ Item {
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: ""
-                        color: "white"
+                        color: Theme.onPrimary
                         font.pixelSize: 32
                         font.family: "CaskaydiaCove NF"
                     }
@@ -511,7 +511,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         // remove thumbs extenstion
                         text: thumb.name.replace(/\.[^/.]+$/, "")
-                        color: "white"
+                        color: Theme.primaryColor
                         font.pixelSize: 13
                         font.family: "CaskaydiaCove NF"
                         font.weight: Font.Medium

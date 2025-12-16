@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Services.Theme
 
 Rectangle {
     id: card
@@ -26,7 +27,7 @@ Rectangle {
 
     width: parent ? parent.width : 360
     height: contentColumn.height + 32
-    color: "#100C08"
+    color: Theme.surfaceColor
     radius: 12
     x: 0
 
@@ -223,14 +224,14 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: 3
-            color: NotificationColors.tertiary
+            color: Theme.surfaceContainer
             radius: 1.5
             visible: card.isActiveCard
 
             Rectangle {
                 width: parent.width * card.progress
                 height: parent.height
-                color: NotificationColors.primary
+                color: Theme.primaryColor
                 radius: 1.5
 
                 Behavior on width {
@@ -303,7 +304,7 @@ Rectangle {
                         font.family: "Poppins"
                         font.pixelSize: 40
                         font.weight: Font.Bold
-                        color: NotificationColors.secondary
+                        color: Theme.secondaryColor
                     }
                 }
 
@@ -314,7 +315,7 @@ Rectangle {
                     font.family: "Poppins"
                     font.pixelSize: 12
                     font.weight: Font.Medium
-                    color: NotificationColors.secondary
+                    color: Theme.secondaryColor
                     opacity: 0.8
                     visible: appName !== ""
                     anchors.verticalCenter: parent.verticalCenter
@@ -347,7 +348,7 @@ Rectangle {
                         anchors.centerIn: parent
                         font.family: "CaskaydiaCove Nerd Font"
                         font.pixelSize: 11
-                        color: downMouseArea.containsMouse ? "blue": "white"
+                        color: downMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurface
                         text: ""
                     }
 
@@ -380,7 +381,7 @@ Rectangle {
                         anchors.centerIn: parent
                         font.family: "CaskaydiaCove Nerd Font"
                         font.pixelSize: 11
-                        color: downMouseArea.containsMouse ? "blue": "white"
+                        color: downMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurface
                         text: ""
                     }
 
@@ -404,7 +405,7 @@ Rectangle {
             font.family: "Poppins"
             font.pixelSize: 14
             font.weight: Font.DemiBold
-            color: NotificationColors.secondary
+            color: Theme.onSurface
             wrapMode: Text.Wrap
             maximumLineCount: 2
             elide: Text.ElideRight
@@ -438,7 +439,7 @@ Rectangle {
                     text: body
                     font.family: "Poppins"
                     font.pixelSize: 12
-                    color: NotificationColors.secondary
+                    color: Theme.onSurface
                     wrapMode: Text.Wrap
                     width: parent.width
                     maximumLineCount: parent.parent.expanded ? -1 : 2
@@ -448,4 +449,3 @@ Rectangle {
         }
     }
 }
-

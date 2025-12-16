@@ -1,2 +1,4 @@
 - [x] Anilist
 - [x] Kururin
+- [x] Setski [Wallski] 
+- [x] Notification system
