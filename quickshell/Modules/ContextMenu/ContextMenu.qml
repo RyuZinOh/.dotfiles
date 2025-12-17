@@ -19,57 +19,108 @@ Item {
     }
     Rectangle {
         id: contextMenu
-        width: 180
-        height: 52
+        width: 140
+        height: 110
         color: Theme.surfaceContainer
         radius: 8
         visible: false
         z: 1000
-        Rectangle {
+
+        Column {
             anchors.fill: parent
-            anchors.margins: 4
-            color: refreshMouse.containsMouse ? Theme.surfaceBright : Theme.surfaceColor
-            radius: 6
-            Row {
-                anchors.left: parent.left
-                anchors.leftMargin: 12
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 12
-                Text {
-                    id: iconText
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "󰑐"
-                    color: Theme.primaryColor
-                    font.pixelSize: 16
-                    font.family: "CaskaydiaCove NF"
-                    // rotation: refreshMouse.containsMouse ? 360 : 0
-                    // Behavior on rotation {
-                    //     NumberAnimation {
-                    //         duration: 500
-                    //         easing.type: Easing.InOutQuad
-                    //     }
-                    // }
+            anchors.margins: 6
+            spacing: 6
+
+            Rectangle {
+                width: parent.width
+                height: 44
+                color: refreshMouse.containsMouse ? Theme.surfaceBright : "transparent"
+                radius: 6
+
+                Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    spacing: 12
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "󰑐"
+                        color: Theme.primaryColor
+                        font.pixelSize: 18
+                        font.family: "CaskaydiaCove NF"
+                        rotation: refreshMouse.containsMouse ? 360 : 0
+                        Behavior on rotation {
+                            NumberAnimation {
+                                duration: 500
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Refresh"
+                        color: Theme.onSurface
+                        font.pixelSize: 13
+                        font.family: "CaskaydiaCove NF"
+                    }
                 }
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "Refresh"
-                    color: Theme.onSurface
-                    font.pixelSize: 13
-                    font.family: "CaskaydiaCove NF"
+                MouseArea {
+                    id: refreshMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        contextMenu.visible = false;
+                        cleanupProcess.running = true;
+                    }
                 }
             }
-            MouseArea {
-                id: refreshMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    contextMenu.visible = false;
-                    cleanupProcess.running = true;
+
+            /* theme toggle*/
+            Rectangle {
+                width: parent.width
+                height: 44
+                color: themeMouse.containsMouse ? Theme.surfaceBright : "transparent"
+                radius: 6
+
+                Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    spacing: 12
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Theme.isDarkMode ? "󰖔" : "󰖙"
+                        color: Theme.primaryColor
+                        font.pixelSize: 18
+                        font.family: "CaskaydiaCove NF"
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Theme.isDarkMode ? "Light" : "Dark"
+                        color: Theme.onSurface
+                        font.pixelSize: 14
+                        font.family: "CaskaydiaCove NF"
+                    }
+                }
+
+                MouseArea {
+                    id: themeMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        contextMenu.visible = false;
+                        Theme.toggleMode();
+                    }
                 }
             }
         }
     }
+
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton

@@ -81,7 +81,7 @@ Scope {
             //anilist but contains todolist as well
             Anilist {
                 id: aniRef
-                anchors.left: parent.left
+                anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
             }
         }

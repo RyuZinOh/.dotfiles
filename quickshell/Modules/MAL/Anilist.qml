@@ -26,14 +26,13 @@ Item {
 
     PopoutShape {
         id: content
-        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
         width: root.isHovered ? 375 : 0.1
         height: parent.height
-
         style: 1
-        alignment: 6
+        alignment: 2
         radius: 20
         color: Theme.surfaceContainer
 
@@ -48,13 +47,21 @@ Item {
         Item {
             anchors.fill: parent
             anchors.margins: 20
+            visible: root.isHovered
             opacity: root.isHovered ? 1 : 0
-            visible: opacity > 0
+            scale: root.isHovered ? 1 : 0.85
 
             Behavior on opacity {
                 NumberAnimation {
                     duration: 300
                     easing.type: Easing.OutQuad
+                }
+            }
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 400
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 1.2
                 }
             }
 
@@ -78,7 +85,6 @@ Item {
                             model: ["Anime List", "To-Do"]
 
                             Item {
-                                id: tabItem
                                 width: tabText.width + 10
                                 height: 28
 
@@ -88,17 +94,18 @@ Item {
                                     id: tabText
                                     anchors.centerIn: parent
                                     text: modelData
-                                    color: tabItem.isActive ? Theme.onSurface : Theme.dimColor
+                                    color: parent.parent.isActive ? Theme.onSurface : Theme.dimColor
                                     font.pixelSize: 13
-                                    font.weight: tabItem.isActive ? Font.Medium : Font.Normal
+                                    font.weight: parent.parent.isActive ? Font.Medium : Font.Normal
                                     font.family: "CaskaydiaCove NF"
-                                    opacity: tabItem.isActive ? 1.0 : 0.5
+                                    opacity: parent.parent.isActive ? 1.0 : 0.5
 
+                                    /*
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: 200
                                         }
-                                    }
+                                    }*/
                                     Behavior on opacity {
                                         NumberAnimation {
                                             duration: 200
@@ -139,7 +146,6 @@ Item {
                             }
                         }
                         MouseArea {
-                            id: reloadMouse
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
@@ -151,12 +157,10 @@ Item {
                     }
 
                     Rectangle {
-                        id: activeIndicator
                         height: 2
                         color: Theme.primaryColor
 
                         property Item activeTab: tabRepeater.count > 0 ? tabRepeater.itemAt(currentTab) : null
-
                         x: activeTab ? activeTab.x + (activeTab.width - width) / 2 : 0
                         width: activeTab ? activeTab.width : 0
 
@@ -184,16 +188,8 @@ Item {
                         id: contentLoader
                         anchors.fill: parent
                         opacity: 0
-                        sourceComponent: {
-                            switch (currentTab) {
-                            case 0:
-                                return animeComponent;
-                            case 1:
-                                return todoComponent;
-                            default:
-                                return null;
-                            }
-                        }
+                        active: root.isHovered
+                        sourceComponent: currentTab === 0 ? animeComponent : todoComponent
                         onLoaded: fadeInAnimation.restart()
 
                         NumberAnimation {
@@ -223,23 +219,28 @@ Item {
             spacing: 8
 
             ListView {
-                id: animeListView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
                 model: animeModel
+                spacing: 6
 
                 delegate: Rectangle {
                     width: ListView.view.width
-                    height: 32
+                    height: 36
                     color: Theme.surfaceColor
                     radius: 10
+                    border.width: 1
+                    border.color: Theme.outlineVariant
 
                     RowLayout {
                         anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 8
+                        spacing: 8
 
                         Text {
-                            text: " " + model.name
+                            text: model.name
                             color: Theme.onSurface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
@@ -247,30 +248,29 @@ Item {
                             elide: Text.ElideRight
                         }
 
-                        Button {
-                            text: ""
-                            Layout.preferredWidth: 30
-                            Layout.preferredHeight: 26
+                        Rectangle {
+                            Layout.preferredWidth: 24
+                            Layout.preferredHeight: 24
+                            radius: 4
+                            color: deleteMouseArea.containsMouse ? Theme.errorContainer : "transparent"
 
-                            contentItem: Text {
-                                text: parent.text
-                                color: Theme.tertiaryColor
+                            Text {
+                                anchors.centerIn: parent
+                                text: "󰅖"
+                                color: deleteMouseArea.containsMouse ? Theme.onErrorContainer : Theme.tertiaryColor
                                 font.pixelSize: 14
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
+                                font.family: "CaskaydiaCove NF"
                             }
 
-                            background: Rectangle {
-                                color: "transparent"
-                            }
-
-                            onClicked: {
-                                animeModel.remove(index);
-                                saveData();
-                            }
-
-                            HoverHandler {
+                            MouseArea {
+                                id: deleteMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    animeModel.remove(index);
+                                    saveData();
+                                }
                             }
                         }
                     }
@@ -285,18 +285,20 @@ Item {
                 TextField {
                     id: animeInputField
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 32
+                    Layout.preferredHeight: 36
                     placeholderText: "Add anime..."
                     placeholderTextColor: Theme.dimColor
                     color: Theme.onSurface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
-                    leftPadding: 10
-                    rightPadding: 10
+                    leftPadding: 12
+                    rightPadding: 12
 
                     background: Rectangle {
                         color: Theme.surfaceColor
                         radius: 100
+                        border.width: 1
+                        border.color: animeInputField.activeFocus ? Theme.primaryColor : Theme.outlineVariant
                     }
 
                     Keys.onReturnPressed: {
@@ -314,12 +316,13 @@ Item {
                 Button {
                     text: "Add"
                     Layout.preferredWidth: 60
-                    Layout.preferredHeight: 32
+                    Layout.preferredHeight: 36
 
                     contentItem: Text {
                         text: parent.text
                         color: Theme.onPrimary
                         font.pixelSize: 13
+                        font.family: "CaskaydiaCove NF"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -356,22 +359,28 @@ Item {
             spacing: 8
 
             ListView {
-                id: todoListView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
                 model: todoModel
+                spacing: 6
 
                 delegate: Rectangle {
                     width: ListView.view.width
-                    height: 32
+                    height: 36
                     color: Theme.surfaceColor
                     radius: 10
+                    border.width: 1
+                    border.color: Theme.outlineVariant
 
                     RowLayout {
                         anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 8
+                        spacing: 8
+
                         Text {
-                            text: " " + model.name
+                            text: model.name
                             color: Theme.onSurface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
@@ -379,37 +388,35 @@ Item {
                             elide: Text.ElideRight
                         }
 
-                        Button {
-                            text: ""
-                            Layout.preferredWidth: 30
-                            Layout.preferredHeight: 26
+                        Rectangle {
+                            Layout.preferredWidth: 24
+                            Layout.preferredHeight: 24
+                            radius: 4
+                            color: deleteMouseArea.containsMouse ? Theme.errorContainer : "transparent"
 
-                            contentItem: Text {
-                                text: parent.text
-                                color: Theme.tertiaryColor
+                            Text {
+                                anchors.centerIn: parent
+                                text: "󰅖"
+                                color: deleteMouseArea.containsMouse ? Theme.onErrorContainer : Theme.tertiaryColor
                                 font.pixelSize: 14
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
+                                font.family: "CaskaydiaCove NF"
                             }
 
-                            background: Rectangle {
-                                color: "transparent"
-                            }
-
-                            onClicked: {
-                                todoModel.remove(index);
-                                saveData();
-                            }
-
-                            HoverHandler {
+                            MouseArea {
+                                id: deleteMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    todoModel.remove(index);
+                                    saveData();
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // Input Area
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
@@ -417,18 +424,20 @@ Item {
                 TextField {
                     id: todoInputField
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 32
+                    Layout.preferredHeight: 36
                     placeholderText: "Add task..."
                     placeholderTextColor: Theme.dimColor
                     color: Theme.onSurface
                     font.pixelSize: 13
                     font.family: "CaskaydiaCove NF"
-                    leftPadding: 10
-                    rightPadding: 10
+                    leftPadding: 12
+                    rightPadding: 12
 
                     background: Rectangle {
                         color: Theme.surfaceColor
                         radius: 100
+                        border.width: 1
+                        border.color: todoInputField.activeFocus ? Theme.primaryColor : Theme.outlineVariant
                     }
 
                     Keys.onReturnPressed: {
@@ -446,12 +455,13 @@ Item {
                 Button {
                     text: "Add"
                     Layout.preferredWidth: 60
-                    Layout.preferredHeight: 32
+                    Layout.preferredHeight: 36
 
                     contentItem: Text {
                         text: parent.text
                         color: Theme.onPrimary
                         font.pixelSize: 13
+                        font.family: "CaskaydiaCove NF"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -518,22 +528,20 @@ Item {
                         animeModel.clear();
                         if (json.anime && Array.isArray(json.anime)) {
                             json.anime.forEach(name => {
-                                if (name) {
+                                if (name)
                                     animeModel.append({
                                         "name": name
                                     });
-                                }
                             });
                         }
 
                         todoModel.clear();
                         if (json.todo && Array.isArray(json.todo)) {
                             json.todo.forEach(name => {
-                                if (name) {
+                                if (name)
                                     todoModel.append({
                                         "name": name
                                     });
-                                }
                             });
                         }
                     } catch (e) {

@@ -333,7 +333,6 @@ Item {
 
                     Dat.WallpaperConfig.currentWallpaper = fileUrl;
                     Dat.WallpaperConfig.saveWallpaper(fileUrl); //qs ipc call wallpaper setWallpaper "path" equivalent for ref
-                    Theme.extractFromWallpaper(fullPath); // extractionMatugen
                     // copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/hyprlock-safal && cp "${fullPath}" /home/safal726/.cache/hyprlock-safal/bg.jpg`]; // hyprlock version
                     copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fullPath}" /home/safal726/.cache/safalQuick/bg.jpg`]; // this one for quickshell
                     copyProcess.running = true;
