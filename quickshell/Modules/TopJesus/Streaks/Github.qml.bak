@@ -1,38 +1,31 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import qs.Services.Theme
 
 Item {
     id: root
     implicitWidth: 750
-    implicitHeight: 180
+    implicitHeight: 240
 
     property var githubContributions: []
     property int totalContributions: 0
     property string username: "ryuzinoh"
     property bool hasError: false
 
-    //notMonochrome color scheme
-    readonly property color bg: "#100C08"
-    readonly property color textPrimary: "#ffffff"
-    readonly property color textSecondary: "#ffffff"
-    readonly property color layer1: "#100C08"
-    readonly property color layer2: "#2a1f18"
-    readonly property color accent: "#ffffff"
-
     function getContributionColor(level) {
         if (level === 0)
-            return root.layer1;
+            return Theme.surfaceContainer;
         if (level === 1) {
-            return root.layer2;
+            return Theme.surfaceContainerHigh;
         }
         if (level === 2) {
-            return "#4a3528";
+            return Theme.primaryContainer;
         }
         if (level === 3) {
-            return "#6a4b38";
+            return Theme.primaryFixedDim;
         }
-        return root.accent;
+        return Theme.primaryColor;
     }
 
     //global layer
@@ -45,9 +38,9 @@ Item {
             id: tooltip
             visible: false
             radius: 8
-            border.color: "#2a1f18"
+            border.color: Theme.outlineVariant
             border.width: 1
-            color: root.bg
+            color: Theme.surfaceContainerHigh
             z: 10000
             opacity: 0
 
@@ -60,7 +53,7 @@ Item {
             Text {
                 id: tooltipText
                 anchors.centerIn: parent
-                color: root.textPrimary
+                color: Theme.onSurface
                 font.pixelSize: 10
                 font.family: "CaskaydiaCove NF"
             }
@@ -132,7 +125,7 @@ Item {
             text: "󰖪"
             font.family: "CaskaydiaCove NF"
             font.pixelSize: 36
-            color: root.textSecondary
+            color: Theme.onSurfaceVariant
             Layout.alignment: Qt.AlignHCenter
         }
         Text {
@@ -140,40 +133,32 @@ Item {
             font.family: "CaskaydiaCove NF"
             font.pixelSize: 13
             font.bold: true
-            color: root.textPrimary
+            color: Theme.onSurface
             Layout.alignment: Qt.AlignHCenter
         }
         Text {
             text: "Unable to fetch GitHub data"
             font.family: "CaskaydiaCove NF"
             font.pixelSize: 11
-            color: root.textSecondary
+            color: Theme.onSurfaceVariant
             Layout.alignment: Qt.AlignHCenter
         }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 16
+        anchors.margins: 10
+        spacing: 8
         visible: !root.hasError
 
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 40
-
-            ColumnLayout {
-                anchors.centerIn: parent
-                spacing: 4
-
-                Text {
-                    text: ` ${root.username} - ${root.totalContributions.toLocaleString()} contributions in the last year`
-                    color: root.textPrimary
-                    font.pixelSize: 16
-                    font.weight: Font.DemiBold
-                    font.family: "CaskaydiaCove NF"
-                    Layout.alignment: Qt.AlignHCenter
-                }
-            }
+        //header
+        Text {
+            text: ` ${root.username} - ${root.totalContributions.toLocaleString()} contributions in the last year`
+            color: Theme.onSurface
+            font.pixelSize: 14
+            font.weight: Font.DemiBold
+            font.family: "CaskaydiaCove NF"
+            Layout.alignment: Qt.AlignHCenter
         }
 
         //contributions grid
@@ -239,38 +224,34 @@ Item {
             }
         }
         // legends -> [I think I have issue showing here due to clipping, well I forgor, u wanna change somehow]
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 8
-            Layout.topMargin: 18
+        RowLayout {
+            spacing: 4
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: -40
 
-            RowLayout {
-                anchors.centerIn: parent
-                spacing: 4
+            Text {
+                text: "Less"
+                color: Theme.onSurfaceVariant
+                font.pixelSize: 10
+                font.family: "CaskaydiaCove NF"
+            }
 
-                Text {
-                    text: "Less"
-                    color: root.textSecondary
-                    font.pixelSize: 10
-                    font.family: "CaskaydiaCove NF"
+            Repeater {
+                model: 5
+                Rectangle {
+                    width: 10
+                    height: 10
+                    radius: 3
+                    color: root.getContributionColor(index)
+                    Layout.alignment: Qt.AlignVCenter
                 }
+            }
 
-                Repeater {
-                    model: 5
-                    Rectangle {
-                        width: 10
-                        height: 10
-                        radius: 3
-                        color: root.getContributionColor(index)
-                    }
-                }
-
-                Text {
-                    text: "More"
-                    color: root.textSecondary
-                    font.pixelSize: 10
-                    font.family: "CaskaydiaCove NF"
-                }
+            Text {
+                text: "More"
+                color: Theme.onSurfaceVariant
+                font.pixelSize: 10
+                font.family: "CaskaydiaCove NF"
             }
         }
     }

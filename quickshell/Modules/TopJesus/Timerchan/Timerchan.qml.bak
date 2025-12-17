@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
 import qs.Services.Notification as Services
+import qs.Services.Theme
 
 Item {
     id: root
@@ -12,11 +13,7 @@ Item {
     property int remainingSeconds: 0
     property bool isPaused: false
     property int notifId: -1
-
-    readonly property string bg: "black"
-    readonly property string surface: "#100C08"
-    readonly property string primary: "#ffffff"
-    readonly property string secondary: "whitesmoke"
+    anchors.bottomMargin: 20
 
     MediaPlayer {
         id: sound
@@ -64,7 +61,8 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: bg
+        color: Theme.backgroundColor
+        radius: 10
 
         RowLayout {
             anchors.centerIn: parent
@@ -74,7 +72,7 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 350
                 Layout.preferredHeight: 200
-                color: surface
+                color: Theme.surfaceContainerLow
                 radius: 10
 
                 ColumnLayout {
@@ -84,7 +82,7 @@ Item {
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: formatTime(remainingSeconds)
-                        color: primary
+                        color: Theme.primaryFixed
                         font.pixelSize: 48
                         font.weight: Font.Light
                     }
@@ -117,15 +115,21 @@ Item {
                                 contentItem: Text {
                                     text: parent.text
                                     font: parent.font
-                                    color: primary
+                                    color: Theme.onPrimaryContainer
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                 }
                                 background: Rectangle {
-                                    color: bg
+                                    color: Theme.primaryContainer
                                     implicitHeight: 24
                                     implicitWidth: 40
                                     radius: 10
+                                    opacity: parent.hovered ? 0.8 : 1.0
+                                    Behavior on opacity {
+                                        NumberAnimation {
+                                            duration: 150
+                                        }
+                                    }
                                 }
                                 MouseArea {
                                     anchors.fill: parent
@@ -151,13 +155,21 @@ Item {
                         leftPadding: 10
                         font.pixelSize: 13
                         enabled: remainingSeconds === 0
-                        color: primary
-                        placeholderTextColor: secondary
+                        color: Theme.onSurface
+                        placeholderTextColor: Theme.onSurfaceVariant
                         background: Rectangle {
-                            color: surface
+                            color: Theme.surfaceContainerLow
                             implicitWidth: 140
                             implicitHeight: 40
                             radius: 10
+                            border.color: titleInput.activeFocus ? Theme.primaryColor : Theme.outlineVariant
+                            border.width: 1
+
+                            Behavior on border.color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+                            }
                         }
                     }
 
@@ -167,13 +179,21 @@ Item {
                         font.pixelSize: 13
                         leftPadding: 10
                         enabled: remainingSeconds === 0
-                        color: primary
-                        placeholderTextColor: secondary
+                        color: Theme.onSurface
+                        placeholderTextColor: Theme.onSurfaceVariant
                         background: Rectangle {
-                            color: surface
+                            color: Theme.surfaceContainerLow
                             implicitWidth: 140
                             implicitHeight: 40
                             radius: 10
+                            border.color: messageInput.activeFocus ? Theme.primaryColor : Theme.outlineVariant
+                            border.width: 1
+
+                            Behavior on border.color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+                            }
                         }
                     }
                 }
@@ -190,26 +210,28 @@ Item {
                         contentItem: TextInput {
                             text: hoursInput.textFromValue(hoursInput.value, hoursInput.locale)
                             font.pixelSize: 16
-                            color: primary
+                            color: Theme.onSurface
                             horizontalAlignment: Qt.AlignHCenter
                             verticalAlignment: Qt.AlignVCenter
                             readOnly: !hoursInput.editable
                             anchors.centerIn: parent
                         }
                         background: Rectangle {
-                            color: surface
+                            color: Theme.surfaceContainerLow
                             implicitWidth: 60
                             implicitHeight: 40
                             radius: 10
+                            border.color: Theme.outlineVariant
+                            border.width: 1
                         }
                     }
 
                     Text {
                         text: ":"
-                        color: secondary
+                        color: Theme.onSurfaceVariant
                         font.pixelSize: 18
                     }
-                    //second
+                    //minute
                     SpinBox {
                         id: minutesInput
                         from: 0
@@ -219,23 +241,25 @@ Item {
                         contentItem: TextInput {
                             text: minutesInput.textFromValue(minutesInput.value, minutesInput.locale)
                             font.pixelSize: 16
-                            color: primary
+                            color: Theme.onSurface
                             horizontalAlignment: Qt.AlignHCenter
                             verticalAlignment: Qt.AlignVCenter
                             anchors.centerIn: parent
                             readOnly: !minutesInput.editable
                         }
                         background: Rectangle {
-                            color: surface
+                            color: Theme.surfaceContainerLow
                             implicitWidth: 60
                             implicitHeight: 40
                             radius: 10
+                            border.color: Theme.outlineVariant
+                            border.width: 1
                         }
                     }
 
                     Text {
                         text: ":"
-                        color: secondary
+                        color: Theme.onSurfaceVariant
                         font.pixelSize: 18
                     }
 
@@ -250,17 +274,19 @@ Item {
                         contentItem: TextInput {
                             text: secondsInput.textFromValue(secondsInput.value, secondsInput.locale)
                             font.pixelSize: 16
-                            color: primary
+                            color: Theme.onSurface
                             anchors.centerIn: parent
                             horizontalAlignment: Qt.AlignHCenter
                             verticalAlignment: Qt.AlignVCenter
                             readOnly: !secondsInput.editable
                         }
                         background: Rectangle {
-                            color: surface
+                            color: Theme.surfaceContainerLow
                             implicitWidth: 60
                             implicitHeight: 40
                             radius: 10
+                            border.color: Theme.outlineVariant
+                            border.width: 1
                         }
                     }
                 }
@@ -269,6 +295,7 @@ Item {
                     spacing: 10
 
                     Button {
+                        id: startButton
                         text: remainingSeconds === 0 ? "Start" : (isPaused ? "Resume" : "Pause")
                         font.pixelSize: 13
                         font.weight: Font.Medium
@@ -276,15 +303,22 @@ Item {
                         contentItem: Text {
                             text: parent.text
                             font: parent.font
-                            color: bg
+                            color: Theme.onPrimary
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
                         background: Rectangle {
-                            color: primary
+                            color: Theme.primaryColor
                             implicitWidth: 135
                             implicitHeight: 40
                             radius: 10
+                            opacity: startButton.hovered ? 0.85 : 1.0
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 150
+                                }
+                            }
                         }
                         MouseArea {
                             anchors.fill: parent
@@ -303,21 +337,29 @@ Item {
                     }
 
                     Button {
+                        id: resetButton
                         text: "Reset"
                         font.pixelSize: 13
                         hoverEnabled: true
                         contentItem: Text {
                             text: parent.text
                             font: parent.font
-                            color: primary
+                            color: Theme.onError
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
                         background: Rectangle {
-                            color: "red"
+                            color: Theme.errorColor
                             implicitWidth: 135
                             implicitHeight: 40
                             radius: 10
+                            opacity: resetButton.hovered ? 0.85 : 1.0
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 150
+                                }
+                            }
                         }
                         MouseArea {
                             anchors.fill: parent

@@ -1,6 +1,7 @@
 import QtQuick
 // import Qt5Compat.GraphicalEffects
 import qs.Services.Shapes
+import qs.Services.Theme
 import qs.Modules.TopJesus.Wow
 import qs.Modules.TopJesus.ControlRoom
 import qs.Modules.TopJesus.Statuski
@@ -8,7 +9,7 @@ import qs.Modules.TopJesus.Statuski
 //[If you to use these go to respected Modules and Backup those .bak files according to readme]
 // import qs.Modules.TopJesus.Timerchan
 // import qs.Modules.TopJesus.Streaks
-// import qs.Services.Music
+import qs.Services.Music
 
 Item {
     id: root
@@ -19,6 +20,7 @@ Item {
     height: implicitHeight
 
     property bool isHovered: false
+    property bool isPinned: false
     property int activeTab: 1 // default is 1 -> Status component
     property real targetWidth: 400
 
@@ -34,7 +36,7 @@ Item {
         {
             name: "Wow",
             component: wowComponent
-        }
+        },
         // {
         //     name: "TimerChan",
         //     component: timerComponent
@@ -43,11 +45,10 @@ Item {
         //     name: "GitHub",
         //     component: githubComponent
         // },
-        // {
-        //     name: "Music",
-        //     component: musicComponent
-        // }
-        ,
+        {
+            name: "Music",
+            component: musicComponent
+        },
     ]
     // was testing but creates a good background dropshadow somehow lol
     // FastBlur {
@@ -62,7 +63,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         implicitWidth: targetWidth
-        implicitHeight: isHovered ? (tabBar.height + 8 + contentArea.height + 40) : 0.1
+        implicitHeight: (isHovered || isPinned) ? (tabBar.height + 8 + contentArea.height + 40) : 0.1
 
         width: implicitWidth
         height: implicitHeight
@@ -70,17 +71,19 @@ Item {
         style: 1
         alignment: 0
         radius: 20
-        color: "black"
+        color: Theme.surfaceContainer
+        visible: (isHovered || isPinned) || heightAnimation.running
 
         Behavior on height {
             NumberAnimation {
+                id: heightAnimation
                 duration: 400
                 easing.type: Easing.OutQuad
             }
         }
 
         Behavior on width {
-            enabled: isHovered
+            enabled: isHovered || isPinned
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.OutQuad
@@ -90,7 +93,7 @@ Item {
         Item {
             anchors.fill: parent
             anchors.margins: 15
-            visible: isHovered
+            visible: isHovered || isPinned
             clip: true
 
             Item {
@@ -127,7 +130,7 @@ Item {
                                     id: tabLabel
                                     anchors.centerIn: parent
                                     text: tabButton.tabName
-                                    color: tabButton.isActive ? "white" : "gray"
+                                    color: tabButton.isActive ? Theme.onSurface : Theme.onSurfaceVariant
                                     font.pixelSize: 13
                                     font.weight: tabButton.isActive ? Font.Medium : Font.Normal
                                     font.family: "CaskaydiaCove NF"
@@ -160,7 +163,7 @@ Item {
                         id: indicator
                         height: 3
                         radius: 50
-                        color: "white"
+                        color: Theme.primaryColor
 
                         property real targetX: 0
                         property real targetWidth: 0
@@ -215,6 +218,53 @@ Item {
                         }
                     }
                 }
+
+                // pin button in case u want a beauty
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 28
+                    height: 28
+                    radius: 6
+                    color: pinMouseArea.containsMouse ? Theme.surfaceBright : "transparent"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: root.isPinned ? "󰐃" : "󰐃"
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 16
+                        color: root.isPinned ? Theme.primaryColor : Theme.onSurfaceVariant
+                        rotation: root.isPinned ? 0 : 45
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+                        Behavior on rotation {
+                            NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: pinMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.isPinned = !root.isPinned;
+                        }
+                    }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
+                }
             }
 
             Item {
@@ -230,7 +280,7 @@ Item {
                     anchors.fill: parent
                     opacity: 0
                     //unload inactive tabs to save memory
-                    active: root.isHovered // probably make it true so that timerchan and other conponent stays active but ye [i dont need it for some reason cause I am not using other stuff beside controlroom and overview so]
+                    active: root.isHovered || root.isPinned // probably make it true so that timerchan and other conponent stays active but ye [i dont need it for some reason cause I am not using other stuff beside controlroom and overview so]
 
                     sourceComponent: root.tabs[root.activeTab].component
 
@@ -287,8 +337,8 @@ Item {
     //     Github {}
     // }
     //
-    // Component {
-    //     id: musicComponent
-    //     Controller {}
-    // }
+    Component {
+        id: musicComponent
+        Controller {}
+    }
 }

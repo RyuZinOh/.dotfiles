@@ -36,7 +36,7 @@ Scope {
                     x: (hyperixonLayer.width / 2) - (topJesusRef.width / 2) //now supporting width cause component lke wow has width factor so..
                     y: 0
                     width: topJesusRef.width
-                    height: topJesusRef.isHovered ? topJesusRef.height + 20 : 1
+                    height: (topJesusRef.isHovered || topJesusRef.isPinned) ? topJesusRef.height + 20 : 1
                 }
 
                 /*

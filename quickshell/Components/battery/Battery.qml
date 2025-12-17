@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Services.UPower
+import qs.Services.Theme
 
 Row {
     id: root
@@ -25,15 +26,15 @@ Row {
 
                 property color accentColor: {
                     if (isCharging || isFullyCharged) {
-                        return "#00ff00";
+                        return Theme.primaryColor;
                     }
                     if (percentInt <= 10) {
-                        return "#ff0000";
+                        return Theme.errorColor;
                     }
                     if (percentInt <= 20) {
-                        return "#f99000";
+                        return Theme.tertiaryColor;
                     }
-                    return "#ffffff";
+                    return Theme.onSurface;
                 }
 
                 property string displayText: isCharging ? "󱐋" : `${percentInt}%`
@@ -94,7 +95,7 @@ Row {
                         font.family: "0xProto Nerd Font"
                         font.pixelSize: batteryData.isCharging ? 14 : 9
                         font.bold: true
-                        color: batteryData.percentage > 0.5 ? "#000000" : batteryData.accentColor
+                        color: batteryData.percentage > 0.5 ? Theme.backgroundColor : batteryData.accentColor
 
                         SequentialAnimation on opacity {
                             running: batteryData.isCharging

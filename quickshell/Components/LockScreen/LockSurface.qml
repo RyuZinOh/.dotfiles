@@ -55,8 +55,8 @@ Rectangle {
 
         font.pointSize: 18
         font.italic: true
-        color: Theme.onSurface
-        opacity: 0.9
+        color: Theme.primaryFixed
+        opacity: 0.95
 
         text: passwordBox.text.length > 0 ? "fuck yea!!" : "Do you love red panda?"
 
@@ -75,7 +75,7 @@ Rectangle {
                 NumberAnimation {
                     target: quoteLabel
                     property: "opacity"
-                    to: 0.9
+                    to: 0.95
                     duration: 150
                 }
             }
@@ -103,9 +103,9 @@ Rectangle {
                     height: parent.height + 20
                     radius: width / 2
                     color: "transparent"
-                    border.color: root.context.showFailure ? Theme.tertiaryColor : Theme.dimColor
+                    border.color: root.context.showFailure ? Theme.errorColor : Theme.primaryFixedDim
                     border.width: 1
-                    opacity: 0.2
+                    opacity: 0.3
                 }
                 // appear when typing
                 Repeater {
@@ -143,8 +143,8 @@ Rectangle {
                         }
 
                         font.pointSize: 18 + (index % 2) * 4
-                        color: Theme.onSurface
-                        opacity: 0.3 - (index % 2) * 0.05
+                        color: Theme.primaryFixedDim
+                        opacity: 0.35 - (index % 2) * 0.08
                         style: Text.Outline
                         styleColor: Theme.backgroundColor
 
@@ -169,7 +169,7 @@ Rectangle {
                     id: pfpContainer
                     anchors.fill: parent
                     radius: width / 2
-                    color: root.context.showFailure ? Theme.tertiaryColor : Theme.primaryColor
+                    color: root.context.showFailure ? Theme.errorColor : Theme.primaryContainer
 
                     Image {
                         id: pfpImage
@@ -204,7 +204,7 @@ Rectangle {
                         text: "?"
                         font.pointSize: 64
                         font.weight: Font.Light
-                        color: Theme.onPrimary
+                        color: Theme.onPrimaryContainer
                         visible: pfpImage.status === Image.Error
                     }
 
@@ -222,7 +222,7 @@ Rectangle {
                     anchors.fill: parent
                     radius: width / 2
                     color: "transparent"
-                    border.color: root.context.showFailure ? Theme.tertiaryColor : Theme.primaryColor
+                    border.color: root.context.showFailure ? Theme.errorColor : Theme.primaryFixed
                     border.width: 3
                 }
             }
@@ -265,8 +265,8 @@ Rectangle {
         text: "Press Enter to unlock"
         font.pointSize: 11
         font.weight: Font.Light
-        color: Theme.onSurface
-        opacity: passwordBox.text.length > 0 ? 0.6 : 0
+        color: Theme.primaryFixedDim
+        opacity: passwordBox.text.length > 0 ? 0.7 : 0
 
         Behavior on opacity {
             NumberAnimation {

@@ -1,14 +1,15 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import qs.Services.Theme
 
 Item {
     id: root
     //properties
     property int workspaceSize
     property int spacing
-    property color activeColor: "blue"
-    property color occupiedColor: "whitesmoke"
+    property color activeColor: Theme.primaryColor
+    property color occupiedColor: Theme.onSurface
     property bool showNumbers: true
     property color bgOva: "transparent"
 

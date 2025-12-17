@@ -6,6 +6,7 @@ import Quickshell.Io
 import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Components.battery
+import qs.Services.Theme
 
 // import qs.Components.bongo [enable if you want]
 
@@ -74,12 +75,12 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 5
-        color: "black"
+        color: "transparent"
 
         Text {
             text: "\uF303"
             font.pixelSize: 32
-            color: "blue"
+            color: Theme.primaryColor
             anchors.centerIn: parent
         }
 
@@ -102,7 +103,7 @@ Item {
 
     Rectangle {
         id: serviceStatus
-        color: "black"
+        color: "transparent"
         height: 50
         width: serviceRow.width + 24
         anchors.verticalCenter: parent.verticalCenter
@@ -120,7 +121,7 @@ Item {
                 text: "\uF308"
                 font.pixelSize: 32
                 font.family: "0xProto Nerd Font"
-                color: dockerRunning ? "#00ff00" : "red"
+                color: dockerRunning ? Theme.primaryColor : Theme.errorColor
                 anchors.verticalCenter: parent.verticalCenter
 
                 Behavior on color {
@@ -136,7 +137,7 @@ Item {
                     delay: 300
 
                     background: Rectangle {
-                        color: "black"
+                        color: Theme.surfaceContainer
                         radius: 4
                         implicitWidth: 140
                         implicitHeight: 70
@@ -144,7 +145,7 @@ Item {
 
                     contentItem: Text {
                         text: dockerTooltip.text
-                        color: "white"
+                        color: Theme.onSurface
                         font.pixelSize: 12
                         font.family: "CaskaydiaCove NF"
                         horizontalAlignment: Text.AlignHCenter
@@ -165,7 +166,7 @@ Item {
                 text: "\ue828"
                 font.pixelSize: 32
                 font.family: "0xProto Nerd Font"
-                color: mariadbRunning ? "#00ff00" : "red"
+                color: mariadbRunning ? Theme.primaryColor : Theme.errorColor
                 anchors.verticalCenter: parent.verticalCenter
 
                 Behavior on color {
@@ -181,7 +182,7 @@ Item {
                     delay: 300
 
                     background: Rectangle {
-                        color: "black"
+                        color: Theme.surfaceContainer
                         radius: 4
                         implicitWidth: 140
                         implicitHeight: 70
@@ -189,7 +190,7 @@ Item {
 
                     contentItem: Text {
                         text: mariadbTooltip.text
-                        color: "white"
+                        color: Theme.onSurface
                         font.pixelSize: 12
                         font.family: "CaskaydiaCove NF"
                         horizontalAlignment: Text.AlignHCenter
@@ -210,7 +211,7 @@ Item {
                 text: "\ue776"
                 font.pixelSize: 32
                 font.family: "0xProto Nerd Font"
-                color: nginxRunning ? "#00ff00" : "red"
+                color: nginxRunning ? Theme.primaryColor : Theme.errorColor
                 anchors.verticalCenter: parent.verticalCenter
 
                 Behavior on color {
@@ -226,7 +227,7 @@ Item {
                     delay: 300
 
                     background: Rectangle {
-                        color: "black"
+                        color: Theme.surfaceContainer
                         radius: 4
                         implicitWidth: 140
                         implicitHeight: 70
@@ -234,7 +235,7 @@ Item {
 
                     contentItem: Text {
                         text: nginxTooltip.text
-                        color: "white"
+                        color: Theme.onSurface
                         font.pixelSize: 12
                         font.family: "CaskaydiaCove NF"
                         horizontalAlignment: Text.AlignHCenter
@@ -255,7 +256,7 @@ Item {
                 text: "\ue72b"
                 font.pixelSize: 32
                 font.family: "0xProto Nerd Font"
-                color: apacheRunning ? "#00ff00" : "red"
+                color: apacheRunning ? Theme.primaryColor : Theme.errorColor
                 anchors.verticalCenter: parent.verticalCenter
 
                 Behavior on color {
@@ -271,7 +272,7 @@ Item {
                     delay: 300
 
                     background: Rectangle {
-                        color: "black"
+                        color: Theme.surfaceContainer
                         radius: 4
                         implicitWidth: 140
                         implicitHeight: 70
@@ -279,7 +280,7 @@ Item {
 
                     contentItem: Text {
                         text: apacheTooltip.text
-                        color: "white"
+                        color: Theme.onSurface
                         font.pixelSize: 12
                         font.family: "CaskaydiaCove NF"
                         horizontalAlignment: Text.AlignHCenter
@@ -299,7 +300,7 @@ Item {
     // BONGO neko [uncomment if you want to use, I don't see anytPoint using it beside showcasing]
     // Rectangle {
     //     id: bongoCatContainer
-    //     color: "black"
+    //     color: Theme.surfaceContainer
     //     height: 50
     //     width: 45
     //     anchors.verticalCenter: parent.verticalCenter
@@ -313,7 +314,7 @@ Item {
 
     Workspace {
         id: workspaces
-        bgOva: "black"
+        bgOva: "transparent"
         height: 50
         anchors.centerIn: parent
         workspaceSize: 40
@@ -323,7 +324,7 @@ Item {
 
     Rectangle {
         id: rightPanelBg
-        color: "black"
+        color: "transparent"
         height: 50
         width: rightPanel.width + 30
         anchors.verticalCenter: parent.verticalCenter
@@ -345,7 +346,7 @@ Item {
                 font.family: "0xProto Nerd Font"
                 font.pixelSize: 20
                 font.bold: true
-                color: "white"
+                color: Theme.onSurface
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -355,13 +356,13 @@ Item {
                 ClockWidget {
                     font.family: "CaskaydiaCove NF"
                     font.pixelSize: 18
-                    color: "white"
+                    color: Theme.onSurface
                 }
 
                 DateWidget {
                     font.family: "CaskaydiaCove NF"
                     font.pixelSize: 18
-                    color: "white"
+                    color: Theme.onSurface
                 }
             }
         }

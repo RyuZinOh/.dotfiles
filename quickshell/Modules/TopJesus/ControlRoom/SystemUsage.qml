@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt.labs.folderlistmodel
 import Quickshell.Io
+import qs.Services.Theme
 
 Rectangle {
     id: root
@@ -10,7 +11,7 @@ Rectangle {
     property string type: "cpu"
 
     radius: 15
-    color: "#100C08"
+    color: Theme.surfaceContainer
 
     property int cpuTemp: 0
     property real lastCpuIdle: 0
@@ -35,17 +36,17 @@ Rectangle {
         "cpu": {
             icon: "󰻠",
             label: "CPU",
-            color: "white"
+            color: Theme.primaryColor
         },
         "memory": {
             icon: "󰍛",
             label: "RAM",
-            color: "white"
+            color: Theme.secondaryColor
         },
         "temp": {
             icon: "󰔏",
             label: "TEMP",
-            color: "white"
+            color: Theme.tertiaryColor
         }
     }
 
@@ -134,7 +135,7 @@ Rectangle {
 
                 ShapePath {
                     strokeWidth: 8
-                    strokeColor: "#27272a"
+                    strokeColor: Theme.surfaceContainerHighest
                     fillColor: "transparent"
                     capStyle: ShapePath.RoundCap
 
@@ -173,7 +174,7 @@ Rectangle {
 
                 Text {
                     text: root.type === "temp" ? Math.round(root.cpuTemp) + "°C" : Math.round(root.value * 100) + "%"
-                    color: "white"
+                    color: Theme.onSurface
                     font.pixelSize: 16
                     font.family: "CaskaydiaCove NF"
                     font.bold: true
@@ -184,7 +185,7 @@ Rectangle {
 
         Text {
             text: root.config[root.type].label
-            color: "white"
+            color: Theme.onSurface
             font.pixelSize: 11
             font.family: "CaskaydiaCove NF"
             font.bold: true

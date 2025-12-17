@@ -1,6 +1,7 @@
 import QtQuick
 import Qt5Compat.GraphicalEffects
 import Quickshell.Services.Mpris
+import qs.Services.Theme
 
 Item {
     id: root
@@ -32,28 +33,11 @@ Item {
         }
     }
 
-    //background blur image
-    Image {
-        id: bgImage
-        anchors.fill: parent
-        source: root.player?.trackArtUrl ?? ""
-        fillMode: Image.PreserveAspectCrop
-        smooth: true
-        asynchronous: true
-        cache: true
-        visible: false
-    }
-
-    FastBlur {
-        anchors.fill: parent
-        source: bgImage
-        radius: 80
-        visible: root.player?.trackArtUrl
-    }
-
+    //themed background instead of blur
     Rectangle {
         anchors.fill: parent
-        color: root.player?.trackArtUrl ? "#cc000000" : "#000000"
+        color: Theme.surfaceDim
+        radius: 10
     }
 
     Text {
@@ -61,7 +45,7 @@ Item {
         text: "Nothing playing..."
         font.family: "CaskaydiaCove NF"
         font.pixelSize: 14
-        color: "#666666"
+        color: Theme.onSurfaceVariant
         visible: !root.player
     }
 
@@ -113,7 +97,7 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
-                color: "#1a1a1a"
+                color: Theme.surfaceContainerHigh
                 visible: !root.player?.trackArtUrl
 
                 Text {
@@ -121,7 +105,7 @@ Item {
                     text: "󰝚"
                     font.family: "CaskaydiaCove NF"
                     font.pixelSize: 56
-                    color: "white"
+                    color: Theme.onSurface
                 }
             }
         }
@@ -148,7 +132,7 @@ Item {
                 font.family: "CaskaydiaCove NF"
                 font.pixelSize: 17
                 font.weight: Font.Bold
-                color: "white"
+                color: Theme.onSurface
                 elide: Text.ElideRight
                 maximumLineCount: 2
                 wrapMode: Text.WordWrap
@@ -166,7 +150,7 @@ Item {
                 text: root.player?.trackArtist ?? "Unknown Artist"
                 font.family: "CaskaydiaCove NF"
                 font.pixelSize: 13
-                color: "#b0b0b0"
+                color: Theme.onSurfaceVariant
                 elide: Text.ElideRight
             }
 
@@ -185,7 +169,7 @@ Item {
                 text: formatTime(progressBar.currentPosition) + " / " + formatTime(progressBar.trackLength)
                 font.family: "CaskaydiaCove NF"
                 font.pixelSize: 10
-                color: "#c0c0c0"
+                color: Theme.onSurfaceVariant
             }
 
             //progress bar
@@ -199,7 +183,7 @@ Item {
                 }
                 height: 4
                 radius: 2
-                color: "#404040"
+                color: Theme.surfaceContainerHighest
                 opacity: 1
 
                 Rectangle {
@@ -210,7 +194,7 @@ Item {
                         bottom: parent.bottom
                     }
                     radius: parent.radius
-                    color: "white"
+                    color: Theme.primaryColor
 
                     property real currentPosition: root.player?.position ?? 0
                     property real trackLength: root.player?.length ?? 1
@@ -239,8 +223,8 @@ Item {
                     width: 32
                     height: 32
                     radius: 16
-                    color: prevMouse.containsMouse ? "#ffffff20" : "transparent"
-                    border.color: "white"
+                    color: prevMouse.containsMouse ? Theme.surfaceBright : "transparent"
+                    border.color: Theme.onSurface
                     border.width: 1
                     visible: root.player?.canGoPrevious ?? false
 
@@ -249,7 +233,7 @@ Item {
                         text: "󰒮"
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 16
-                        color: "white"
+                        color: Theme.onSurface
                     }
 
                     MouseArea {
@@ -259,20 +243,26 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.player?.previous()
                     }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
                 }
 
                 Rectangle {
                     width: 42
                     height: 42
                     radius: 21
-                    color: playMouse.containsMouse ? "white" : "#f0f0f0"
+                    color: playMouse.containsMouse ? Theme.primaryFixedDim : Theme.primaryColor
 
                     Text {
                         anchors.centerIn: parent
                         text: (root.player?.playbackState === MprisPlaybackState.Playing) ? "󰏤" : "󰐊"
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 20
-                        color: "black"
+                        color: Theme.onPrimary
                     }
 
                     MouseArea {
@@ -282,14 +272,20 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.player?.togglePlaying()
                     }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
                 }
 
                 Rectangle {
                     width: 32
                     height: 32
                     radius: 16
-                    color: nextMouse.containsMouse ? "#ffffff20" : "transparent"
-                    border.color: "white"
+                    color: nextMouse.containsMouse ? Theme.surfaceBright : "transparent"
+                    border.color: Theme.onSurface
                     border.width: 1
                     visible: root.player?.canGoNext ?? false
 
@@ -298,7 +294,7 @@ Item {
                         text: "󰒭"
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 16
-                        color: "white"
+                        color: Theme.onSurface
                     }
 
                     MouseArea {
@@ -307,6 +303,12 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.player?.next()
+                    }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
                     }
                 }
             }

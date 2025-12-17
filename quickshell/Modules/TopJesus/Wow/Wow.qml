@@ -2,15 +2,13 @@ import QtQuick
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.Services.Overview
+import qs.Services.Theme
 
 Item {
     id: root
     anchors.fill: parent
     implicitWidth: 900
-    implicitHeight: 250 
-    readonly property string surfaceColor: "#100C08"
-    readonly property string primaryColor: "#ffffff"
-    readonly property string activeWorkspaceColor: "#FFD700"
+    implicitHeight: 250
     readonly property int roundingSmall: 8
     readonly property int roundingNormal: 12
 
@@ -85,7 +83,7 @@ Item {
                     color: "transparent"
                     radius: root.roundingSmall
                     border.width: isActive ? 3 : (isDropTarget ? 2 : 0)
-                    border.color: isActive ? root.activeWorkspaceColor : root.primaryColor
+                    border.color: isActive ? Theme.primaryColor : Theme.outlineColor
 
                     Behavior on border.width {
                         NumberAnimation {
@@ -97,7 +95,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: root.jpN[parent.workspaceId] ?? parent.workspaceId
-                        color: root.primaryColor
+                        color: Theme.onSurface
                         font.pixelSize: 32
                         font.weight: Font.DemiBold
                     }
@@ -194,7 +192,7 @@ Item {
                     Rectangle {
                         id: windowRect
                         anchors.fill: parent
-                        color: root.surfaceColor
+                        color: Theme.surfaceContainerHigh
                         radius: 4
                         border.width: 0
                         border.color: "transparent"
@@ -267,7 +265,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: windowItem.modelData?.class ?? ""
-                            color: root.primaryColor
+                            color: Theme.onSurface
                             font.pixelSize: 9
                             font.weight: Font.Medium
                             visible: parent.width > 50 && parent.height > 30
