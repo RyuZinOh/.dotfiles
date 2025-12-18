@@ -3,6 +3,8 @@ import Quickshell
 import QtQuick
 import Quickshell.Wayland
 import qs.Modules.TopJesus
+import qs.Data
+import qs.Components.Dancer
 
 Scope {
     Variants {
@@ -71,6 +73,25 @@ Scope {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     property bool hasNotifications: queue.length > 0
+                }
+
+                //bouncing dancer
+                BouncingDancer {
+                    id: bouncingDancer
+                    anchors.fill: parent
+                    active: false
+
+                    Connections {
+                        target: DancerConfig
+
+                        function onShowDancer() {
+                            bouncingDancer.active = true;
+                        }
+
+                        function onHideDancer() {
+                            bouncingDancer.active = false;
+                        }
+                    }
                 }
             }
         }
