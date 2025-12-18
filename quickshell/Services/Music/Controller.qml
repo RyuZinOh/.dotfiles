@@ -6,7 +6,7 @@ import qs.Services.Theme
 Item {
     id: root
     implicitWidth: 520
-    implicitHeight: 200
+    implicitHeight: 180
 
     property MprisPlayer player: null
 
@@ -53,8 +53,8 @@ Item {
         anchors {
             fill: parent
             margins: 16
-            topMargin: 12
-            bottomMargin: 35
+            topMargin: 10
+            bottomMargin: 10
         }
         visible: root.player
 

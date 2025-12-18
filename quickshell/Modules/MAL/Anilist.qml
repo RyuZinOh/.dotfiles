@@ -94,18 +94,17 @@ Item {
                                     id: tabText
                                     anchors.centerIn: parent
                                     text: modelData
-                                    color: parent.parent.isActive ? Theme.onSurface : Theme.dimColor
+                                    color: parent.isActive ? Theme.onSurface : Theme.dimColor
                                     font.pixelSize: 13
-                                    font.weight: parent.parent.isActive ? Font.Medium : Font.Normal
+                                    font.weight: parent.isActive ? Font.Medium : Font.Normal
                                     font.family: "CaskaydiaCove NF"
-                                    opacity: parent.parent.isActive ? 1.0 : 0.5
+                                    opacity: parent.isActive ? 1.0 : 0.5
 
-                                    /*
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: 200
                                         }
-                                    }*/
+                                      }
                                     Behavior on opacity {
                                         NumberAnimation {
                                             duration: 200

@@ -94,7 +94,6 @@ Item {
             anchors.fill: parent
             anchors.margins: 15
             visible: isHovered || isPinned
-            clip: true
 
             Item {
                 id: tabBar
