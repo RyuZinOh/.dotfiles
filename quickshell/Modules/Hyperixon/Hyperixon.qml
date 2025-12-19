@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import qs.Modules.TopJesus
 import qs.Data
 import qs.Components.Dancer
+import qs.Components.Omnitrix
 
 Scope {
     Variants {
@@ -52,6 +53,13 @@ Scope {
                     width: 400
                     height: notifWindow.hasNotifications ? notifWindow.height : 1
                 }
+
+                Region {
+                    x: (hyperixonLayer.width / 2) - 300  // 600/2 = 300 (width of omnitrix)
+                    y: (hyperixonLayer.height / 2) - 300 // 600/2 = 300 (height of omnitrix)
+                    width: omnitrixLauncher.active ? 600 : 1
+                    height: omnitrixLauncher.active ? 600 : 1
+                }
             }
 
             //content container
@@ -74,7 +82,24 @@ Scope {
                     anchors.top: parent.top
                     property bool hasNotifications: queue.length > 0
                 }
+                //omnitrix launcher
+                OmnitrixLauncher {
+                    id: omnitrixLauncher
+                    anchors.fill: parent
+                    active: false
 
+                    Connections {
+                        target: OmnitrixConfig
+
+                        function onShowOmnitrix() {
+                            omnitrixLauncher.active = true;
+                        }
+
+                        function onHideOmnitrix() {
+                            omnitrixLauncher.active = false;
+                        }
+                    }
+                }
                 //bouncing dancer
                 BouncingDancer {
                     id: bouncingDancer
