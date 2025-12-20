@@ -2,11 +2,28 @@ import QtQuick
 import QtQuick.Shapes
 import Qt5Compat.GraphicalEffects
 import QtMultimedia
+import Quickshell.Io
 
 Item {
     id: root
-
     property bool active: false
+
+    readonly property color outerRingSlotBg: "#000000"
+    readonly property color outerRingSlotBorder: "#000000"
+    readonly property color outerRingSlotFill: "#00ff00"
+
+    readonly property color watchBodyOuter: "#4a4a4a"
+    readonly property color watchBodyOuterBorder: "#5a5a5a"
+    readonly property color watchBodyMiddle: "#0d0d0d"
+    readonly property color watchBodyMiddleBorder: "#1a1a1a"
+    readonly property color watchBodyInner: "#5a5a5a"
+    readonly property color watchBodyInnerBorder: "#6a6a6a"
+
+    readonly property color centerRingColor: "#00ff00"
+    readonly property color centerBgColor: "#000000"
+    readonly property color hourglassTriangle: "#00ff00"
+    readonly property color diamondBg: "#00ff00"
+    readonly property color flashColor: "#a8ff00"
 
     Loader {
         id: omnitrixLoader
@@ -14,7 +31,6 @@ Item {
         anchors.centerIn: parent
 
         sourceComponent: Rectangle {
-            id: omnitrixRoot
             implicitWidth: 400
             implicitHeight: 400
             color: "transparent"
@@ -40,6 +56,14 @@ Item {
                 playbackRate: 2.5
             }
 
+            Process {
+                id: copyPfpProcess
+            }
+
+            Process {
+                id: notifyProcess
+            }
+
             Item {
                 id: omnitrix
                 implicitWidth: 500
@@ -49,32 +73,41 @@ Item {
                 property real morphProgress: 0
                 property real ringRotation: 0
                 property int currentAlienIndex: 0
-                property var alienList: ["A", "B", "C", "D"]
+                // shilouette [these arent ready yet visually]
+                property var silhouetteList: ["file:///home/safal726/pfps/shilouette/reddo.png", "file:///home/safal726/pfps/shilouette/gingka.png", "file:///home/safal726/pfps/shilouette/free.png", "file:///home/safal726/pfps/shilouette/ichigo.png", "file:///home/safal726/pfps/shilouette/joshua.png", "file:///home/safal726/pfps/shilouette/lionheart.png", "file:///home/safal726/pfps/shilouette/Meitenkun.png", "file:///home/safal726/pfps/shilouette/nura_again.png", "file:///home/safal726/pfps/shilouette/nura_again_.png", "file:///home/safal726/pfps/shilouette/nura_yokai.png", "file:///home/safal726/pfps/shilouette/woo.png"]
+                // mapped to real image
+                property var realImageList: ["file:///home/safal726/pfps/reddo.jpeg", "file:///home/safal726/pfps/gingka.jpeg", "file:///home/safal726/pfps/free.jpg", "file:///home/safal726/pfps/ichigo.jpg", "file:///home/safal726/pfps/joshua.jpeg", "file:///home/safal726/pfps/lioheart.jpeg", "file:///home/safal726/pfps/Meitenkun.jpg", "file:///home/safal726/pfps/nura_again.jpg", "file:///home/safal726/pfps/nura_again_.jpg", "file:///home/safal726/pfps/nura_yokai.jpg", "file:///home/safal726/pfps/woo.jpeg"]
                 property bool isTransformed: false
                 property bool isTransforming: false
                 property real flashProgress: 0
 
+                function getImageNameWithoutExtension(filePath) {
+                    const path = filePath.toString().replace("file://", "");
+                    const fileName = path.split('/').pop();
+                    return fileName.replace(/\.[^/.]+$/, "");
+                }
+
+                function copyCurrentImageToCache() {
+                    const sourceFile = realImageList[currentAlienIndex];
+                    const sourcePath = sourceFile.toString().replace("file://", "");
+                    const dest = "/home/safal726/.cache/safalQuick/pfp.jpeg";
+                    const imageName = getImageNameWithoutExtension(sourceFile);
+
+                    copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${sourcePath}" "${dest}"`];
+                    copyPfpProcess.running = true;
+
+                    notifyProcess.command = ["notify-send", "-a", "Azmuth", "-i", "/home/safal726/pfps/azmuth.svg", "Lockscreen Applied", imageName];
+                    notifyProcess.running = true;
+                }
+
                 NumberAnimation on morphProgress {
                     id: morphAnim
-                    duration: 300
+                    duration: 400
                     easing.type: Easing.OutCubic
                     running: false
                     onFinished: {
                         if (omnitrix.morphProgress === 1) {
                             omnitrix.isTransformed = true;
-                        }
-                    }
-                }
-
-                NumberAnimation on morphProgress {
-                    id: reverseAnim
-                    duration: 300
-                    easing.type: Easing.OutCubic
-                    running: false
-                    onFinished: {
-                        if (omnitrix.morphProgress === 0) {
-                            omnitrix.isTransformed = false;
-                            omnitrix.isTransforming = false;
                         }
                     }
                 }
@@ -85,6 +118,7 @@ Item {
                     ScriptAction {
                         script: {
                             omnitrix.isTransforming = true;
+                            omnitrix.copyCurrentImageToCache();
                         }
                     }
 
@@ -93,12 +127,12 @@ Item {
                         property: "flashProgress"
                         from: 0
                         to: 1
-                        duration: 200
+                        duration: 250
                         easing.type: Easing.OutQuad
                     }
 
                     PauseAnimation {
-                        duration: 150
+                        duration: 200
                     }
 
                     ParallelAnimation {
@@ -106,16 +140,16 @@ Item {
                             target: omnitrix
                             property: "flashProgress"
                             to: 0
-                            duration: 300
-                            easing.type: Easing.InQuad
+                            duration: 600
+                            easing.type: Easing.InOutQuad
                         }
 
                         NumberAnimation {
                             target: omnitrix
                             property: "morphProgress"
                             to: 0
-                            duration: 300
-                            easing.type: Easing.OutCubic
+                            duration: 600
+                            easing.type: Easing.InOutCubic
                         }
                     }
 
@@ -134,15 +168,15 @@ Item {
 
                     Behavior on rotation {
                         RotationAnimation {
-                            duration: 150
+                            duration: 200
                             direction: RotationAnimation.Shortest
-                            easing.type: Easing.OutQuad
+                            easing.type: Easing.OutCubic
                         }
                     }
 
                     Repeater {
                         model: 4
-                        Item {
+                        delegate: Item {
                             x: omnitrix.width / 2 + Math.cos((index * 90 - 90) * Math.PI / 180) * 230 - 30
                             y: omnitrix.height / 2 + Math.sin((index * 90 - 90) * Math.PI / 180) * 230 - 12.5
                             width: 60
@@ -151,21 +185,19 @@ Item {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: "#2d2d2d"
+                                color: root.outerRingSlotBg
                                 radius: 5
-                                antialiasing: true
-                                smooth: true
-                                border.color: "#1a1a1a"
+                                border.color: root.outerRingSlotBorder
                                 border.width: 2
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.margins: 3
-                                color: "#00ff00"
-                                radius: 3
                                 antialiasing: true
-                                smooth: true
+
+                                Rectangle {
+                                    anchors.fill: parent
+                                    anchors.margins: 3
+                                    color: root.outerRingSlotFill
+                                    radius: 3
+                                    antialiasing: true
+                                }
                             }
                         }
                     }
@@ -178,22 +210,22 @@ Item {
                         property real lastAngle: 0
                         property bool isDragging: false
 
-                        onPressed: {
+                        onPressed: mouse => {
                             if (omnitrix.morphProgress === 1) {
                                 isDragging = true;
-                                var centerX = omnitrix.width / 2;
-                                var centerY = omnitrix.height / 2;
+                                const centerX = omnitrix.width / 2;
+                                const centerY = omnitrix.height / 2;
                                 lastAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
                                 cursorShape = Qt.ClosedHandCursor;
                             }
                         }
 
-                        onPositionChanged: {
+                        onPositionChanged: mouse => {
                             if (isDragging && omnitrix.morphProgress === 1) {
-                                var centerX = omnitrix.width / 2;
-                                var centerY = omnitrix.height / 2;
-                                var currentAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
-                                var deltaAngle = currentAngle - lastAngle;
+                                const centerX = omnitrix.width / 2;
+                                const centerY = omnitrix.height / 2;
+                                let currentAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
+                                let deltaAngle = currentAngle - lastAngle;
 
                                 if (deltaAngle > 180) {
                                     deltaAngle -= 360;
@@ -205,8 +237,10 @@ Item {
                                 omnitrix.ringRotation += deltaAngle;
                                 lastAngle = currentAngle;
 
-                                var normalizedRotation = ((omnitrix.ringRotation % 360) + 360) % 360;
-                                var newIndex = Math.round(normalizedRotation / 90) % 4;
+                                const normalizedRotation = ((omnitrix.ringRotation % 360) + 360) % 360;
+                                const totalImages = omnitrix.silhouetteList.length;
+                                const anglePerImage = 360 / totalImages;
+                                const newIndex = Math.round(normalizedRotation / anglePerImage) % totalImages;
 
                                 if (newIndex !== omnitrix.currentAlienIndex) {
                                     switchSound.play();
@@ -225,73 +259,62 @@ Item {
                 }
 
                 Rectangle {
-                    id: outerCircle
                     implicitWidth: 430
                     implicitHeight: 430
                     radius: width / 2
-                    color: "#4a4a4a"
+                    color: root.watchBodyOuter
+                    border.color: root.watchBodyOuterBorder
+                    border.width: 1
                     anchors.centerIn: parent
                     antialiasing: true
-                    smooth: true
-                    border.color: "#5a5a5a"
-                    border.width: 1
                 }
 
                 Rectangle {
-                    id: blackRing
                     implicitWidth: 420
                     implicitHeight: 420
                     radius: width / 2
-                    color: "#0d0d0d"
+                    color: root.watchBodyMiddle
+                    border.color: root.watchBodyMiddleBorder
+                    border.width: 1
                     anchors.centerIn: parent
                     antialiasing: true
-                    smooth: true
-                    border.color: "#1a1a1a"
-                    border.width: 1
                 }
 
                 Rectangle {
-                    id: innerGrayCircle
                     implicitWidth: 400
                     implicitHeight: 400
                     radius: width / 2
-                    color: "#5a5a5a"
+                    color: root.watchBodyInner
+                    border.color: root.watchBodyInnerBorder
+                    border.width: 1
                     anchors.centerIn: parent
                     antialiasing: true
-                    smooth: true
-                    border.color: "#6a6a6a"
-                    border.width: 1
                 }
 
                 Item {
-                    id: centerFaceContainer
                     implicitWidth: 360
                     implicitHeight: 360
                     anchors.centerIn: parent
 
                     Rectangle {
-                        id: centerFace
                         anchors.fill: parent
                         radius: width / 2
-                        color: "#00ff00"
-                        anchors.centerIn: parent
+                        color: root.centerRingColor
                         antialiasing: true
-                        smooth: true
 
                         Rectangle {
                             id: innerGreenRect
                             anchors.fill: parent
                             anchors.margins: 5
                             radius: width / 2
-                            color: "#a8ff00"
+                            color: root.centerBgColor
                             antialiasing: true
-                            smooth: true
 
                             Item {
                                 id: hourglassContainer
                                 anchors.fill: parent
-                                anchors.margins: 0
                                 layer.enabled: true
+                                layer.smooth: true
                                 layer.effect: OpacityMask {
                                     maskSource: Rectangle {
                                         width: innerGreenRect.width
@@ -321,21 +344,20 @@ Item {
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: width / 2
-                                    color: "#00ff00"
+                                    color: root.flashColor
                                     opacity: omnitrix.flashProgress * 0.95
                                     visible: omnitrix.isTransforming
                                     z: 10
+                                    antialiasing: true
                                 }
 
                                 Shape {
-                                    id: leftTriangle
                                     anchors.fill: parent
                                     antialiasing: true
                                     smooth: true
-
                                     transform: [
                                         Translate {
-                                            x: (omnitrix.morphProgress * hourglassContainer.width / 2)
+                                            x: omnitrix.morphProgress * hourglassContainer.width / 2
                                         },
                                         Scale {
                                             origin.x: hourglassContainer.width / 2
@@ -346,7 +368,7 @@ Item {
                                     ]
 
                                     ShapePath {
-                                        fillColor: "#1a1a1a"
+                                        fillColor: root.hourglassTriangle
                                         strokeColor: "transparent"
 
                                         startX: 0
@@ -367,14 +389,12 @@ Item {
                                 }
 
                                 Shape {
-                                    id: rightTriangle
                                     anchors.fill: parent
                                     antialiasing: true
                                     smooth: true
-
                                     transform: [
                                         Translate {
-                                            x: -(omnitrix.morphProgress * hourglassContainer.width / 2)
+                                            x: -omnitrix.morphProgress * hourglassContainer.width / 2
                                         },
                                         Scale {
                                             origin.x: hourglassContainer.width / 2
@@ -385,7 +405,7 @@ Item {
                                     ]
 
                                     ShapePath {
-                                        fillColor: "#1a1a1a"
+                                        fillColor: root.hourglassTriangle
                                         strokeColor: "transparent"
 
                                         startX: hourglassContainer.width
@@ -405,30 +425,46 @@ Item {
                                     }
                                 }
 
-                                Text {
-                                    id: alienText
-                                    text: omnitrix.alienList[omnitrix.currentAlienIndex]
-                                    color: omnitrix.isTransforming ? "#ffffff" : "#00ff00"
-                                    font.pixelSize: omnitrix.isTransforming ? 180 : 130
-                                    font.bold: true
+                                Item {
+                                    id: imageContainer
                                     anchors.centerIn: parent
+                                    width: parent.width * 0.8 * omnitrix.morphProgress
+                                    height: parent.height * 0.8 * omnitrix.morphProgress
+                                    rotation: 45
                                     opacity: omnitrix.morphProgress
                                     z: 12
 
-                                    Behavior on font.pixelSize {
+                                    scale: omnitrix.isTransforming ? 1.8 : 1
+                                    Behavior on scale {
                                         NumberAnimation {
-                                            duration: 150
+                                            duration: 500
                                             easing.type: Easing.OutBack
+                                            easing.overshoot: 1.3
                                         }
                                     }
 
-                                    // Intense glow effect when transforming
-                                    layer.enabled: omnitrix.isTransforming
-                                    layer.effect: Glow {
-                                        samples: 32
-                                        color: "#00ff00"
-                                        spread: 0.8
-                                        radius: 24
+                                    Rectangle {
+                                        id: diamondRect
+                                        anchors.fill: parent
+                                        color: root.diamondBg
+                                        antialiasing: true
+
+                                        Item {
+                                            anchors.fill: parent
+                                            anchors.margins: 10
+                                            clip: true
+
+                                            Image {
+                                                anchors.centerIn: parent
+                                                width: parent.width * 1.5
+                                                height: parent.height * 1.5
+                                                source: omnitrix.silhouetteList[omnitrix.currentAlienIndex]
+                                                fillMode: Image.PreserveAspectCrop
+                                                rotation: -45
+                                                asynchronous: true
+                                                smooth: true
+                                            }
+                                        }
                                     }
 
                                     MouseArea {
@@ -440,27 +476,6 @@ Item {
                                             if (omnitrix.isTransformed && !omnitrix.isTransforming) {
                                                 transformSound.play();
                                                 transformFlashAnim.restart();
-                                            }
-                                        }
-                                    }
-
-                                    Behavior on text {
-                                        SequentialAnimation {
-                                            NumberAnimation {
-                                                target: alienText
-                                                property: "opacity"
-                                                to: 0
-                                                duration: 100
-                                            }
-                                            PropertyAction {
-                                                target: alienText
-                                                property: "text"
-                                            }
-                                            NumberAnimation {
-                                                target: alienText
-                                                property: "opacity"
-                                                to: omnitrix.morphProgress
-                                                duration: 100
                                             }
                                         }
                                     }
