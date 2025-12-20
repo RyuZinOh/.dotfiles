@@ -75,7 +75,6 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: root.isHovered ? 200 : 0.1
         height: parent.height
-        style: 1
         alignment: 3
         radius: root.isHovered ? 20 : 1
         color: Theme.surfaceContainer

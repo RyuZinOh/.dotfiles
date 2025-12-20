@@ -28,7 +28,6 @@ Item {
         anchors.bottom: parent.bottom
         width: 200
         height: root.isHovered ? parent.height : 0.1
-        style: 1
         alignment: 5
         radius: root.isHovered ? 20 : 5
         color: Theme.surfaceContainer

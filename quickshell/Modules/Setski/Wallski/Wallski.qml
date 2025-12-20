@@ -331,6 +331,11 @@ Item {
                     const fullPath = root.picturesPath + fileName;
                     const fileUrl = "file://" + fullPath;
 
+                    // will use matugen in thumbnails instead
+                    const thumbPath = root.thumbsPath + fileName;
+                    thumbPersistProcess.command = ["/usr/bin/sh", "-c", `echo "${thumbPath}" > /home/safal726/.cache/safalQuick/persist_thumb`];
+                    thumbPersistProcess.running = true;
+
                     Dat.WallpaperConfig.currentWallpaper = fileUrl;
                     Dat.WallpaperConfig.saveWallpaper(fileUrl); //qs ipc call wallpaper setWallpaper "path" equivalent for ref
                     // copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/hyprlock-safal && cp "${fullPath}" /home/safal726/.cache/hyprlock-safal/bg.jpg`]; // hyprlock version
@@ -343,7 +348,9 @@ Item {
                     root.wallpaperChanged(fullPath);
                 }
             }
-
+            Process {
+                id: thumbPersistProcess
+            }
             // Empty state
             Column {
                 anchors.centerIn: parent

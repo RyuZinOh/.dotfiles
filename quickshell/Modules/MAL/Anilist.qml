@@ -31,7 +31,6 @@ Item {
 
         width: root.isHovered ? 375 : 0.1
         height: parent.height
-        style: 1
         alignment: 2
         radius: 20
         color: Theme.surfaceContainer

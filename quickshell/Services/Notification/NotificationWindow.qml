@@ -123,7 +123,6 @@ Item {
 
         width: 420
         height: queue.length > 0 ? Math.min(column.implicitHeight + 60, 800) : 0
-        style: 1
         alignment: 1
         radius: queue.length > 0 ? 20 : 5
         color: Theme.surfaceContainer

@@ -68,7 +68,6 @@ Item {
         width: implicitWidth
         height: implicitHeight
 
-        style: 1
         alignment: 0
         radius: 20
         color: Theme.surfaceContainer

@@ -120,7 +120,8 @@ Singleton {
     /* reads persisted wallpaper path */
     FileView {
         id: persistFile
-        path: "file:///home/safal726/.cache/safalQuick/persist"
+        // path: "file:///home/safal726/.cache/safalQuick/persist" // use this if you want to ues matugen on a real file instead of thumb
+        path: "file:///home/safal726/.cache/safalQuick/persist_thumb"
         blockLoading: true
         watchChanges: true
         onFileChanged: {
@@ -164,7 +165,7 @@ Singleton {
         const cleanPath = path.replace("file://", "");
         const mode = isDarkMode ? "dark" : "light";
 
-        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "scheme-fruit-salad"`];
+        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "scheme-content"`];
         matugenProcess.running = true;
     }
     Process {
