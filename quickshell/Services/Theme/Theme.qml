@@ -165,7 +165,7 @@ Singleton {
         const cleanPath = path.replace("file://", "");
         const mode = isDarkMode ? "dark" : "light";
 
-        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "scheme-content"`];
+        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "scheme-fruit-salad"`];
         matugenProcess.running = true;
     }
     Process {

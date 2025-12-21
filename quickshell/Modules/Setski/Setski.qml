@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Io
 import qs.Services.Shapes
 import qs.Modules.Setski.Wallski
 import qs.Services.Theme
@@ -24,6 +25,7 @@ Item {
 
     //storing last known width
     property real currentContentWidth: parent.width
+    property bool isRefreshing: false
 
     signal wallpaperChanged(string path)
 
@@ -34,6 +36,23 @@ Item {
             }
         }
     }
+
+/* I wanted to run script from UI for the ease, so adding this*/
+    Process {
+        id: bamProcess
+        command: ["/bin/bash", "/home/safal726/.dotfiles/quickshell/Scripts/bam.sh"]
+        running: false
+
+        onExited: {
+            isRefreshing = false;
+        }
+    }
+
+    function runBamScript() {
+        isRefreshing = true;
+        bamProcess.running = true;
+    }
+
     // FastBlur {
     //     anchors.fill: content
     //     source: popout
@@ -102,7 +121,8 @@ Item {
 
                 Row {
                     id: tabRow
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
                     spacing: 25
 
                     Repeater {
@@ -144,6 +164,42 @@ Item {
                                 onClicked: currentTab = index
                             }
                         }
+                    }
+                }
+
+                //refresh
+                Text {
+                    id: refreshIcon
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "󰑐"
+                    color: refreshMouse.containsMouse ? Theme.primaryColor : Theme.dimColor
+                    font.pixelSize: 32
+                    font.family: "CaskaydiaCove NF"
+
+                    RotationAnimator {
+                        target:refreshIcon
+                        from: 0
+                        to: 360
+                        duration: 400
+                        loops: Animation.Infinite
+                        running: isRefreshing
+                    }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                        }
+                    }
+
+                    MouseArea {
+                        id: refreshMouse
+                        anchors.fill: parent
+                        anchors.margins: -5
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        enabled: !isRefreshing
+                        onClicked: runBamScript()
                     }
                 }
 
@@ -200,7 +256,9 @@ Item {
                     onLoaded: {
                         fadeInAnimation.restart();
                         if (currentTab === 0 && item) {
-                            item.isHovered = Qt.binding(() => root.isHovered && currentTab === 0);
+                            item.isHovered = Qt.binding(function () {
+                                return root.isHovered && currentTab === 0;
+                            });
                             item.wallpaperChanged.connect(root.wallpaperChanged);
                         }
                     }
