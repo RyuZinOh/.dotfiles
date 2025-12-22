@@ -19,9 +19,9 @@ Item {
     readonly property color watchBodyInner: "#5a5a5a"
     readonly property color watchBodyInnerBorder: "#6a6a6a"
 
-    readonly property color centerRingColor: "#00ff00"
-    readonly property color centerBgColor: "#000000"
-    readonly property color hourglassTriangle: "#00ff00"
+    readonly property color centerRingColor: "#000000"
+    readonly property color centerBgColor: "#00ff00"
+    readonly property color hourglassTriangle: "#000000"
     readonly property color diamondBg: "#00ff00"
     readonly property color flashColor: "#a8ff00"
 
@@ -341,15 +341,15 @@ Item {
                                 }
 
                                 // Green flash overlay for entire container
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: width / 2
-                                    color: root.flashColor
-                                    opacity: omnitrix.flashProgress * 0.95
-                                    visible: omnitrix.isTransforming
-                                    z: 10
-                                    antialiasing: true
-                                }
+                                // Rectangle {
+                                //     anchors.fill: parent
+                                //     radius: width / 2
+                                //     color: root.flashColor
+                                //     opacity: omnitrix.flashProgress * 0.95
+                                //     visible: omnitrix.isTransforming
+                                //     z: 10
+                                //     antialiasing: true
+                                // }
 
                                 Shape {
                                     anchors.fill: parent
@@ -428,13 +428,13 @@ Item {
                                 Item {
                                     id: imageContainer
                                     anchors.centerIn: parent
-                                    width: parent.width * 0.8 * omnitrix.morphProgress
-                                    height: parent.height * 0.8 * omnitrix.morphProgress
+                                    width: parent.width * 0.7 * omnitrix.morphProgress
+                                    height: parent.height * 0.7 * omnitrix.morphProgress
                                     rotation: 45
                                     opacity: omnitrix.morphProgress
                                     z: 12
 
-                                    scale: omnitrix.isTransforming ? 1.8 : 1
+                                    scale: omnitrix.isTransforming ? 1.45 : 1
                                     Behavior on scale {
                                         NumberAnimation {
                                             duration: 500
@@ -448,10 +448,12 @@ Item {
                                         anchors.fill: parent
                                         color: root.diamondBg
                                         antialiasing: true
+                                        // border.color: root.outerRingSlotBorder
+                                        // border.width: 7
 
                                         Item {
                                             anchors.fill: parent
-                                            anchors.margins: 10
+                                            // anchors.margins: 10
                                             clip: true
 
                                             Image {

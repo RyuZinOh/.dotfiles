@@ -7,6 +7,8 @@ import qs.Data
 import qs.Components.Dancer
 import qs.Components.Omnitrix
 
+// import qs.Components.Toolski
+
 Scope {
     Variants {
         model: Quickshell.screens
@@ -60,6 +62,31 @@ Scope {
                     width: omnitrixLauncher.active ? 600 : 1
                     height: omnitrixLauncher.active ? 600 : 1
                 }
+
+                /*Toolski
+                  - balls
+                  - blades
+                  - card
+                 */
+                // Region {
+                //     x: 0
+                //     y: (hyperixonLayer.height / 2) - 30
+                //     width: 60
+                //     height: 60
+                // }
+                //
+                // Region {
+                //     x: toolskiRef.isExpanded ? 65 : 0
+                //     y: (hyperixonLayer.height / 2) - 100
+                //     width: toolskiRef.isExpanded ? 200 : 1
+                //     height: toolskiRef.isExpanded ? 200 : 1
+                // }
+                // Region {
+                //     x: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.width / 2) - 250 : 0
+                //     y: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.height / 2) - 350 : 0
+                //     width: toolskiRef.openedBladeIndex !== -1 ? 500 : 1
+                //     height: toolskiRef.openedBladeIndex !== -1 ? 700 : 1
+                // }
             }
 
             //content container
@@ -82,6 +109,14 @@ Scope {
                     anchors.top: parent.top
                     property bool hasNotifications: queue.length > 0
                 }
+
+                //toolski [If U want the ball then go for it.../ I don't want ball until its fully ready]
+                // Toolski {
+                //     id: toolskiRef
+                //     anchors.left: parent.left
+                //     anchors.verticalCenter: parent.verticalCenter
+                // }
+
                 //omnitrix launcher
                 OmnitrixLauncher {
                     id: omnitrixLauncher

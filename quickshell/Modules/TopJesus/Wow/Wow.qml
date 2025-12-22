@@ -7,7 +7,7 @@ import qs.Services.Theme
 Item {
     id: root
     anchors.fill: parent
-    implicitWidth: 900
+    implicitWidth: 920
     implicitHeight: 250
     readonly property int roundingSmall: 8
     readonly property int roundingNormal: 12
@@ -82,7 +82,7 @@ Item {
 
                     color: "transparent"
                     radius: root.roundingSmall
-                    border.width: isActive ? 3 : (isDropTarget ? 2 : 0)
+                    border.width: isActive ? 1 : (isDropTarget ? 2 : 0)
                     border.color: isActive ? Theme.primaryColor : Theme.outlineColor
 
                     Behavior on border.width {
