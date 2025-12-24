@@ -7,7 +7,7 @@ import qs.Data
 import qs.Components.Dancer
 import qs.Components.Omnitrix
 
-// import qs.Components.Toolski
+import qs.Components.Toolski
 
 Scope {
     Variants {
@@ -68,25 +68,30 @@ Scope {
                   - blades
                   - card
                  */
-                // Region {
-                //     x: 0
-                //     y: (hyperixonLayer.height / 2) - 30
-                //     width: 60
-                //     height: 60
-                // }
-                //
-                // Region {
-                //     x: toolskiRef.isExpanded ? 65 : 0
-                //     y: (hyperixonLayer.height / 2) - 100
-                //     width: toolskiRef.isExpanded ? 200 : 1
-                //     height: toolskiRef.isExpanded ? 200 : 1
-                // }
-                // Region {
-                //     x: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.width / 2) - 250 : 0
-                //     y: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.height / 2) - 350 : 0
-                //     width: toolskiRef.openedBladeIndex !== -1 ? 500 : 1
-                //     height: toolskiRef.openedBladeIndex !== -1 ? 700 : 1
-                // }
+                Region {
+                    x: 0
+                    y: (hyperixonLayer.height / 2) - 50
+                    width: toolskiRef.isHovered ? 0 : 10
+                    height: 100
+                }
+                Region {
+                    x: 0
+                    y: (hyperixonLayer.height / 2) - 30
+                    width: toolskiRef.isHovered ? 60 : 1
+                    height: toolskiRef.isHovered ? 60 : 1
+                }
+                Region {
+                    x: toolskiRef.isExpanded ? 65 : 0
+                    y: (hyperixonLayer.height / 2) - 100
+                    width: toolskiRef.isExpanded ? 200 : 1
+                    height: toolskiRef.isExpanded ? 200 : 1
+                }
+                Region {
+                    x: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.width / 2) - 250 : 0
+                    y: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.height / 2) - (toolskiRef.currentCardHeight / 2) : 0
+                    width: toolskiRef.openedBladeIndex !== -1 ? 500 : 1
+                    height: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardHeight : 1
+                }
             }
 
             //content container
@@ -110,12 +115,12 @@ Scope {
                     property bool hasNotifications: queue.length > 0
                 }
 
-                //toolski [If U want the ball then go for it.../ I don't want ball until its fully ready]
-                // Toolski {
-                //     id: toolskiRef
-                //     anchors.left: parent.left
-                //     anchors.verticalCenter: parent.verticalCenter
-                // }
+                //toolski
+                Toolski {
+                    id: toolskiRef
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
                 //omnitrix launcher
                 OmnitrixLauncher {

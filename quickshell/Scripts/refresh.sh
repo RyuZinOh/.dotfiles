@@ -13,6 +13,7 @@ static_dirs=(
   "mozilla"
   "gstreamer-1.0"
   "mesa_shader_cache"
+  "QtProject"
   "quickshell"
 )
 

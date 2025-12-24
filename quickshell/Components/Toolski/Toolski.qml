@@ -1,5 +1,7 @@
 import QtQuick
 import qs.Services.Theme
+import qs.Components.Toolski.Nihongo
+import qs.Components.Toolski.Powerski
 
 Item {
     id: root
@@ -7,32 +9,37 @@ Item {
     property bool isHovered: false
     property bool isExpanded: false
     property int openedBladeIndex: -1
-
+    property real currentCardHeight: 700
     Timer {
         id: autoHideTimer
         interval: 1000
         running: false
         repeat: false
         onTriggered: {
-            root.isHovered = false;
-            root.isExpanded = false;
+            if (!root.isExpanded) {
+                root.isHovered = false;
+                root.isExpanded = false;
+            }
         }
     }
 
-    MouseArea {
+    Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: 5
-        height: parent.height
-        hoverEnabled: true
-        enabled: openedBladeIndex === -1
-        onEntered: {
-            root.isHovered = true;
-            autoHideTimer.stop();
-        }
-        onExited: {
-            if (!mainCircle.containsMouse && !root.isExpanded) {
-                autoHideTimer.restart();
+        width: 0.1
+        height: 100
+        visible: openedBladeIndex === -1
+
+        HoverHandler {
+            onHoveredChanged: {
+                if (hovered) {
+                    root.isHovered = true;
+                    autoHideTimer.stop();
+                } else {
+                    if (!root.isExpanded) {
+                        autoHideTimer.restart();
+                    }
+                }
             }
         }
     }
@@ -44,12 +51,15 @@ Item {
         width: 60
         height: 60
         visible: ballX > -100
-        property bool containsMouse: false
-        property real ballX: root.isHovered ? 0 : -150
 
-        transform: Translate {
-            x: mainCircle.ballX
-        }
+        property real ballX: root.isHovered ? 0 : -150
+        property real shakeOffset: 0
+
+        transform: [
+            Translate {
+                x: mainCircle.ballX + mainCircle.shakeOffset
+            }
+        ]
 
         Behavior on ballX {
             SpringAnimation {
@@ -57,6 +67,47 @@ Item {
                 damping: 0.2
                 epsilon: 0.01
                 velocity: 1200
+            }
+        }
+
+        SequentialAnimation {
+            id: shakeAnimation
+            running: false
+
+            NumberAnimation {
+                target: mainCircle
+                property: "shakeOffset"
+                to: -10
+                duration: 50
+                easing.type: Easing.OutQuad
+            }
+            NumberAnimation {
+                target: mainCircle
+                property: "shakeOffset"
+                to: 10
+                duration: 100
+                easing.type: Easing.InOutQuad
+            }
+            NumberAnimation {
+                target: mainCircle
+                property: "shakeOffset"
+                to: -10
+                duration: 100
+                easing.type: Easing.InOutQuad
+            }
+            NumberAnimation {
+                target: mainCircle
+                property: "shakeOffset"
+                to: 10
+                duration: 100
+                easing.type: Easing.InOutQuad
+            }
+            NumberAnimation {
+                target: mainCircle
+                property: "shakeOffset"
+                to: 0
+                duration: 50
+                easing.type: Easing.InQuad
             }
         }
 
@@ -69,21 +120,12 @@ Item {
             border.color: Theme.outlineColor
             border.width: 1
 
-            scale: mainCircle.containsMouse ? 1.05 : 1.0
+            scale: mainCircleHover.hovered ? 1.05 : 1.0
 
             Behavior on scale {
                 SpringAnimation {
                     spring: 3.0
                     damping: 0.3
-                    epsilon: 0.01
-                }
-            }
-
-            Behavior on border.width {
-                SpringAnimation {
-                    spring: 3.0
-                    damping: 0.3
-                    epsilon: 0.01
                 }
             }
         }
@@ -94,36 +136,34 @@ Item {
             color: Theme.onSurface
             font.pixelSize: 26
             font.family: "CaskaydiaCove NF"
+        }
 
-            scale: mainCircle.containsMouse ? 1.1 : 1.0
-
-            Behavior on scale {
-                SpringAnimation {
-                    spring: 3.0
-                    damping: 0.3
-                    epsilon: 0.01
+        HoverHandler {
+            id: mainCircleHover
+            cursorShape: Qt.PointingHandCursor
+            onHoveredChanged: {
+                if (hovered) {
+                    root.isHovered = true;
+                    autoHideTimer.stop();
+                } else {
+                    if (!root.isExpanded) {
+                        autoHideTimer.restart();
+                    }
                 }
             }
         }
 
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onEntered: {
-                mainCircle.containsMouse = true;
-                autoHideTimer.stop();
-            }
-            onExited: {
-                mainCircle.containsMouse = false;
-                if (!root.isExpanded) {
-                    autoHideTimer.restart();
-                }
-            }
-            onClicked: {
-                root.isExpanded = !root.isExpanded;
-                if (root.isExpanded) {
-                    autoHideTimer.stop();
+        TapHandler {
+            onTapped: {
+                if (root.openedBladeIndex !== -1) {
+                    shakeAnimation.restart();
+                } else {
+                    root.isExpanded = !root.isExpanded;
+                    if (root.isExpanded) {
+                        autoHideTimer.stop();
+                    } else {
+                        autoHideTimer.restart();
+                    }
                 }
             }
         }
@@ -139,7 +179,28 @@ Item {
         visible: mainCircle.visible
 
         Repeater {
-            model: 4
+            model: [
+                {
+                    icon: "日本",
+                    blade: 0,
+                    cardHeight: 850
+                },
+                {
+                    icon: "󰘳",
+                    blade: 1,
+                    cardHeight: 400
+                },
+                {
+                    icon: "󱎓",
+                    blade: 2,
+                    cardHeight: 600
+                },
+                {
+                    icon: "󱗻",
+                    blade: 3,
+                    cardHeight: 650
+                }
+            ]
 
             Rectangle {
                 id: blade
@@ -147,9 +208,9 @@ Item {
                 height: 40
                 radius: 10
                 color: Theme.surfaceContainer
-                border.color: bladeMouseArea.containsMouse ? Theme.onSurface : Theme.outlineColor
-                border.width: bladeMouseArea.containsMouse ? 2 : 1
-                visible: (root.isExpanded || targetRotation !== 0 || targetX !== 0) && openedBladeIndex !== index
+                border.color: bladeHoverHandler.hovered ? Theme.onSurface : Theme.outlineColor
+                border.width: bladeHoverHandler.hovered ? 2 : 1
+                visible: (root.isExpanded || targetRotation !== 0) && openedBladeIndex !== index
 
                 transformOrigin: Item.Left
                 x: 0
@@ -157,9 +218,16 @@ Item {
 
                 property real targetRotation: root.isExpanded ? (index - 1.5) * 20 : 0
                 property real targetX: root.isExpanded ? 15 : 0
-                property real hoverScale: bladeMouseArea.containsMouse ? 1.15 : 1.0
+                property real hoverScale: bladeHoverHandler.hovered ? 1.15 : 1.0
 
                 rotation: targetRotation
+
+                Behavior on hoverScale {
+                    SpringAnimation {
+                        spring: 3.5
+                        damping: 0.3
+                    }
+                }
 
                 transform: [
                     Translate {
@@ -177,7 +245,6 @@ Item {
                     SpringAnimation {
                         spring: 2.5
                         damping: 0.25
-                        epsilon: 0.01
                     }
                 }
 
@@ -185,47 +252,23 @@ Item {
                     SpringAnimation {
                         spring: 2.5
                         damping: 0.25
-                        epsilon: 0.01
-                    }
-                }
-
-                Behavior on hoverScale {
-                    SpringAnimation {
-                        spring: 3.5
-                        damping: 0.25
-                        epsilon: 0.01
-                    }
-                }
-
-                Behavior on border.width {
-                    SpringAnimation {
-                        spring: 3.0
-                        damping: 0.3
-                        epsilon: 0.01
-                    }
-                }
-
-                Behavior on border.color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutQuad
                     }
                 }
 
                 Text {
                     anchors.centerIn: parent
-                    text: ["󰏘", "", "󱎓", "󱗻"][index]
+                    text: modelData.icon
                     color: Theme.onSurface
                     font.pixelSize: 20
                     font.family: "CaskaydiaCove NF"
+                }
 
-                    scale: bladeMouseArea.containsMouse ? 1.2 : 1.0
-
-                    Behavior on scale {
-                        SpringAnimation {
-                            spring: 3.5
-                            damping: 0.3
-                            epsilon: 0.01
+                HoverHandler {
+                    id: bladeHoverHandler
+                    cursorShape: Qt.PointingHandCursor
+                    onHoveredChanged: {
+                        if (hovered) {
+                            autoHideTimer.stop();
                         }
                     }
                 }
@@ -233,10 +276,8 @@ Item {
                 MouseArea {
                     id: bladeMouseArea
                     anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
+                    cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
-                    property bool containsMouse: false
                     property real startX: 0
                     property real dragStartX: 0
 
@@ -258,17 +299,9 @@ Item {
                         var delta = mouse.x - dragStartX;
                         if (delta > 50) {
                             root.openedBladeIndex = index;
+                            root.currentCardHeight = modelData.cardHeight;
                         }
                         blade.x = Qt.binding(() => startX);
-                    }
-
-                    onEntered: {
-                        containsMouse = true;
-                        autoHideTimer.stop();
-                    }
-
-                    onExited: {
-                        containsMouse = false;
                     }
                 }
 
@@ -276,7 +309,6 @@ Item {
                     SpringAnimation {
                         spring: 3.0
                         damping: 0.3
-                        epsilon: 0.01
                     }
                 }
             }
@@ -290,7 +322,7 @@ Item {
         property real targetX: openedBladeIndex !== -1 ? parent.width / 2 : (mainCircle.x + mainCircle.width + 5 + 60)
         property real targetY: parent.height / 2
         property real targetWidth: openedBladeIndex !== -1 ? 500 : 0
-        property real targetHeight: openedBladeIndex !== -1 ? 700 : 0
+        property real targetHeight: openedBladeIndex !== -1 ? root.currentCardHeight : 0
 
         x: targetX - width / 2
         y: targetY - height / 2
@@ -306,110 +338,80 @@ Item {
             SpringAnimation {
                 spring: 2.0
                 damping: 0.3
-                epsilon: 0.01
             }
         }
-
         Behavior on targetWidth {
             SpringAnimation {
                 spring: 2.0
                 damping: 0.3
-                epsilon: 0.01
             }
         }
-
         Behavior on targetHeight {
             SpringAnimation {
                 spring: 2.0
                 damping: 0.3
-                epsilon: 0.01
             }
         }
 
-        Item {
-            anchors.fill: parent
-            visible: fullScreenCard.width > 400
+        Rectangle {
+            id: closeButton
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: 20
+            width: 40
+            height: 40
+            radius: 20
+            color: Theme.surfaceContainerHighest
+            border.color: Theme.outlineColor
+            border.width: 1
+            z: 100
 
-            scale: fullScreenCard.width > 400 ? 1.0 : 0.8
+            scale: closeHoverHandler.hovered ? 1.15 : 1.0
 
             Behavior on scale {
                 SpringAnimation {
-                    spring: 2.5
+                    spring: 3.5
                     damping: 0.3
-                    epsilon: 0.01
                 }
             }
 
             Text {
                 anchors.centerIn: parent
-                text: "Hello World\nBlade " + (openedBladeIndex + 1)
+                text: "✕"
                 color: Theme.onSurface
-                font.pixelSize: 48
-                font.family: "CaskaydiaCove NF"
-                horizontalAlignment: Text.AlignHCenter
-            }
+                font.pixelSize: 20
 
-            Rectangle {
-                anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.margins: 20
-                width: 40
-                height: 40
-                radius: 20
-                color: Theme.surfaceContainerHighest
-                border.color: Theme.outlineColor
-                border.width: 1
+                rotation: closeHoverHandler.hovered ? 90 : 0
 
-                scale: closeMouseArea.containsMouse ? 1.15 : 1.0
-
-                Behavior on scale {
+                Behavior on rotation {
                     SpringAnimation {
-                        spring: 3.5
+                        spring: 3.0
                         damping: 0.3
-                        epsilon: 0.01
-                    }
-                }
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutQuad
-                    }
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "✕"
-                    color: Theme.onSurface
-                    font.pixelSize: 20
-
-                    rotation: closeMouseArea.containsMouse ? 90 : 0
-
-                    Behavior on rotation {
-                        SpringAnimation {
-                            spring: 3.0
-                            damping: 0.3
-                            epsilon: 0.01
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: closeMouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-
-                    property bool containsMouse: false
-
-                    onEntered: containsMouse = true
-                    onExited: containsMouse = false
-
-                    onClicked: {
-                        root.openedBladeIndex = -1;
                     }
                 }
             }
+
+            HoverHandler {
+                id: closeHoverHandler
+                cursorShape: Qt.PointingHandCursor
+            }
+
+            TapHandler {
+                onTapped: root.openedBladeIndex = -1
+            }
+        }
+
+        Nihongo {
+            anchors.fill: parent
+            anchors.margins: 20
+            anchors.topMargin: 70
+            visible: openedBladeIndex === 0 && fullScreenCard.width > 400
+        }
+        Powerski {
+            anchors.fill: parent
+            anchors.margins: 20
+            anchors.topMargin: 70
+            visible: openedBladeIndex === 1 && fullScreenCard.width > 400
         }
     }
 }

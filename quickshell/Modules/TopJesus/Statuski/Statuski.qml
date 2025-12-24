@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import Quickshell
 import Quickshell.Io
 // import QtQuick.Effects
 import qs.Components.workspace
@@ -91,14 +90,6 @@ Item {
         //     blurMax: 64
         //     blur: 1.0
         // }
-
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                Quickshell.execDetached("/home/safal726/.config/quickshell/Scripts/powerski");
-            }
-        }
     }
 
     Rectangle {
