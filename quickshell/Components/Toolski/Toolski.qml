@@ -2,6 +2,8 @@ import QtQuick
 import qs.Services.Theme
 import qs.Components.Toolski.Nihongo
 import qs.Components.Toolski.Powerski
+import qs.Components.Toolski.War
+import qs.Components.Toolski.Wow
 
 Item {
     id: root
@@ -10,6 +12,7 @@ Item {
     property bool isExpanded: false
     property int openedBladeIndex: -1
     property real currentCardHeight: 700
+    property real currentCardWidth: 500
     Timer {
         id: autoHideTimer
         interval: 1000
@@ -183,22 +186,26 @@ Item {
                 {
                     icon: "日本",
                     blade: 0,
-                    cardHeight: 850
+                    cardHeight: 850,
+                    cardWidth: 500
                 },
                 {
                     icon: "󰘳",
                     blade: 1,
-                    cardHeight: 400
+                    cardHeight: 300,
+                    cardWidth: 500
                 },
                 {
                     icon: "󱎓",
                     blade: 2,
-                    cardHeight: 600
+                    cardHeight: 420,
+                    cardWidth: 450
                 },
                 {
                     icon: "󱗻",
                     blade: 3,
-                    cardHeight: 650
+                    cardHeight: 400,
+                    cardWidth: 1440
                 }
             ]
 
@@ -300,6 +307,7 @@ Item {
                         if (delta > 50) {
                             root.openedBladeIndex = index;
                             root.currentCardHeight = modelData.cardHeight;
+                            root.currentCardWidth = modelData.cardWidth;
                         }
                         blade.x = Qt.binding(() => startX);
                     }
@@ -315,103 +323,107 @@ Item {
         }
     }
 
-    Rectangle {
+    Item {
         id: fullScreenCard
         visible: openedBladeIndex !== -1
+        clip: true
+        focus: visible
+
+        property real dragOffsetY: 0
+        property real dragRotation: 0
+        property bool isFalling: false
 
         property real targetX: openedBladeIndex !== -1 ? parent.width / 2 : (mainCircle.x + mainCircle.width + 5 + 60)
         property real targetY: parent.height / 2
-        property real targetWidth: openedBladeIndex !== -1 ? 500 : 0
+        property real targetWidth: openedBladeIndex !== -1 ? root.currentCardWidth : 0
         property real targetHeight: openedBladeIndex !== -1 ? root.currentCardHeight : 0
 
-        x: targetX - width / 2
-        y: targetY - height / 2
+        x: targetX - targetWidth / 2
+        y: targetY - targetHeight / 2 + dragOffsetY
         width: targetWidth
         height: targetHeight
-
-        radius: 20
-        color: Theme.surfaceContainer
-        border.color: Theme.outlineColor
-        border.width: 2
-
+        rotation: dragRotation
         Behavior on targetX {
+            enabled: !fullScreenCard.isFalling
             SpringAnimation {
                 spring: 2.0
                 damping: 0.3
             }
         }
         Behavior on targetWidth {
+            enabled: !fullScreenCard.isFalling
             SpringAnimation {
                 spring: 2.0
                 damping: 0.3
             }
         }
         Behavior on targetHeight {
+            enabled: !fullScreenCard.isFalling
             SpringAnimation {
                 spring: 2.0
                 damping: 0.3
             }
         }
 
+        Keys.onEscapePressed: {
+            fullScreenCard.isFalling = true;
+            gravityAnimation.restart();
+        }
+
         Rectangle {
-            id: closeButton
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.margins: 20
-            width: 40
-            height: 40
+            anchors.fill: parent
             radius: 20
-            color: Theme.surfaceContainerHighest
+            color: Theme.surfaceContainer
             border.color: Theme.outlineColor
-            border.width: 1
-            z: 100
+            border.width: 2
 
-            scale: closeHoverHandler.hovered ? 1.15 : 1.0
-
-            Behavior on scale {
-                SpringAnimation {
-                    spring: 3.5
-                    damping: 0.3
-                }
+            Nihongo {
+                anchors.fill: parent
+                anchors.margins: 20
+                visible: openedBladeIndex === 0 && fullScreenCard.width > 400
             }
-
-            Text {
-                anchors.centerIn: parent
-                text: "✕"
-                color: Theme.onSurface
-                font.pixelSize: 20
-
-                rotation: closeHoverHandler.hovered ? 90 : 0
-
-                Behavior on rotation {
-                    SpringAnimation {
-                        spring: 3.0
-                        damping: 0.3
-                    }
-                }
+            Powerski {
+                anchors.fill: parent
+                anchors.margins: 20
+                visible: openedBladeIndex === 1 && fullScreenCard.width > 400
             }
-
-            HoverHandler {
-                id: closeHoverHandler
-                cursorShape: Qt.PointingHandCursor
+            War {
+                anchors.fill: parent
+                anchors.margins: 20
+                visible: openedBladeIndex === 2 && fullScreenCard.width > 400
             }
-
-            TapHandler {
-                onTapped: root.openedBladeIndex = -1
+            Wow {
+                anchors.fill: parent
+                anchors.margins: 20
+                visible: openedBladeIndex === 3 && fullScreenCard.width > 400
             }
         }
 
-        Nihongo {
-            anchors.fill: parent
-            anchors.margins: 20
-            anchors.topMargin: 70
-            visible: openedBladeIndex === 0 && fullScreenCard.width > 400
-        }
-        Powerski {
-            anchors.fill: parent
-            anchors.margins: 20
-            anchors.topMargin: 70
-            visible: openedBladeIndex === 1 && fullScreenCard.width > 400
+        ParallelAnimation {
+            id: gravityAnimation
+
+            NumberAnimation {
+                target: fullScreenCard
+                property: "dragOffsetY"
+                to: root.height * 1.5
+                duration: 1200
+                easing.type: Easing.InCubic
+            }
+            NumberAnimation {
+                target: fullScreenCard
+                property: "dragRotation"
+                from: 0
+                to: 95
+                duration: 1200
+                easing.type: Easing.Linear
+            }
+
+            onFinished: {
+                root.openedBladeIndex = -1;
+                fullScreenCard.isFalling = false;
+                fullScreenCard.dragOffsetY = 0;
+                fullScreenCard.dragRotation = 0;
+            }
         }
     }
 }

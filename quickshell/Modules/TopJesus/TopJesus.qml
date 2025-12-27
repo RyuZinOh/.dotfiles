@@ -2,7 +2,6 @@ import QtQuick
 // import Qt5Compat.GraphicalEffects
 import qs.Services.Shapes
 import qs.Services.Theme
-import qs.Modules.TopJesus.Wow
 import qs.Modules.TopJesus.ControlRoom
 import qs.Modules.TopJesus.Statuski
 
@@ -32,10 +31,6 @@ Item {
         {
             name: "Status",
             component: statusComponent
-        },
-        {
-            name: "Wow",
-            component: wowComponent
         },
         // {
         //     name: "TimerChan",
@@ -315,12 +310,6 @@ Item {
         ControlRoom {}
     }
 
-    Component {
-        id: wowComponent
-        Wow {
-            useScreencopyLivePreview: false
-        }
-    }
     Component {
         id: statusComponent
         Statuski {}

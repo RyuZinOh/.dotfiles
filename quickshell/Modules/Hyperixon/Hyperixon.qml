@@ -87,9 +87,9 @@ Scope {
                     height: toolskiRef.isExpanded ? 200 : 1
                 }
                 Region {
-                    x: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.width / 2) - 250 : 0
+                    x: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.width / 2) - (toolskiRef.currentCardWidth / 2) : 0
                     y: toolskiRef.openedBladeIndex !== -1 ? (hyperixonLayer.height / 2) - (toolskiRef.currentCardHeight / 2) : 0
-                    width: toolskiRef.openedBladeIndex !== -1 ? 500 : 1
+                    width: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardWidth : 1
                     height: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardHeight : 1
                 }
             }

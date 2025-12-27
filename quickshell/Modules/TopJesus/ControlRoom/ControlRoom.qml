@@ -7,7 +7,7 @@ Now, this is just a content with no container, popup is handled by the TopJesus!
 Item {
     id: root
     implicitWidth: 540
-    implicitHeight: 180
+    implicitHeight: 140
 
     Rectangle {
         anchors.fill: parent

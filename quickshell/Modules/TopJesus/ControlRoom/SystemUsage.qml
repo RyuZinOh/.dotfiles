@@ -4,6 +4,7 @@ import QtQuick.Shapes
 import Qt.labs.folderlistmodel
 import Quickshell.Io
 import qs.Services.Theme
+import qs.Components.Icon
 
 Rectangle {
     id: root
@@ -34,17 +35,17 @@ Rectangle {
 
     readonly property var config: {
         "cpu": {
-            icon: "󰻠",
+            icon: "cpu",
             label: "CPU",
             color: Theme.primaryColor
         },
         "memory": {
-            icon: "󰍛",
+            icon: "memory",
             label: "RAM",
             color: Theme.secondaryColor
         },
         "temp": {
-            icon: "󰔏",
+            icon: "popcorn",
             label: "TEMP",
             color: Theme.tertiaryColor
         }
@@ -127,79 +128,94 @@ Rectangle {
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignCenter
 
-            Shape {
-                id: shape
+            Item {
+                id: ringContainer
                 anchors.centerIn: parent
-                width: 70
-                height: 70
+                width: 110
+                height: 110
 
-                ShapePath {
-                    strokeWidth: 8
-                    strokeColor: Theme.surfaceContainerHighest
-                    fillColor: "transparent"
-                    capStyle: ShapePath.RoundCap
+                property real gapAngle: 70
+                property real gapCenterAngle: 50
 
-                    PathAngleArc {
-                        centerX: shape.width / 2
-                        centerY: shape.height / 2
-                        radiusX: (shape.width - 8) / 2
-                        radiusY: (shape.height - 8) / 2
-                        startAngle: -90
-                        sweepAngle: 360
+                Shape {
+                    id: shape
+                    anchors.fill: parent
+
+                    ShapePath {
+                        strokeWidth: 8
+                        strokeColor: Theme.surfaceContainerHighest
+                        fillColor: "transparent"
+                        capStyle: ShapePath.RoundCap
+
+                        PathAngleArc {
+                            centerX: shape.width / 2
+                            centerY: shape.height / 2
+                            radiusX: (shape.width - 8) / 2
+                            radiusY: (shape.height - 8) / 2
+                            startAngle: ringContainer.gapCenterAngle + ringContainer.gapAngle / 2
+                            sweepAngle: 360 - ringContainer.gapAngle
+                        }
                     }
-                }
 
-                ShapePath {
-                    strokeWidth: 8
-                    strokeColor: root.config[root.type].color
-                    fillColor: "transparent"
-                    capStyle: ShapePath.RoundCap
+                    ShapePath {
+                        strokeWidth: 8
+                        strokeColor: root.config[root.type].color
+                        fillColor: "transparent"
+                        capStyle: ShapePath.RoundCap
 
-                    PathAngleArc {
-                        centerX: shape.width / 2
-                        centerY: shape.height / 2
-                        radiusX: (shape.width - 8) / 2
-                        radiusY: (shape.height - 8) / 2
-                        startAngle: -90
-                        sweepAngle: 360 * root.value
+                        PathAngleArc {
+                            centerX: shape.width / 2
+                            centerY: shape.height / 2
+                            radiusX: (shape.width - 8) / 2
+                            radiusY: (shape.height - 8) / 2
+                            startAngle: ringContainer.gapCenterAngle + ringContainer.gapAngle / 2
+                            sweepAngle: (360 - ringContainer.gapAngle) * root.value
 
-                        Behavior on sweepAngle {
-                            NumberAnimation {
-                                duration: 800
-                                easing.type: Easing.OutCubic
+                            Behavior on sweepAngle {
+                                NumberAnimation {
+                                    duration: 800
+                                    easing.type: Easing.OutCubic
+                                }
                             }
                         }
                     }
                 }
 
-                Text {
-                    text: root.type === "temp" ? Math.round(root.cpuTemp) + "°C" : Math.round(root.value * 100) + "%"
-                    color: Theme.onSurface
-                    font.pixelSize: 16
-                    font.family: "CaskaydiaCove NF"
-                    font.bold: true
+                Icon {
+                    id: gapIcon
+                    name: root.config[root.type].icon
+                    size: 26
+                    color: root.config[root.type].color
+
+                    property real radius: (ringContainer.width - 8) / 2
+
+                    x: ringContainer.width / 2 + radius * Math.cos(ringContainer.gapCenterAngle * Math.PI / 180) - width / 2
+                    y: ringContainer.height / 2 + radius * Math.sin(ringContainer.gapCenterAngle * Math.PI / 180) - height / 2
+                }
+
+                Column {
                     anchors.centerIn: parent
+                    spacing: 2
+
+                    Text {
+                        text: root.type === "temp" ? Math.round(root.cpuTemp) + "°C" : Math.round(root.value * 100) + "%"
+                        color: Theme.onSurface
+                        font.pixelSize: 20
+                        font.family: "CaskaydiaCove NF"
+                        font.bold: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    Text {
+                        text: root.config[root.type].label
+                        color: Theme.onSurfaceVariant
+                        font.pixelSize: 11
+                        font.family: "CaskaydiaCove NF"
+                        opacity: 0.7
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
                 }
             }
-        }
-
-        Text {
-            text: root.config[root.type].label
-            color: Theme.onSurface
-            font.pixelSize: 11
-            font.family: "CaskaydiaCove NF"
-            font.bold: true
-            Layout.topMargin: 10
-            Layout.alignment: Qt.AlignHCenter
-        }
-
-        Text {
-            text: root.config[root.type].icon
-            color: root.config[root.type].color
-            font.pixelSize: 20
-            font.family: "CaskaydiaCove NF"
-            Layout.alignment: Qt.AlignHCenter
-            opacity: 0.6
         }
     }
 

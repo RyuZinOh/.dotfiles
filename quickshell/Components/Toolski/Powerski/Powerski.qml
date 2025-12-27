@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Io
 import qs.Services.Theme
+import qs.Components.Icon
 
 Item {
     id: root
@@ -16,10 +17,11 @@ Item {
                 height: 120
                 color: "transparent"
 
-                Shutdown {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    fillColor: Theme.onSurface
+                Icon {
+                    name: "power"
+                    size: 100
+                    color: Theme.onSurface
+                    anchors.centerIn: parent
                     scale: shutdownMouse.pressed ? 0.9 : (shutdownMouse.containsMouse ? 1.05 : 1.0)
                     opacity: shutdownMouse.pressed ? 0.5 : 1.0
 
@@ -71,10 +73,11 @@ Item {
                 width: 120
                 height: 120
                 color: "transparent"
-                Restart {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    fillColor: Theme.onSurface
+                Icon {
+                    name: "arrow-clockwise"
+                    size: 100
+                    color: Theme.onSurface
+                    anchors.centerIn: parent
                     scale: restartMouse.pressed ? 0.9 : (restartMouse.containsMouse ? 1.05 : 1.0)
                     opacity: restartMouse.pressed ? 0.5 : 1.0
 
