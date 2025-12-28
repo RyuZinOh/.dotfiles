@@ -27,7 +27,7 @@ Item {
 
     Loader {
         anchors.fill: parent
-        asynchronous: false 
+        asynchronous: true
 
         sourceComponent: {
             const shapes = [attachedTop, attachedTopRight, attachedRight, attachedBottomRight, attachedBottom, attachedBottomLeft, attachedLeft, attachedTopLeft];

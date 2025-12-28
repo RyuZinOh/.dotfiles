@@ -377,25 +377,55 @@ Item {
             border.color: Theme.outlineColor
             border.width: 2
 
-            Nihongo {
+            Loader {
+                id: cardLoader
                 anchors.fill: parent
                 anchors.margins: 20
-                visible: openedBladeIndex === 0 && fullScreenCard.width > 400
+                active: openedBladeIndex !== -1 && fullScreenCard.width > 400
+                asynchronous: true
+
+                sourceComponent: {
+                    switch (openedBladeIndex) {
+                    case 0:
+                        return nihongoComponent;
+                    case 1:
+                        return powerskiComponent;
+                    case 2:
+                        return warComponent;
+                    case 3:
+                        return wowComponent;
+                    default:
+                        return null;
+                    }
+                }
+
+                // onStatusChanged: {
+                //     if (status === Loader.Loading) {
+                //         console.log("Loading component...");
+                //     } else if (status === Loader.Ready) {
+                //         console.log("Component loaded and ready");
+                //     }
+                // }
             }
-            Powerski {
-                anchors.fill: parent
-                anchors.margins: 20
-                visible: openedBladeIndex === 1 && fullScreenCard.width > 400
+
+            Component {
+                id: nihongoComponent
+                Nihongo {}
             }
-            War {
-                anchors.fill: parent
-                anchors.margins: 20
-                visible: openedBladeIndex === 2 && fullScreenCard.width > 400
+
+            Component {
+                id: powerskiComponent
+                Powerski {}
             }
-            Wow {
-                anchors.fill: parent
-                anchors.margins: 20
-                visible: openedBladeIndex === 3 && fullScreenCard.width > 400
+
+            Component {
+                id: warComponent
+                War {}
+            }
+
+            Component {
+                id: wowComponent
+                Wow {}
             }
         }
 

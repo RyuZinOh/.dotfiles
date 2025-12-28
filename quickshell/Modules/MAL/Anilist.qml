@@ -103,7 +103,7 @@ Item {
                                         ColorAnimation {
                                             duration: 200
                                         }
-                                      }
+                                    }
                                     Behavior on opacity {
                                         NumberAnimation {
                                             duration: 200
@@ -187,7 +187,15 @@ Item {
                         anchors.fill: parent
                         opacity: 0
                         active: root.isHovered
-                        sourceComponent: currentTab === 0 ? animeComponent : todoComponent
+                        asynchronous: true
+
+                        sourceComponent: {
+                            if (!root.isHovered){
+                                return null;
+                            }
+                            return currentTab === 0 ? animeComponent : todoComponent;
+                        }
+
                         onLoaded: fadeInAnimation.restart()
 
                         NumberAnimation {
@@ -222,6 +230,8 @@ Item {
                 clip: true
                 model: animeModel
                 spacing: 6
+                cacheBuffer: 100
+                reuseItems: true
 
                 delegate: Rectangle {
                     width: ListView.view.width
@@ -326,7 +336,7 @@ Item {
                     }
 
                     background: Rectangle {
-                        color: Theme.primaryColor
+                        color: parent.down ? Qt.darker(Theme.primaryColor, 1.1) : Theme.primaryColor
                         radius: 100
                     }
 
@@ -362,6 +372,8 @@ Item {
                 clip: true
                 model: todoModel
                 spacing: 6
+                cacheBuffer: 100
+                reuseItems: true
 
                 delegate: Rectangle {
                     width: ListView.view.width
@@ -465,7 +477,7 @@ Item {
                     }
 
                     background: Rectangle {
-                        color: Theme.primaryColor
+                        color: parent.down ? Qt.darker(Theme.primaryColor, 1.1) : Theme.primaryColor
                         radius: 100
                     }
 
