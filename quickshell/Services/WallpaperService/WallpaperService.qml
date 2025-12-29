@@ -7,16 +7,15 @@ Item {
 
     // public properties
     property bool enablePanning: true
-    property bool enableZoomEffect: true
-    property int crossfadeDuration: 1000
-    property int zoomDuration: 1200
+    property int bubbleDuration: 1000
 
     //transition types
-    property string transitionType: "crossfade"
+    property string transitionType: "instant"
 
     // scaling
     property bool isHovered: false
     property real hoverScale: isHovered ? 1.06 : 1
+    property bool isFirstLoad: true
 
     anchors.fill: parent
     scale: hoverScale
@@ -43,13 +42,16 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
             source: ""
-            cache: true
-            asynchronous: true //block prevention
+            cache: false
+            asynchronous: true
             fillMode: Image.PreserveAspectCrop
+            sourceSize.width: parent.width
+            sourceSize.height: parent.height
 
             property real mouseXNormalized: 0.5
             property bool isPannable: false
             property real calculatedWidth: parent.width
+            property bool isTransitioning: false
 
             onStatusChanged: {
                 if (status === Image.Ready) {
@@ -58,11 +60,12 @@ Item {
                     const isWide = imgAspect > screenAspect * 1.1;
 
                     isPannable = isWide && enablePanning;
+                    calculatedWidth = isWide ? implicitWidth * (parent.height / implicitHeight) : parent.width;
 
-                    if (isWide) {
-                        calculatedWidth = implicitWidth * (parent.height / implicitHeight);
-                    } else {
-                        calculatedWidth = parent.width;
+                    if (transitionType === "bubble" && isTransitioning) {
+                        isTransitioning = false;
+                        bubbleWallpaper.source = "";
+                        bubbleClip.diameter = 0;
                     }
                 }
             }
@@ -73,8 +76,7 @@ Item {
                 if (!isPannable) {
                     return 0;
                 }
-                const maxOffset = width - parent.width;
-                return -maxOffset * mouseXNormalized;
+                return -(width - parent.width) * mouseXNormalized;
             }
 
             Behavior on x {
@@ -111,11 +113,14 @@ Item {
                         return;
                     }
 
-                    if (transitionType === "crossfade") {
-                        if (crossfadeAnimation.running) {
-                            crossfadeAnimation.complete();
-                        }
-                        animatingWal.source = newWallpaper;
+                    if (isFirstLoad) {
+                        wallpaper.source = newWallpaper;
+                        isFirstLoad = false;
+                        return;
+                    }
+
+                    if (transitionType === "instant") {
+                        wallpaper.source = newWallpaper;
                     } else if (transitionType === "bubble") {
                         if (bubbleAnimation.running) {
                             bubbleAnimation.complete();
@@ -128,96 +133,10 @@ Item {
                     }
                 });
 
-                animatingWal.statusChanged.connect(() => {
-                    if (animatingWal.status === Image.Ready) {
-                        crossfadeAnimation.start();
-                    }
-                });
-
-                crossfadeAnimation.finished.connect(() => {
-                    wallpaper.source = animatingWal.source;
-                    animatingWal.source = "";
-                    animatingWal.opacity = 0;
-                    animatingWal.scale = 1.0;
-                });
-
                 bubbleAnimation.finished.connect(() => {
+                    wallpaper.isTransitioning = true;
                     wallpaper.source = bubbleWallpaper.source;
-                    bubbleWallpaper.source = "";
-                    bubbleClip.diameter = 0;
                 });
-            }
-        }
-
-        //crossfade zoom
-        Image {
-            id: animatingWal
-            anchors.verticalCenter: parent.verticalCenter
-            height: parent.height
-            source: ""
-            cache: true
-            asynchronous: true
-            fillMode: Image.PreserveAspectCrop
-            opacity: 0
-            scale: enableZoomEffect ? 1.1 : 1.0
-            visible: transitionType === "crossfade" && source !== ""
-
-            property bool isPannable: false
-            property real calculatedWidth: parent.width
-
-            onStatusChanged: {
-                if (status === Image.Ready) {
-                    const imgAspect = implicitWidth / implicitHeight;
-                    const screenAspect = parent.width / parent.height;
-                    const isWide = imgAspect > screenAspect * 1.1;
-
-                    isPannable = isWide && enablePanning;
-
-                    if (isWide) {
-                        calculatedWidth = implicitWidth * (parent.height / implicitHeight);
-                    } else {
-                        calculatedWidth = parent.width;
-                    }
-                }
-            }
-
-            width: calculatedWidth
-
-            x: {
-                if (!isPannable)
-                    return 0;
-                const maxOffset = width - parent.width;
-                return -maxOffset * wallpaper.mouseXNormalized;
-            }
-
-            Behavior on x {
-                enabled: animatingWal.isPannable
-                NumberAnimation {
-                    duration: 600
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            ParallelAnimation {
-                id: crossfadeAnimation
-
-                NumberAnimation {
-                    target: animatingWal
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: wallpaperService.crossfadeDuration
-                    easing.type: Easing.InOutQuad
-                }
-
-                NumberAnimation {
-                    target: animatingWal
-                    property: "scale"
-                    from: enableZoomEffect ? 1.1 : 1.0
-                    to: 1.0
-                    duration: wallpaperService.zoomDuration
-                    easing.type: Easing.OutCubic
-                }
             }
         }
 
@@ -258,7 +177,7 @@ Item {
 
                         return Math.sqrt(maxDx * maxDx + maxDy * maxDy) * 2.2;
                     }
-                    duration: wallpaperService.crossfadeDuration
+                    duration: wallpaperService.bubbleDuration
                     easing.type: Easing.Bezier
                     easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
                 }
@@ -270,9 +189,11 @@ Item {
                     width: wallpaperService.width
                     height: wallpaperService.height
                     source: ""
-                    cache: true
+                    cache: false
                     asynchronous: true
                     fillMode: Image.PreserveAspectCrop
+                    sourceSize.width: wallpaperService.width
+                    sourceSize.height: wallpaperService.height
                 }
             }
         }
