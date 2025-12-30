@@ -6,7 +6,7 @@ import qs.Modules.TopJesus
 import qs.Data
 import qs.Components.Dancer
 import qs.Components.Omnitrix
-
+import qs.Modules.Ash
 import qs.Components.Toolski
 
 Scope {
@@ -92,12 +92,27 @@ Scope {
                     width: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardWidth : 1
                     height: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardHeight : 1
                 }
+
+                /*Project Ash*/
+                // Region {
+                //     x: (hyperixonLayer.width / 2) - (ashRef.isHovered ? 140 : 20)
+                //     y: 10
+                //     width: ashRef.isHovered ? 280 : 40
+                //     height: ashRef.isHovered ? 120 : 40  // Updated from 80 to 120
+                // }
             }
 
             //content container
             Item {
                 id: hyperixonContent
                 anchors.fill: parent
+
+                /*UnderDevelopment*/
+                // Ash {
+                //     id: ashRef
+                //     anchors.horizontalCenter: parent.horizontalCenter
+                //     anchors.top: parent.top
+                // }
 
                 //topJesus
                 TopJesus {

@@ -26,6 +26,18 @@ Scope {
                 left: true
                 right: true
             }
+            /*
+             This is Useless until I fully develop project Ash which
+             share bond to it as [A Helper/guid/friend] -> I am working on in this...
+             */
+            // PanelWindow {
+            //     anchors.top: true
+            //     implicitWidth: 0
+            //     implicitHeight: 0
+            //     exclusiveZone: 40
+            //     visible: true
+            // }
+
             exclusiveZone: ExclusionMode.Ignore
             color: "transparent"
 
@@ -37,8 +49,8 @@ Scope {
 
                 //customs
                 enablePanning: true
-                // transitionType: "bubble"
-                transitionType: "instant"
+                transitionType: "bubble"
+                // transitionType: "instant"
             }
 
             //touchpad gestured right click contextmenu [Just like Windows]
