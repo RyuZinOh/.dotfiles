@@ -257,7 +257,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             orientation: ListView.Horizontal
-            spacing: 10
+            spacing: 0
             clip: true
             cacheBuffer: 600
 
@@ -405,35 +405,13 @@ Item {
         property string name
         property bool isCurrentWallpaper: false
         signal clicked
+        clip: true
 
         Rectangle {
             id: card
             anchors.fill: parent
             color: "transparent"
             radius: 12
-            scale: mouseArea.pressed ? 1 : (mouseArea.containsMouse ? 1.08 : 1.0)
-            // border.width: thumb.isCurrentWallpaper ? 3 : (mouseArea.containsMouse ? 2 : 0)
-            // border.color: thumb.isCurrentWallpaper ? "blue" : "white"
-
-            Behavior on scale {
-                NumberAnimation {
-                    duration: 250
-                    easing.type: Easing.OutCubic
-                }
-            }
-            /*
-            Behavior on border.width {
-                NumberAnimation {
-                    duration: 200
-                }
-            }
-
-            Behavior on border.color {
-                ColorAnimation {
-                    duration: 200
-                }
-            }
-            */
             /* Current wallpaper badge
              [not much of a use unless some genius use this as a
              seperate fixed compartment or give it as a priority to always so at first or something]
@@ -461,42 +439,56 @@ Item {
             //     }
             // }
 
-            Image {
-                id: img
+            Item {
+                id: imageContainer
                 anchors.fill: parent
                 anchors.margins: 4
-                source: thumb.thumbSource
-                fillMode: Image.PreserveAspectCrop
-                smooth: true
-                asynchronous: true
-                cache: true
+
+                Item {
+                    anchors.fill: parent
+                    clip: true
+
+                    Image {
+                        id: img
+                        anchors.centerIn: parent
+                        width: parent.width
+                        height: parent.height
+                        source: thumb.thumbSource
+                        fillMode: Image.PreserveAspectCrop
+                        smooth: true
+                        asynchronous: true
+                        cache: true
+                        scale: mouseArea.pressed ? 1.0 : (mouseArea.containsMouse ? 1.1 : 1.0)
+
+                        Behavior on scale {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                    }
+                }
+
                 layer.enabled: true
                 layer.effect: OpacityMask {
                     maskSource: Rectangle {
-                        width: img.width
-                        height: img.height
+                        width: imageContainer.width
+                        height: imageContainer.height
                         radius: 10
                     }
                 }
             }
             // Hover overlay
-            Rectangle {
+            Item {
+                id: hoverOverlayContainer
                 anchors.fill: parent
                 anchors.margins: 4
-                color: Theme.surfaceColor
-                opacity: mouseArea.containsMouse ? 0.5 : 0.0
 
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.OutQuad
-                    }
-                }
-
-                Column {
-                    anchors.centerIn: parent
-                    spacing: 8
-                    opacity: mouseArea.containsMouse ? 1.0 : 0.0
+                Rectangle {
+                    anchors.fill: parent
+                    color: Theme.surfaceColor
+                    opacity: mouseArea.containsMouse ? 0.5 : 0.0
+                    radius: 10
 
                     Behavior on opacity {
                         NumberAnimation {
@@ -505,25 +497,47 @@ Item {
                         }
                     }
 
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: ""
-                        color: Theme.onPrimary
-                        font.pixelSize: 32
-                        font.family: "CaskaydiaCove NF"
-                    }
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 8
+                        opacity: mouseArea.containsMouse ? 1.0 : 0.0
 
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        // remove thumbs extenstion
-                        text: thumb.name.replace(/\.[^/.]+$/, "")
-                        color: Theme.primaryColor
-                        font.pixelSize: 13
-                        font.family: "CaskaydiaCove NF"
-                        font.weight: Font.Medium
-                        elide: Text.ElideMiddle
-                        width: card.width - 40
-                        horizontalAlignment: Text.AlignHCenter
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutQuad
+                            }
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: ""
+                            color: Theme.onPrimary
+                            font.pixelSize: 32
+                            font.family: "CaskaydiaCove NF"
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            // remove thumbs extension
+                            text: thumb.name.replace(/\.[^/.]+$/, "")
+                            color: Theme.primaryColor
+                            font.pixelSize: 13
+                            font.family: "CaskaydiaCove NF"
+                            font.weight: Font.Medium
+                            elide: Text.ElideMiddle
+                            width: card.width - 40
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+                }
+
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: Rectangle {
+                        width: hoverOverlayContainer.width
+                        height: hoverOverlayContainer.height
+                        radius: 10
                     }
                 }
             }

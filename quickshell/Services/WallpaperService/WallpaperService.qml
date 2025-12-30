@@ -36,6 +36,20 @@ Item {
         anchors.fill: parent
         clip: true
 
+        //preloading to prevent blackflash
+        Image {
+            id: preloadWallpaper
+            visible: false
+            cache: false
+            asynchronous: true
+
+            onStatusChanged: {
+                if (status === Image.Ready && transitionType === "instant") {
+                    wallpaper.source = source;
+                }
+            }
+        }
+
         // main wallpaper
         Image {
             id: wallpaper
@@ -120,7 +134,7 @@ Item {
                     }
 
                     if (transitionType === "instant") {
-                        wallpaper.source = newWallpaper;
+                        preloadWallpaper.source = newWallpaper;
                     } else if (transitionType === "bubble") {
                         if (bubbleAnimation.running) {
                             bubbleAnimation.complete();

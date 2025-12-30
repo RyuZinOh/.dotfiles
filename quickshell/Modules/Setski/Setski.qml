@@ -17,6 +17,7 @@ Item {
     height: implicitHeight
 
     property bool isHovered: false
+    property bool isPinned: false
     /*
     [0 => wallski] Never Increase the default size greater than the other else
     It might auto hide when switching to lesser width one!!
@@ -37,7 +38,7 @@ Item {
         }
     }
 
-/* I wanted to run script from UI for the ease, so adding this*/
+    /* I wanted to run script from UI for the ease, so adding this*/
     Process {
         id: bamProcess
         command: ["/bin/bash", "/home/safal726/.dotfiles/quickshell/Scripts/bam.sh"]
@@ -66,7 +67,7 @@ Item {
 
         //width based on active component
         implicitWidth: {
-            if (!root.isHovered) {
+            if (!(root.isHovered || root.isPinned)) {
                 return currentContentWidth;
             }
             if (!contentLoader.item) {
@@ -79,7 +80,7 @@ Item {
 
         //height based on hover state and content
         implicitHeight: {
-            if (!root.isHovered) {
+            if (!(root.isHovered || root.isPinned)) {
                 return 0.1;
             }
             const tabsHeight = 28;
@@ -112,7 +113,7 @@ Item {
             anchors.fill: parent
             anchors.margins: 15
             spacing: 8
-            visible: root.isHovered
+            visible: root.isHovered || root.isPinned
 
             // tabs
             Item {
@@ -167,39 +168,102 @@ Item {
                     }
                 }
 
-                //refresh
-                Text {
-                    id: refreshIcon
+                //refresh, pin
+                Row {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "󰑐"
-                    color: refreshMouse.containsMouse ? Theme.primaryColor : Theme.dimColor
-                    font.pixelSize: 32
-                    font.family: "CaskaydiaCove NF"
+                    spacing: 8
 
-                    RotationAnimator {
-                        target:refreshIcon
-                        from: 0
-                        to: 360
-                        duration: 400
-                        loops: Animation.Infinite
-                        running: isRefreshing
-                    }
+                    // pin button
+                    Rectangle {
+                        width: 28
+                        height: 28
+                        radius: 6
+                        color: pinMouseArea.containsMouse ? Theme.surfaceBright : "transparent"
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
+                        Text {
+                            anchors.centerIn: parent
+                            text: root.isPinned ? "󰐃" : "󰐃"
+                            font.family: "CaskaydiaCove NF"
+                            font.pixelSize: 16
+                            color: root.isPinned ? Theme.primaryColor : Theme.onSurfaceVariant
+                            rotation: root.isPinned ? 0 : 45
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 200
+                                }
+                            }
+                            Behavior on rotation {
+                                NumberAnimation {
+                                    duration: 200
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: pinMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.isPinned = !root.isPinned;
+                            }
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
                         }
                     }
 
-                    MouseArea {
-                        id: refreshMouse
-                        anchors.fill: parent
-                        anchors.margins: -5
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        enabled: !isRefreshing
-                        onClicked: runBamScript()
+                    //refresh
+                    Rectangle {
+                        width: 28
+                        height: 28
+                        radius: 6
+                        color: refreshMouse.containsMouse ? Theme.surfaceBright : "transparent"
+
+                        Text {
+                            id: refreshIcon
+                            anchors.centerIn: parent
+                            text: "󰑐"
+                            color: refreshMouse.containsMouse ? Theme.primaryColor : Theme.dimColor
+                            font.pixelSize: 16
+                            font.family: "CaskaydiaCove NF"
+
+                            RotationAnimator {
+                                target: refreshIcon
+                                from: 0
+                                to: 360
+                                duration: 400
+                                loops: Animation.Infinite
+                                running: isRefreshing
+                            }
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 200
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: refreshMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            enabled: !isRefreshing
+                            onClicked: runBamScript()
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
                     }
                 }
 
@@ -240,7 +304,7 @@ Item {
                     anchors.fill: parent
                     opacity: 0
                     //unload inactive tabs to save memory
-                    active: root.isHovered // probably make it true so that timerchan stays active but ye [i dont need it for some reason]
+                    active: root.isHovered || root.isPinned // probably make it true so that timerchan stays active but ye [i dont need it for some reason]
                     sourceComponent: {
                         switch (currentTab) {
                         case 0:
@@ -257,7 +321,7 @@ Item {
                         fadeInAnimation.restart();
                         if (currentTab === 0 && item) {
                             item.isHovered = Qt.binding(function () {
-                                return root.isHovered && currentTab === 0;
+                                return (root.isHovered || root.isPinned) && currentTab === 0;
                             });
                             item.wallpaperChanged.connect(root.wallpaperChanged);
                         }
