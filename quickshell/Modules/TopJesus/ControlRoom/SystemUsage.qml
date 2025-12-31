@@ -19,6 +19,9 @@ Rectangle {
     property real lastCpuTotal: 0
     property real cpuPerc: 0
     property real usedMemoryPerc: 0
+    property bool componentActive: true
+
+    readonly property bool debugMode: false
 
     readonly property real value: {
         switch (type) {
@@ -51,6 +54,23 @@ Rectangle {
         }
     }
 
+    Component.onCompleted: {
+        if (debugMode) {
+            console.log("Component created, type:", type);
+        }
+    }
+
+    Component.onDestruction: {
+        if (debugMode) {
+            console.log("Component being destroyed");
+        }
+        componentActive = false;
+        updateTimer.running = false;
+        if (debugMode) {
+            console.log("Cleanup complete");
+        }
+    }
+
     Behavior on radius {
         NumberAnimation {
             duration: 400
@@ -70,16 +90,27 @@ Rectangle {
         property string fileName: "name"
         path: folderListModel.status === FolderListModel.Ready ? `file:///sys/class/hwmon/hwmon${Math.min(index, folderListModel.count - 1)}/${fileName}` : ""
         onLoaded: {
+            if (!root.componentActive) {
+                return;
+            }
+
             if (!done) {
                 if (text().includes("coretemp")) {
                     Qt.callLater(() => {
-                        done = true;
-                        fileName = "temp1_input";
+                        if (root.componentActive) {
+                            done = true;
+                            fileName = "temp1_input";
+                        }
                     });
                 } else if (index < folderListModel.count - 1)
-                    Qt.callLater(() => ++index);
-            } else
+                    Qt.callLater(() => {
+                        if (root.componentActive) {
+                            ++index;
+                        }
+                    });
+            } else {
                 root.cpuTemp = Number(text()) / 1000;
+            }
         }
     }
 
@@ -87,6 +118,10 @@ Rectangle {
         id: procStat
         path: "file:///proc/stat"
         onLoaded: {
+            if (!root.componentActive) {
+                return;
+            }
+
             const cpuTimes = text().split(' ').slice(2, 9).map(Number);
             const idle = cpuTimes[3] + cpuTimes[4];
             const total = cpuTimes.reduce((acc, cur) => acc + cur, 0);
@@ -102,19 +137,37 @@ Rectangle {
         id: procMemInfo
         path: "file:///proc/meminfo"
         onLoaded: {
+            if (!root.componentActive) {
+                return;
+            }
+
             const memNumbers = text().split('\n').map(m => parseInt(m.split(':')[1]));
             root.usedMemoryPerc = 1 - memNumbers[2] / memNumbers[0];
         }
     }
 
     Timer {
+        id: updateTimer
         interval: 1000
-        running: true
+        running: root.componentActive
         repeat: true
+
+        onRunningChanged: {
+            if (debugMode) {
+                if (running) {
+                    console.log("Update timer started");
+                } else {
+                    console.log("Update timer stopped");
+                }
+            }
+        }
+
         onTriggered: {
-            hwmon.reload();
-            procStat.reload();
-            procMemInfo.reload();
+            if (root.componentActive) {
+                hwmon.reload();
+                procStat.reload();
+                procMemInfo.reload();
+            }
         }
     }
 
@@ -122,6 +175,13 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 12
         spacing: 0
+        opacity: componentActive ? 1.0 : 0.0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 0
+            }
+        }
 
         Item {
             Layout.fillWidth: true

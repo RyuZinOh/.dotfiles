@@ -8,6 +8,29 @@ Item {
     width: content.width
     height: 140
     property bool isHovered: false
+    property bool componentActive: true
+
+    readonly property bool debugMode: true
+
+    Component.onCompleted: {
+        if (debugMode) {
+            console.log("Component created");
+        }
+    }
+
+    Component.onDestruction: {
+        if (debugMode) {
+            console.log("Component being destroyed");
+        }
+        componentActive = false;
+        if (gifSmollLoader.item)
+            gifSmollLoader.item.playing = false;
+        if (gifBigLoader.item)
+            gifBigLoader.item.playing = false;
+        if (debugMode) {
+            console.log("Cleanup complete");
+        }
+    }
 
     // [uncomment to use, i dont want to use ts right now]
     // MediaPlayer {
@@ -50,11 +73,11 @@ Item {
             anchors.topMargin: 24
             anchors.leftMargin: 4
             anchors.rightMargin: 4
-            anchors.bottomMargin: -20
+            anchors.bottomMargin: 24
 
             opacity: root.isHovered ? 1 : 0
             visible: opacity > 0
-            scale: root.isHovered ? 1 : 0.85
+            scale: root.isHovered ? 2.7 : 1
 
             Behavior on opacity {
                 NumberAnimation {
@@ -78,63 +101,99 @@ Item {
                 anchors.bottom: parent.bottom
                 height: parent.height
 
-                property bool shouldPlay: root.isHovered
+                property bool shouldPlay: root.isHovered && root.componentActive
                 property real speed: 0.8
                 property bool switchable: true
+                property bool showSmoll: true
 
-                AnimatedImage {
-                    id: gifSmoll
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    fillMode: Image.PreserveAspectFit
+                Loader {
+                    id: gifSmollLoader
+                    anchors.fill: parent
+                    active: root.isHovered && gifContainer.showSmoll
 
-                    playing: gifContainer.shouldPlay && gifSmoll.visible
-                    paused: !gifContainer.shouldPlay
-                    source: "../../Assets/KuruKuru/hertaa1.gif"
-                    smooth: true
-                    cache: false
-                    speed: gifContainer.speed
+                    sourceComponent: AnimatedImage {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        fillMode: Image.PreserveAspectFit
 
-                    //reset to first frame when not visible/playing
-                    onVisibleChanged: {
-                        if (!visible && !playing) {
-                            currentFrame = 0;
+                        playing: gifContainer.shouldPlay
+                        paused: !gifContainer.shouldPlay
+                        source: "../../Assets/KuruKuru/hertaa1.gif"
+                        smooth: true
+                        cache: false
+                        speed: gifContainer.speed
+
+                        Component.onCompleted: {
+                            if (root.debugMode) {
+                                console.log("small gif loaded");
+                            }
+                        }
+
+                        Component.onDestruction: {
+                            if (root.debugMode) {
+                                console.log("small gif  unloaded");
+                            }
+                        }
+
+                        onVisibleChanged: {
+                            if (!visible && !playing) {
+                                currentFrame = 0;
+                            }
                         }
                     }
                 }
 
-                AnimatedImage {
-                    id: gifBig
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    fillMode: Image.PreserveAspectFit
+                Loader {
+                    id: gifBigLoader
+                    anchors.fill: parent
+                    active: root.isHovered && !gifContainer.showSmoll
 
-                    playing: gifContainer.shouldPlay && gifBig.visible
-                    paused: !gifContainer.shouldPlay
-                    source: "../../Assets/KuruKuru/seseren.gif"
-                    smooth: true
-                    cache: false
-                    speed: gifContainer.speed
-                    visible: false
+                    sourceComponent: AnimatedImage {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        fillMode: Image.PreserveAspectFit
 
-                    onVisibleChanged: {
-                        if (!visible && !playing) {
-                            currentFrame = 0;
+                        playing: gifContainer.shouldPlay
+                        paused: !gifContainer.shouldPlay
+                        source: "../../Assets/KuruKuru/seseren.gif"
+                        smooth: true
+                        cache: false
+                        speed: gifContainer.speed
+
+                        Component.onCompleted: {
+                            if (root.debugMode) {
+                                console.log("beeg gif loaded");
+                            }
+                        }
+
+                        Component.onDestruction: {
+                            if (root.debugMode) {
+                                console.log("beeg gif unloaded");
+                            }
+                        }
+
+                        onVisibleChanged: {
+                            if (!visible && !playing) {
+                                currentFrame = 0;
+                            }
                         }
                     }
                 }
 
                 MouseArea {
                     anchors.fill: parent
+                    enabled: root.componentActive
                     onPressed: {
                         if (gifContainer.switchable) {
-                            gifSmoll.visible = !gifSmoll.visible;
-                            gifBig.visible = !gifBig.visible;
+                            if (root.debugMode) {
+                                console.log("Switching gif");
+                            }
+                            gifContainer.showSmoll = !gifContainer.showSmoll;
 
                             // sound corresponding
-                            // if (gifSmoll.visible) {
+                            // if (gifContainer.showSmoll) {
                             //     kuruSound.play();
                             // } else {
                             //     kururinSound.play();
@@ -149,6 +208,15 @@ Item {
     }
 
     HoverHandler {
-        onHoveredChanged: root.isHovered = hovered
+        onHoveredChanged: {
+            if (root.componentActive) {
+                root.isHovered = hovered;
+                if (hovered && root.debugMode) {
+                    console.log("Hovered: loading GIF");
+                } else if (!hovered && root.debugMode) {
+                    console.log("Unhovered: unloading GIF");
+                }
+            }
+        }
     }
 }

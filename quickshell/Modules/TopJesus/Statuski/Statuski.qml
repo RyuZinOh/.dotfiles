@@ -19,51 +19,159 @@ Item {
     property bool nginxRunning: false
     property bool apacheRunning: false
 
-    Process {
-        id: dockerCheck
-        command: ["systemctl", "is-active", "docker"]
-        running: true
-        onExited: (code, status) => {
-            dockerRunning = (code === 0);
+    readonly property bool debugMode: false
+
+    Component.onCompleted: {
+        if (debugMode) {
+            console.log("Component created");
         }
+        checkServices();
     }
 
-    Process {
-        id: mariadbCheck
-        command: ["systemctl", "is-active", "mariadb"]
-        running: true
-        onExited: (code, status) => {
-            mariadbRunning = (code === 0);
+    Component.onDestruction: {
+        if (debugMode) {
+            console.log("Component being destroyed");
         }
-    }
-
-    Process {
-        id: nginxCheck
-        command: ["systemctl", "is-active", "nginx"]
-        running: true
-        onExited: (code, status) => {
-            nginxRunning = (code === 0);
-        }
-    }
-
-    Process {
-        id: apacheCheck
-        command: ["systemctl", "is-active", "httpd"]
-        running: true
-        onExited: (code, status) => {
-            apacheRunning = (code === 0);
+        serviceCheckTimer.running = false;
+        destroyProcesses();
+        if (debugMode) {
+            console.log("Cleanup complete");
         }
     }
 
     Timer {
+        id: serviceCheckTimer
         interval: 5000
         running: true
         repeat: true
-        onTriggered: {
-            dockerCheck.running = true;
-            mariadbCheck.running = true;
-            nginxCheck.running = true;
-            apacheCheck.running = true;
+
+        onRunningChanged: {
+            if (debugMode) {
+                if (running) {
+                    console.log("Service check timer started");
+                } else {
+                    console.log("Service check timer stopped");
+                }
+            }
+        }
+
+        onTriggered: checkServices()
+    }
+
+    Component {
+        id: processComponent
+        Process {}
+    }
+
+    property var dockerProcess: null
+    property var mariadbProcess: null
+    property var nginxProcess: null
+    property var apacheProcess: null
+
+    function checkServices() {
+        if (debugMode) {
+            console.log("Checking services...");
+        }
+        checkDocker();
+        checkMariadb();
+        checkNginx();
+        checkApache();
+    }
+
+    function checkDocker() {
+        if (dockerProcess)
+            dockerProcess.destroy();
+
+        dockerProcess = processComponent.createObject(root, {
+            command: ["systemctl", "is-active", "docker"],
+            running: true
+        });
+
+        dockerProcess.exited.connect(function (code, status) {
+            dockerRunning = (code === 0);
+            if (debugMode) {
+                console.log("[ControlRoom] Docker:", dockerRunning ? "running" : "not running");
+            }
+            dockerProcess.destroy();
+            dockerProcess = null;
+        });
+    }
+
+    function checkMariadb() {
+        if (mariadbProcess) {
+            mariadbProcess.destroy();
+        }
+
+        mariadbProcess = processComponent.createObject(root, {
+            command: ["systemctl", "is-active", "mariadb"],
+            running: true
+        });
+
+        mariadbProcess.exited.connect(function (code, status) {
+            mariadbRunning = (code === 0);
+            if (debugMode) {
+                console.log("[ControlRoom] MariaDB:", mariadbRunning ? "running" : "not running");
+            }
+            mariadbProcess.destroy();
+            mariadbProcess = null;
+        });
+    }
+
+    function checkNginx() {
+        if (nginxProcess) {
+            nginxProcess.destroy();
+        }
+
+        nginxProcess = processComponent.createObject(root, {
+            command: ["systemctl", "is-active", "nginx"],
+            running: true
+        });
+
+        nginxProcess.exited.connect(function (code, status) {
+            nginxRunning = (code === 0);
+            if (debugMode) {
+                console.log("Nginx:", nginxRunning ? "running" : "not running");
+            }
+            nginxProcess.destroy();
+            nginxProcess = null;
+        });
+    }
+
+    function checkApache() {
+        if (apacheProcess)
+            apacheProcess.destroy();
+
+        apacheProcess = processComponent.createObject(root, {
+            command: ["systemctl", "is-active", "httpd"],
+            running: true
+        });
+
+        apacheProcess.exited.connect(function (code, status) {
+            apacheRunning = (code === 0);
+            if (debugMode) {
+                console.log("apache:", apacheRunning ? "running" : "not running");
+            }
+            apacheProcess.destroy();
+            apacheProcess = null;
+        });
+    }
+
+    function destroyProcesses() {
+        if (dockerProcess) {
+            dockerProcess.destroy();
+            dockerProcess = null;
+        }
+        if (mariadbProcess) {
+            mariadbProcess.destroy();
+            mariadbProcess = null;
+        }
+        if (nginxProcess) {
+            nginxProcess.destroy();
+            nginxProcess = null;
+        }
+        if (apacheProcess) {
+            apacheProcess.destroy();
+            apacheProcess = null;
         }
     }
 

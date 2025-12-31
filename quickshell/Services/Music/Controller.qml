@@ -9,27 +9,123 @@ Item {
     implicitHeight: 180
 
     property MprisPlayer player: null
+    property bool componentActive: true
+
+    readonly property bool debugMode: false
+
+    Component.onCompleted: {
+        if (debugMode) {
+            console.log("Component created");
+        }
+    }
+
+    Component.onDestruction: {
+        if (debugMode) {
+            console.log("Component being destroyed - cleaning up");
+        }
+        componentActive = false;
+        positionTimer.running = false;
+        root.player = null;
+        if (debugMode) {
+            console.log("Cleanup complete");
+        }
+    }
 
     //detect everything out there available
     Repeater {
         model: Mpris.players
-        Item {
+        delegate: Item {
+            required property MprisPlayer modelData
+
+            width: 0
+            height: 0
+            visible: false
+
             Component.onCompleted: {
-                if (!root.player) {
+                if (root.debugMode) {
+                    console.log("Found MPRIS player:", modelData.identity, "DBus:", modelData.dbusName);
+                }
+                if (!root.player && root.componentActive) {
                     root.player = modelData;
+                    if (root.debugMode) {
+                        console.log("Set active player to:", modelData.identity);
+                    }
+                }
+            }
+
+            Component.onDestruction: {
+                if (root.debugMode) {
+                    console.log("Player being removed:", modelData.identity, "DBus:", modelData.dbusName);
+                }
+
+                if (!root.componentActive) {
+                    if (root.debugMode) {
+                        console.log("Component inactive, ignoring player removal");
+                    }
+                    return;
+                }
+
+                if (root.player === modelData) {
+                    if (root.debugMode) {
+                        console.log("Active player is being removed, clearing reference");
+                    }
+                    root.player = null;
+
+                    for (var i = 0; i < Mpris.players.length; i++) {
+                        if (Mpris.players[i] !== modelData) {
+                            root.player = Mpris.players[i];
+                            if (root.debugMode) {
+                                console.log("Switched to new player:", root.player.identity);
+                            }
+                            break;
+                        }
+                    }
+
+                    if (!root.player && root.debugMode) {
+                        console.log("No other players available");
+                    }
                 }
             }
         }
     }
 
     Timer {
-        running: root.player?.playbackState === MprisPlaybackState.Playing
+        id: positionTimer
+        running: root.player?.playbackState === MprisPlaybackState.Playing && root.componentActive
         interval: 500
         repeat: true
-        onTriggered: {
-            if (root.player) {
-                progressBar.currentPosition = root.player.position || 0;
+
+        onRunningChanged: {
+            if (root.debugMode) {
+                if (running) {
+                    console.log("Position timer started");
+                } else {
+                    console.log("Position timer stopped");
+                }
             }
+        }
+
+        onTriggered: {
+            if (root.player && root.componentActive) {
+                root.player.positionChanged();
+            }
+        }
+    }
+
+    onPlayerChanged: {
+        if (!root.debugMode) {
+            return;
+        }
+
+        if (player && componentActive) {
+            console.log("Active player changed to:", player.identity);
+            console.log("track:", player.trackTitle || "Unknown");
+            console.log("artist:", player.trackArtist || "Unknown");
+            console.log("state:", player.playbackState);
+        } else if (!componentActive) {
+            console.log("Component inactive");
+        } else {
+            console.log("No active player");
         }
     }
 
@@ -38,6 +134,13 @@ Item {
         anchors.fill: parent
         color: Theme.surfaceDim
         radius: 10
+        opacity: componentActive ? 1.0 : 0.0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 0
+            }
+        }
     }
 
     Text {
@@ -46,7 +149,7 @@ Item {
         font.family: "CaskaydiaCove NF"
         font.pixelSize: 14
         color: Theme.onSurfaceVariant
-        visible: !root.player
+        visible: !root.player && componentActive
     }
 
     Item {
@@ -56,7 +159,7 @@ Item {
             topMargin: 10
             bottomMargin: 10
         }
-        visible: root.player
+        visible: root.player && componentActive
 
         // album art
         Rectangle {
@@ -166,7 +269,7 @@ Item {
                     bottom: progressBarBg.top
                     bottomMargin: 5
                 }
-                text: formatTime(progressBar.currentPosition) + " / " + formatTime(progressBar.trackLength)
+                text: formatTime(root.player?.position ?? 0) + " / " + formatTime(root.player?.length ?? 0)
                 font.family: "CaskaydiaCove NF"
                 font.pixelSize: 10
                 color: Theme.onSurfaceVariant
