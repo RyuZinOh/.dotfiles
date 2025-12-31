@@ -10,7 +10,7 @@ Item {
     property bool isHovered: false
     property bool componentActive: true
 
-    readonly property bool debugMode: true
+    readonly property bool debugMode: false
 
     Component.onCompleted: {
         if (debugMode) {

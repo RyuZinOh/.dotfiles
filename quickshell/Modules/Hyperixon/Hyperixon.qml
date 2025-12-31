@@ -6,7 +6,7 @@ import qs.Modules.TopJesus
 import qs.Data
 import qs.Components.Dancer
 import qs.Components.Omnitrix
-import qs.Modules.Ash
+// import qs.Modules.Ash
 import qs.Components.Toolski
 
 Scope {
@@ -16,9 +16,13 @@ Scope {
         WlrLayershell {
             id: hyperixonLayer
             required property var modelData
-
+            
+            /*jan 1-2026 => at the new year I noticed a shit*/
+            Component.onCompleted: {
+                console.log("ExclusionMode.Ignore value:", ExclusionMode.Ignore);
+            }
             screen: modelData
-            layer: WlrLayer.Overlay
+            layer: WlrLayer.Top // ok Overlay wasnt the deal breaker here, I was thinking ass.
             keyboardFocus: WlrKeyboardFocus.OnDemand
             namespace: "quickshell-hyperixon"
             visible: true
@@ -95,10 +99,10 @@ Scope {
 
                 /*Project Ash*/
                 // Region {
-                //     x: (hyperixonLayer.width / 2) - (ashRef.isHovered ? 140 : 20)
+                //     x: (hyperixonLayer.width / 2) - (ashRef.implicitWidth / 2)
                 //     y: 10
-                //     width: ashRef.isHovered ? 280 : 40
-                //     height: ashRef.isHovered ? 120 : 40  // Updated from 80 to 120
+                //     width: ashRef.implicitWidth
+                //     height: ashRef.implicitHeight
                 // }
             }
 
@@ -121,7 +125,7 @@ Scope {
                     anchors.top: parent.top
                 }
 
-                //notification
+                //notification [Also we can implement our own layershell overlay for this one but nah...]
                 NotificationWindow {
                     id: notifWindow
                     //anchors.topMargin: 20
