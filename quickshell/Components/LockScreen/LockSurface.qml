@@ -58,7 +58,7 @@ Rectangle {
         color: Theme.primaryFixed
         opacity: 0.95
 
-        text: passwordBox.text.length > 0 ? "fuck yea!!" : "Do you love red panda?"
+        text: passwordBox.text.length > 0 ? "hell yea!!" : "Do you love red panda?"
 
         Behavior on text {
             SequentialAnimation {

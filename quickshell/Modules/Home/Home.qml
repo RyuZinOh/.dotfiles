@@ -30,13 +30,13 @@ Scope {
              This is Useless until I fully develop project Ash which
              share bond to it as [A Helper/guid/friend] -> I am working on in this...
              */
-            PanelWindow {
-                anchors.top: true
-                implicitWidth: 0
-                implicitHeight: 0
-                exclusiveZone: 40
-                visible: true
-            }
+            // PanelWindow {
+            //     anchors.top: true
+            //     implicitWidth: 0
+            //     implicitHeight: 0
+            //     exclusiveZone: 40
+            //     visible: true
+            // }
 
             exclusiveZone: ExclusionMode.Ignore
             color: "transparent"
