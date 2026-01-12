@@ -1,12 +1,12 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Modules.Setski
-import qs.Modules.Pictorial
+// import qs.Modules.Pictorial
 import qs.Services.WallpaperService
 import qs.Modules.MAL
-import qs.Modules.KuruKuru
+// import qs.Modules.KuruKuru
 import qs.Modules.ContextMenu
+import qs.Modules.Wallski
 
 Scope {
     // background layer [wallpaper]
@@ -45,7 +45,7 @@ Scope {
             WallpaperService {
                 id: wallpaperService
                 anchors.fill: parent
-                isHovered: setskiRef.isHovered
+                isHovered: wallskiRef.isHovered
 
                 //customs
                 enablePanning: true
@@ -59,7 +59,7 @@ Scope {
             Rectangle {
                 anchors.fill: parent
                 color: "black"
-                opacity: setskiRef.isHovered ? 0.3 : 0.0
+                opacity: wallskiRef.isHovered ? 0.3 : 0.0
 
                 Behavior on opacity {
                     NumberAnimation {
@@ -68,25 +68,26 @@ Scope {
                     }
                 }
             }
-            // setski
-            Setski {
-                id: setskiRef
+            // wallski direct
+            Wallski {
+                id: wallskiRef
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
             }
+
             // kururin leftbottom
-            Kururin {
-                id: kuruRef
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-            }
+            // Kururin {
+            //     id: kuruRef
+            //     anchors.left: parent.left
+            //     anchors.bottom: parent.bottom
+            // }
 
             // pictorial at right-bottom side
-            Pictorial {
-                id: pictorialRef
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-            }
+            // Pictorial {
+            //     id: pictorialRef
+            //     anchors.right: parent.right
+            //     anchors.bottom: parent.bottom
+            // }
 
             //anilist but contains todolist as well
             Anilist {

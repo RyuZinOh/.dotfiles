@@ -8,6 +8,7 @@ import qs.Components.Dancer
 import qs.Components.Omnitrix
 // import qs.Modules.Ash
 import qs.Components.Toolski
+import qs.Modules.Hut
 
 Scope {
     Variants {
@@ -16,7 +17,7 @@ Scope {
         WlrLayershell {
             id: hyperixonLayer
             required property var modelData
-            
+
             /*jan 1-2026 => at the new year I noticed a shit*/
             Component.onCompleted: {
                 console.log("ExclusionMode.Ignore value:", ExclusionMode.Ignore);
@@ -96,7 +97,13 @@ Scope {
                     width: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardWidth : 1
                     height: toolskiRef.openedBladeIndex !== -1 ? toolskiRef.currentCardHeight : 1
                 }
-
+                /*Hut*/
+                Region {
+                    x: hyperixonLayer.width - hutRef.width
+                    y: 0
+                    width: hutRef.isHovered ? hutRef.width : 1
+                    height: hutRef.isHovered ? hutRef.height : 1
+                }
                 /*Project Ash*/
                 // Region {
                 //     x: (hyperixonLayer.width / 2) - (ashRef.implicitWidth / 2)
@@ -140,7 +147,12 @@ Scope {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                 }
-
+                //hut
+                Hut {
+                    id: hutRef
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                }
                 //omnitrix launcher
                 OmnitrixLauncher {
                     id: omnitrixLauncher

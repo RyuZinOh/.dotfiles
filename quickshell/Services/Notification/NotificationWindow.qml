@@ -124,7 +124,8 @@ Item {
         width: 420
         height: queue.length > 0 ? Math.min(column.implicitHeight + 60, 800) : 0
         alignment: 1
-        radius: queue.length > 0 ? 20 : 5
+        // radius: queue.length > 0 ? 20 : 5
+        radius: 20
         color: Theme.surfaceContainer
 
         Behavior on height {
@@ -134,12 +135,12 @@ Item {
             }
         }
 
-        Behavior on radius {
-            NumberAnimation {
-                duration: 400
-                easing.type: Easing.InOutCubic
-            }
-        }
+        // Behavior on radius {
+        //     NumberAnimation {
+        //         duration: 400
+        //         easing.type: Easing.InOutCubic
+        //     }
+        // }
 
         Item {
             anchors.fill: parent

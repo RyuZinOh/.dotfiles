@@ -11,6 +11,37 @@ Singleton {
         const text = modeFile.text()?.trim();
         return text === "dark" || text === "" || !text;
     }
+
+    property string currentSchemeType: {
+        schemeTypeFile.reload();
+        const text = schemeTypeFile.text()?.trim();
+        return text || "scheme-fruit-salad";
+    }
+
+    readonly property var schemeTypes: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot", "scheme-vibrant"]
+
+    readonly property string currentSchemeName: getSchemeDisplayName(currentSchemeType)
+
+    function getSchemeDisplayName(schemeType) {
+        const names = {
+            "scheme-content": "Content",
+            "scheme-expressive": "Expressive",
+            "scheme-fidelity": "Fidelity",
+            "scheme-fruit-salad": "Fruit Salad",
+            "scheme-monochrome": "Monochrome",
+            "scheme-neutral": "Neutral",
+            "scheme-rainbow": "Rainbow",
+            "scheme-tonal-spot": "Tonal Spot",
+            "scheme-vibrant": "Vibrant"
+        };
+        return names[schemeType] || schemeType;
+    }
+
+    function setSchemeType(schemeType) {
+        saveSchemeProcess.command = ["/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && echo '${schemeType}' > /home/safal726/.cache/safalQuick/scheme_type`];
+        saveSchemeProcess.running = true;
+    }
+
     /* parsed color palette from json, auto-updates on mode change */
     property var colors: {
         const text = jsonFile.text();
@@ -117,6 +148,19 @@ Singleton {
         blockLoading: true
         watchChanges: true
     }
+
+    // schemes
+    FileView {
+        id: schemeTypeFile
+        path: "file:///home/safal726/.cache/safalQuick/scheme_type"
+        blockLoading: true
+        watchChanges: true
+        onFileChanged: {
+            schemeTypeFile.reload();
+            schemeTypeTimer.restart();
+        }
+    }
+
     /* reads persisted wallpaper path */
     FileView {
         id: persistFile
@@ -128,6 +172,13 @@ Singleton {
             persistFile.reload();
             persistTimer.restart();
         }
+    }
+
+    /* debounces scheme type changes */
+    Timer {
+        id: schemeTypeTimer
+        interval: 50
+        onTriggered: generateColors()
     }
 
     /* debounces persist file changes */
@@ -154,6 +205,11 @@ Singleton {
         onExited: reloadTimer.restart()
     }
 
+    Process {
+        id: saveSchemeProcess
+        onExited: schemeTypeFile.reload()
+    }
+
     function generateColors() {
         persistFile.reload();
         const path = persistFile.text()?.trim();
@@ -164,8 +220,9 @@ Singleton {
 
         const cleanPath = path.replace("file://", "");
         const mode = isDarkMode ? "dark" : "light";
+        const scheme = currentSchemeType;
 
-        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "scheme-fruit-salad"`];
+        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "${scheme}"`];
         matugenProcess.running = true;
     }
     Process {
