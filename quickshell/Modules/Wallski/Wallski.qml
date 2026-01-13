@@ -38,6 +38,7 @@ Item {
         interval: 400
         onTriggered: {
             if (!root.isHovered) {
+                folderModel.nameFilters = ["*.jpg", "*.jpeg"];
                 contentLoader.active = false;
             }
         }
@@ -52,8 +53,8 @@ Item {
 
     PopoutShape {
         id: content
-        width: 1200
-        height: isHovered ? 235 : 1
+        width: contentLoader.item ? contentLoader.item.implicitWidth + 20 : 1200
+        height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 40 : 235) : 1
         alignment: 4
         radius: 20
         color: Theme.surfaceContainerLow
@@ -72,8 +73,8 @@ Item {
             anchors {
                 leftMargin: 10
                 rightMargin: 10
-                topMargin: -10
-                bottomMargin: 0
+                topMargin: 10
+                bottomMargin: 10
             }
             active: false
             asynchronous: true
@@ -100,17 +101,20 @@ Item {
             sourceComponent: Item {
                 id: contentItem
                 visible: root.isHovered
+                implicitWidth: 1180
+                implicitHeight: 204
 
                 property alias searchInput: searchInput
                 property alias listView: listView
 
                 Column {
+                    id: mainColumn
                     anchors.fill: parent
                     spacing: 10
 
                     Item {
                         width: parent.width
-                        height: parent.height - 44 - 10
+                        height: 150
 
                         ListView {
                             id: listView
@@ -367,10 +371,10 @@ Item {
                                         Text {
                                             anchors.fill: parent
                                             verticalAlignment: Text.AlignVCenter
-                                            text: "Search wallpapers..."
+                                            text: `Search among ${folderModel.count} wallpapers`
                                             color: Theme.onSurfaceVariant
                                             visible: !searchInput.text && !searchInput.activeFocus
-                                            font.pixelSize: 14
+                                            font.pixelSize: 13
                                             font.family: "CaskaydiaCove NF"
                                         }
 

@@ -2,6 +2,8 @@
 import QtQuick
 import qs.Services.Theme
 import qs.Services.Shapes
+import qs.Modules.Hut.Powerski
+import qs.Modules.Hut.Profile
 
 Item {
     id: root
@@ -38,8 +40,8 @@ Item {
         id: content
         anchors.right: parent.right
         anchors.top: parent.top
-        width: 400
-        height: isHovered ? 300 : 1
+        width: contentLoader.item ? contentLoader.item.implicitWidth + 48 : 280
+        height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 48 : 140) : 1
         alignment: 1
         radius: 20
         color: Theme.surfaceContainerLow
@@ -52,33 +54,59 @@ Item {
             }
         }
 
+        Behavior on width {
+            NumberAnimation {
+                duration: 350
+                easing.type: Easing.OutCubic
+            }
+        }
+
         Loader {
             id: contentLoader
             anchors.fill: parent
-            anchors.margins: 10
+            anchors.leftMargin: 15
             active: false
             asynchronous: true
 
             sourceComponent: Item {
+                id: contentItem
                 visible: root.isHovered
+                implicitWidth: Math.max(profileComponent.implicitWidth, powerskiComponent.implicitWidth)
+                implicitHeight: mainContent.implicitHeight
 
-                Rectangle {
-                    anchors.fill: parent
-                    anchors{
-                      leftMargin: 20
-                      rightMargin: 0
-                      topMargin: -15
-                      bottomMargin: 10
+                property real contentOpacity: root.isHovered ? 1 : 0
+                property real contentTranslateY: root.isHovered ? 0 : -20
+
+                Behavior on contentOpacity {
+                    NumberAnimation {
+                        duration: 350
+                        easing.type: Easing.OutCubic
                     }
-                    color: Theme.surfaceContainer
-                    radius: 12
+                }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Hut Content"
-                        color: Theme.onSurface
-                        font.pixelSize: 16
-                        font.family: "CaskaydiaCove NF"
+                Behavior on contentTranslateY {
+                    NumberAnimation {
+                        duration: 350
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                opacity: contentOpacity
+                transform: Translate {
+                    y: contentTranslateY
+                }
+
+                Column {
+                    id: mainContent
+                    spacing: 16
+
+                    Profile {
+                        id: profileComponent
+                    }
+
+                    Powerski {
+                        id: powerskiComponent
+                        anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
             }

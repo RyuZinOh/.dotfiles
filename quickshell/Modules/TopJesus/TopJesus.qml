@@ -5,9 +5,6 @@ import qs.Services.Theme
 import qs.Modules.TopJesus.ControlRoom
 import qs.Modules.TopJesus.Statuski
 
-//[If you to use these go to respected Modules and Backup those .bak files according to readme]
-// import qs.Modules.TopJesus.Timerchan
-// import qs.Modules.TopJesus.Streaks
 import qs.Services.Music
 
 Item {
@@ -32,14 +29,6 @@ Item {
             name: "Status",
             component: statusComponent
         },
-        // {
-        //     name: "TimerChan",
-        //     component: timerComponent
-        // },
-        // // {
-        //     name: "GitHub",
-        //     component: githubComponent
-        // },
         {
             name: "Music",
             component: musicComponent
@@ -314,16 +303,6 @@ Item {
         id: statusComponent
         Statuski {}
     }
-    // Component {
-    //     id: timerComponent
-    //     Timerchan {}
-    // }
-    //
-    // Component {
-    //     id: githubComponent
-    //     Github {}
-    // }
-    //
     Component {
         id: musicComponent
         Controller {}

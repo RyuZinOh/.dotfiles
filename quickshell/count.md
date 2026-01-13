@@ -1,8 +1,0 @@
-- [x] Anilist
-- [x] Kururin
-- [x] Setski [Wallski] 
-- [x] Notification system
-- [x] Pictorial
-- [x] LockSurface
-- [x] ContextMenu [Window Like Refresh]
-- [x] TopJesus [wow, systemusage, statuski, musiccontroller, githubstreaks, timerchan]

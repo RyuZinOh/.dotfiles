@@ -1,7 +1,6 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-// import qs.Modules.Pictorial
 import qs.Services.WallpaperService
 import qs.Modules.MAL
 // import qs.Modules.KuruKuru
@@ -79,13 +78,6 @@ Scope {
             // Kururin {
             //     id: kuruRef
             //     anchors.left: parent.left
-            //     anchors.bottom: parent.bottom
-            // }
-
-            // pictorial at right-bottom side
-            // Pictorial {
-            //     id: pictorialRef
-            //     anchors.right: parent.right
             //     anchors.bottom: parent.bottom
             // }
 

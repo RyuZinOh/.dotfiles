@@ -1,7 +1,6 @@
 import QtQuick
 import qs.Services.Theme
 import qs.Components.Toolski.Nihongo
-import qs.Components.Toolski.Powerski
 import qs.Components.Toolski.War
 import qs.Components.Toolski.Wow
 
@@ -187,12 +186,6 @@ Item {
                     icon: "日本",
                     blade: 0,
                     cardHeight: 850,
-                    cardWidth: 500
-                },
-                {
-                    icon: "󰘳",
-                    blade: 1,
-                    cardHeight: 300,
                     cardWidth: 500
                 },
                 {
@@ -389,10 +382,8 @@ Item {
                     case 0:
                         return nihongoComponent;
                     case 1:
-                        return powerskiComponent;
-                    case 2:
                         return warComponent;
-                    case 3:
+                    case 2:
                         return wowComponent;
                     default:
                         return null;
@@ -411,11 +402,6 @@ Item {
             Component {
                 id: nihongoComponent
                 Nihongo {}
-            }
-
-            Component {
-                id: powerskiComponent
-                Powerski {}
             }
 
             Component {
