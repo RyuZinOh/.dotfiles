@@ -41,7 +41,7 @@ Item {
         id: content
         anchors.right: parent.right
         anchors.top: parent.top
-        width: contentLoader.item ? contentLoader.item.implicitWidth + 48 : 280
+        width: 400
         height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 48 : 140) : 1
         alignment: 1
         radius: 20
@@ -55,12 +55,12 @@ Item {
             }
         }
 
-        Behavior on width {
-            NumberAnimation {
-                duration: 350
-                easing.type: Easing.OutCubic
-            }
-        }
+        // Behavior on width {
+        //     NumberAnimation {
+        //         duration: 350
+        //         easing.type: Easing.OutCubic
+        //     }
+        // }
 
         Loader {
             id: contentLoader
