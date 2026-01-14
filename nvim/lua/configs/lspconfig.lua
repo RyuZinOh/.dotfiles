@@ -29,6 +29,7 @@ vim.lsp.config("clangd", {
     "--clang-tidy",
     "--background-index",
     "--completion-style=detailed",
+    "--header-insertion=never",
   },
   filetypes = { "c", "cpp", "objc", "objcpp" },
   root_dir = vim.fs.root(0, { "compile_commands.json", ".git" }),
@@ -84,7 +85,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 vim.lsp.config("pyright", {
   cmd = { "pyright-langserver", "--stdio" },
   filetypes = { "python" },
-  root_dir = vim.fs.root(0, {"pyrightconfig.json", "pyproject.toml", "setup.py", "requirements.txt", "venv", ".git" }),
+  root_dir = vim.fs.root(0, { "pyrightconfig.json", "pyproject.toml", "setup.py", "requirements.txt", "venv", ".git" }),
   settings = {
     python = {
       analysis = {

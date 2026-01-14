@@ -4,6 +4,7 @@ import qs.Services.Theme
 import qs.Services.Shapes
 import qs.Modules.Hut.Powerski
 import qs.Modules.Hut.Profile
+import qs.Modules.Hut.Warsa
 
 Item {
     id: root
@@ -71,7 +72,7 @@ Item {
             sourceComponent: Item {
                 id: contentItem
                 visible: root.isHovered
-                implicitWidth: Math.max(profileComponent.implicitWidth, powerskiComponent.implicitWidth)
+                implicitWidth: Math.max(profileComponent.implicitWidth, warsaComponent.implicitWidth, powerskiComponent.implicitWidth)
                 implicitHeight: mainContent.implicitHeight
 
                 property real contentOpacity: root.isHovered ? 1 : 0
@@ -102,6 +103,10 @@ Item {
 
                     Profile {
                         id: profileComponent
+                    }
+                    Warsa {
+                        id: warsaComponent
+                        anchors.horizontalCenter: parent.horizontalCenter
                     }
 
                     Powerski {

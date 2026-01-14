@@ -50,7 +50,7 @@ Item {
 
     Rectangle {
         id: profileCard
-        width: profileRow.width + 24
+        width: profileRow.width + 100
         height: profileRow.height + 16
         radius: 14
         color: Theme.surfaceContainerHigh
