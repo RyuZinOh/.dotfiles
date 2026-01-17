@@ -83,9 +83,9 @@ Item {
                 if (item && item.searchInput) {
                     item.searchInput.text = "";
                 }
-                if (item && item.listView && Dat.WallpaperConfig.currentWallpaper) {
+                if (item && item.listView && Dat.WallpaperConfigAdapter.currentWallpaper) {
                     Qt.callLater(function () {
-                        const currentFilename = Dat.WallpaperConfig.currentWallpaper.split('/').pop();
+                        const currentFilename = Dat.WallpaperConfigAdapter.currentWallpaper.split('/').pop();
                         for (let i = 0; i < folderModel.count; i++) {
                             if (folderModel.get(i, "fileName") === currentFilename) {
                                 item.listView.currentIndex = i;
@@ -585,8 +585,10 @@ Item {
         thumbPersistProcess.command = ["/usr/bin/sh", "-c", `echo "${thumbPath}" > /home/safal726/.cache/safalQuick/persist_thumb`];
         thumbPersistProcess.running = true;
 
-        Dat.WallpaperConfig.currentWallpaper = fileUrl;
-        Dat.WallpaperConfig.saveWallpaper(fileUrl);
+        setWallpaperProcess.command = ["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fullPath];
+        setWallpaperProcess.running = true;
+
+        // Dat.WallpaperConfigAdapter.currentWallpaper = fileUrl; // this turned out to be runtime cause singleton and I dont have a explicit savecall..
 
         copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fullPath}" /home/safal726/.cache/safalQuick/bg.jpg`];
         copyProcess.running = true;
@@ -606,5 +608,8 @@ Item {
     }
     Process {
         id: thumbPersistProcess
+    }
+    Process {
+        id: setWallpaperProcess
     }
 }

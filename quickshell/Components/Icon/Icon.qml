@@ -17,7 +17,7 @@ Item {
         source: root.name ? `file:///home/safal726/.cache/safalQuick/svgs/${root.name}.svg` : ""
         sourceSize: Qt.size(root.size, root.size)
         smooth: true
-        cache: true
+        cache: false
         asynchronous: true
         visible: false
     }
@@ -26,6 +26,6 @@ Item {
         anchors.fill: img
         source: img
         color: root.color
-        cached: true
+        cached: false
     }
 }

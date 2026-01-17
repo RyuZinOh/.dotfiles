@@ -2,8 +2,6 @@ import Quickshell
 import QtQuick
 import Quickshell.Wayland
 import qs.Services.WallpaperService
-import qs.Modules.MAL
-// import qs.Modules.KuruKuru
 import qs.Modules.ContextMenu
 import qs.Modules.Wallski
 
@@ -42,14 +40,8 @@ Scope {
 
             //wallpaperService
             WallpaperService {
-                id: wallpaperService
                 anchors.fill: parent
                 isHovered: wallskiRef.isHovered
-
-                //customs
-                enablePanning: true
-                transitionType: "bubble"
-                // transitionType: "instant"
             }
 
             //touchpad gestured right click contextmenu [Just like Windows]
@@ -72,20 +64,6 @@ Scope {
                 id: wallskiRef
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
-            }
-
-            // kururin leftbottom
-            // Kururin {
-            //     id: kuruRef
-            //     anchors.left: parent.left
-            //     anchors.bottom: parent.bottom
-            // }
-
-            //anilist but contains todolist as well
-            Anilist {
-                id: aniRef
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
             }
         }
     }

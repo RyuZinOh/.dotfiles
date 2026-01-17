@@ -42,7 +42,13 @@ Item {
 
     //tracking workspace which has clients
     property var workspacewithWindows: ({})
+    property bool componentActive: true
+
     function updtateWWW() {
+        if (!componentActive) {
+            return;
+        }
+
         var occupied = {};
         //check clients
         var allWorkspaces = Hyprland.workspaces.values;
@@ -56,20 +62,32 @@ Item {
     }
 
     Component.onCompleted: updtateWWW()
+
+    Component.onDestruction: {
+        componentActive = false;
+    }
+
     //emit the signal whenever the changes occur
     Connections {
         target: Hyprland.workspaces
+        enabled: componentActive
         function onValuesChanged() {
-            updtateWWW();
+            if (componentActive) {
+                updtateWWW();
+            }
         }
     }
 
     Connections {
         target: Hyprland
+        enabled: componentActive
         function onFocusedWorkspaceChanged() {
-            updtateWWW();
+            if (componentActive) {
+                updtateWWW();
+            }
         }
     }
+
     implicitWidth: workspaces.length * (workspaceSize + spacing)
     implicitHeight: workspaceSize + spacing
     Rectangle {
@@ -79,6 +97,7 @@ Item {
 
     Row {
         anchors.centerIn: parent
+        //spacing: root.spacing
         visible: root.showNumbers
         Repeater {
             model: root.workspaces
@@ -89,28 +108,31 @@ Item {
 
                 property bool isHovered: false
                 property bool hasWindows: !!root.workspacewithWindows[modelData] //convert to false if undefined with !!
+                property bool isActive: modelData === root.activeWorkspaceId
+
                 Text {
                     anchors.centerIn: parent
                     visible: root.showNumbers
                     text: root.jpN[modelData]
                     font.bold: true
-                    font.pixelSize: (modelData === root.activeWorkspaceId) ? 24 : 20
+                    font.pixelSize: parent.isActive ? 24 : 20
                     color: {
                         if (parent.isHovered) {
                             return root.activeColor;
                         }
-                        if (modelData === root.activeWorkspaceId) {
+                        if (parent.isActive) {
                             return root.activeColor;
                         }
                         if (parent.hasWindows) {
                             return root.occupiedColor;
                         }
+                        return root.occupiedColor;
                     }
                     opacity: {
                         if (parent.isHovered) {
                             return 0.85;
                         }
-                        if (modelData === root.activeWorkspaceId) {
+                        if (parent.isActive) {
                             return 1;
                         }
                         if (parent.hasWindows) {
@@ -139,10 +161,12 @@ Item {
                 MouseArea {
                     hoverEnabled: true
                     anchors.fill: parent
-                    onClicked: if (modelData && modelData !== root.activeWorkspaceId) {
-                        Hyprland.dispatch("workspace " + modelData); // wow we need space lol
-                    }
                     cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (modelData && !parent.isActive) {
+                            Hyprland.dispatch("workspace " + modelData); // wow we need space lol
+                        }
+                    }
                     onEntered: {
                         if (parent)
                             parent.isHovered = true; //checks

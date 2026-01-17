@@ -22,6 +22,8 @@ Item {
                 height: 64
                 radius: shutdownMouse.containsMouse ? 32 : 16
                 color: shutdownMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHighest
+                border.width: shutdownMouse.containsMouse ? 2 : 1
+                border.color: shutdownMouse.containsMouse ? Theme.primaryColor : Theme.outlineVariant
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Behavior on radius {
@@ -35,6 +37,18 @@ Item {
                     ColorAnimation {
                         duration: 200
                         easing.type: Easing.OutCubic
+                    }
+                }
+
+                Behavior on border.width {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
+
+                Behavior on border.color {
+                    ColorAnimation {
+                        duration: 200
                     }
                 }
 
@@ -95,6 +109,8 @@ Item {
                 height: 64
                 radius: restartMouse.containsMouse ? 32 : 16
                 color: restartMouse.containsMouse ? Theme.secondaryContainer : Theme.surfaceContainerHighest
+                border.width: restartMouse.containsMouse ? 2 : 1
+                border.color: restartMouse.containsMouse ? Theme.secondaryColor : Theme.outlineVariant
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Behavior on radius {
@@ -108,6 +124,18 @@ Item {
                     ColorAnimation {
                         duration: 200
                         easing.type: Easing.OutCubic
+                    }
+                }
+
+                Behavior on border.width {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
+
+                Behavior on border.color {
+                    ColorAnimation {
+                        duration: 200
                     }
                 }
 
@@ -168,6 +196,8 @@ Item {
                 height: 64
                 radius: lockMouse.containsMouse ? 32 : 16
                 color: lockMouse.containsMouse ? Theme.tertiaryContainer : Theme.surfaceContainerHighest
+                border.width: lockMouse.containsMouse ? 2 : 1
+                border.color: lockMouse.containsMouse ? Theme.tertiaryColor : Theme.outlineVariant
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Behavior on radius {
@@ -181,6 +211,18 @@ Item {
                     ColorAnimation {
                         duration: 200
                         easing.type: Easing.OutCubic
+                    }
+                }
+
+                Behavior on border.width {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
+
+                Behavior on border.color {
+                    ColorAnimation {
+                        duration: 200
                     }
                 }
 

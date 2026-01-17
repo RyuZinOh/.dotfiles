@@ -3,38 +3,47 @@ import QtQuick
 import qs.Services.Shapes
 import qs.Services.Theme
 import qs.Modules.TopJesus.ControlRoom
-import qs.Modules.TopJesus.Statuski
-
-import qs.Services.Music
+import qs.Components.workspace
+import qs.Components.ymdt
+import qs.Modules.TopJesus.Wset
+import qs.Modules.TopJesus.MAL
+import qs.Components.battery
+import qs.Components.Icon
+import Quickshell
 
 Item {
     id: root
+    //enable this for extra pin stuff [very interesthing]
+    PanelWindow {
+        anchors.top: true
+        implicitWidth: 0
+        implicitHeight: 0
+        exclusiveZone: 40
+        visible: root.isPinned
+    }
 
-    implicitWidth: popout.implicitWidth
-    implicitHeight: popout.implicitHeight
+    implicitWidth: 1440
+    implicitHeight: popout.height + nestedPopout.height
     width: implicitWidth
     height: implicitHeight
 
     property bool isHovered: false
     property bool isPinned: false
-    property int activeTab: 1 // default is 1 -> Status component
-    property real targetWidth: 400
+    property int activePopout: 0
 
-    readonly property var tabs: [
-        {
-            name: "Control",
-            component: controlRoomComponent
-        },
-        {
-            name: "Status",
-            component: statusComponent
-        },
-        {
-            name: "Music",
-            component: musicComponent
-        },
-    ]
-    // was testing but creates a good background dropshadow somehow lol
+    MouseArea {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 1
+        hoverEnabled: true
+
+        onEntered: {
+            root.isHovered = true;
+        }
+    }
+
+  // was testing but creates a good background dropshadow somehow lol
     // FastBlur {
     //     anchors.fill: popout
     //     source: popout
@@ -46,173 +55,67 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
-        implicitWidth: targetWidth
-        implicitHeight: (isHovered || isPinned) ? (tabBar.height + 8 + contentArea.height + 40) : 0.1
-
-        width: implicitWidth
-        height: implicitHeight
+        width: 1440
+        height: (isHovered || isPinned) ? 40 : 0
 
         alignment: 0
         radius: 20
         color: Theme.surfaceContainer
-        visible: (isHovered || isPinned) || heightAnimation.running
 
         Behavior on height {
             NumberAnimation {
-                id: heightAnimation
                 duration: 400
-                easing.type: Easing.OutQuad
-            }
-        }
-
-        Behavior on width {
-            enabled: isHovered || isPinned
-            NumberAnimation {
-                duration: 300
                 easing.type: Easing.OutQuad
             }
         }
 
         Item {
             anchors.fill: parent
-            anchors.margins: 15
-            visible: isHovered || isPinned
+            anchors.margins: 10
+            opacity: (isHovered || isPinned) ? 1 : 0
 
-            Item {
-                id: tabBar
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 32
-
-                Item {
-                    id: tabsContainer
-                    anchors.centerIn: parent
-                    width: childrenRect.width
-                    height: parent.height
-
-                    Row {
-                        id: tabRow
-                        spacing: 25
-                        height: parent.height
-
-                        Repeater {
-                            id: tabRepeater
-                            model: root.tabs
-
-                            Item {
-                                id: tabButton
-                                width: tabLabel.width + 20
-                                height: tabRow.height
-
-                                readonly property bool isActive: root.activeTab === index
-                                readonly property string tabName: modelData.name
-
-                                Text {
-                                    id: tabLabel
-                                    anchors.centerIn: parent
-                                    text: tabButton.tabName
-                                    color: tabButton.isActive ? Theme.onSurface : Theme.onSurfaceVariant
-                                    font.pixelSize: 13
-                                    font.weight: tabButton.isActive ? Font.Medium : Font.Normal
-                                    font.family: "CaskaydiaCove NF"
-                                    opacity: tabButton.isActive ? 1.0 : 0.5
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
-                                    Behavior on opacity {
-                                        NumberAnimation {
-                                            duration: 200
-                                        }
-                                    }
-                                }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        root.activeTab = index;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        id: indicator
-                        height: 3
-                        radius: 50
-                        color: Theme.primaryColor
-
-                        property real targetX: 0
-                        property real targetWidth: 0
-
-                        x: targetX
-                        width: targetWidth
-
-                        Component.onCompleted: {
-                            updateIndicator();
-                        }
-
-                        Connections {
-                            target: root
-                            function onActiveTabChanged() {
-                                indicator.updateIndicator();
-                            }
-                        }
-
-                        Connections {
-                            target: tabRepeater
-                            function onItemAdded() {
-                                Qt.callLater(indicator.updateIndicator);
-                            }
-                        }
-
-                        function updateIndicator() {
-                            if (tabRepeater.count === 0) {
-                                return;
-                            }
-
-                            const activeItem = tabRepeater.itemAt(root.activeTab);
-                            if (!activeItem) {
-                                return;
-                            }
-
-                            targetX = activeItem.x;
-                            targetWidth = activeItem.width;
-                        }
-
-                        Behavior on targetX {
-                            NumberAnimation {
-                                duration: 200
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-
-                        Behavior on targetWidth {
-                            NumberAnimation {
-                                duration: 200
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-                    }
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutQuad
                 }
+            }
 
-                // pin button in case u want a beauty
+            Workspace {
+                id: workspaces
+                bgOva: "transparent"
+                height: 50
+                anchors.left: parent.left
+                anchors.leftMargin: 15
+                anchors.verticalCenter: parent.verticalCenter
+                workspaceSize: 40
+                spacing: 12
+                showNumbers: true
+            }
+
+            Row {
+                id: rightPanel
+                spacing: 20
+                anchors.right: parent.right
+                anchors.rightMargin: 15
+                anchors.verticalCenter: parent.verticalCenter
+
                 Rectangle {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
                     width: 28
                     height: 28
                     radius: 6
                     color: pinMouseArea.containsMouse ? Theme.surfaceBright : "transparent"
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
 
                     Text {
                         anchors.centerIn: parent
-                        text: root.isPinned ? "󰐃" : "󰐃"
+                        text: "󰐃"
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 16
                         color: root.isPinned ? Theme.primaryColor : Theme.onSurfaceVariant
@@ -223,6 +126,7 @@ Item {
                                 duration: 200
                             }
                         }
+
                         Behavior on rotation {
                             NumberAnimation {
                                 duration: 200
@@ -240,49 +144,333 @@ Item {
                             root.isPinned = !root.isPinned;
                         }
                     }
+                }
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 150
+                Battery {
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: cpuIconArea
+                    width: 28
+                    height: 28
+                    radius: 6
+                    color: "transparent"
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Icon {
+                        name: "onigiri"
+                        size: 24
+                        color: cpuMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurfaceVariant
+                        anchors.centerIn: parent
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: cpuMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+
+                        onEntered: {
+                            hoverTimer.stop();
+                            root.activePopout = 1;
+                        }
+
+                        onExited: {
+                            hoverTimer.restart();
                         }
                     }
                 }
+
+                Rectangle {
+                    id: anilistIconArea
+                    width: 28
+                    height: 28
+                    radius: 6
+                    color: "transparent"
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Icon {
+                        name: "feather"
+                        size: 24
+                        color: anilistMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurfaceVariant
+                        anchors.centerIn: parent
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: anilistMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+
+                        onEntered: {
+                            hoverTimer.stop();
+                            root.activePopout = 3;
+                        }
+
+                        onExited: {
+                            hoverTimer.restart();
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: settingsIconArea
+                    width: 28
+                    height: 28
+                    radius: 6
+                    color: "transparent"
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Icon {
+                        name: "gear"
+                        size: 24
+                        color: settingsMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurfaceVariant
+                        anchors.centerIn: parent
+                        rotation: settingsMouseArea.containsMouse ? 90 : 0
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+
+                        Behavior on rotation {
+                            NumberAnimation {
+                                duration: 400
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: settingsMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+
+                        onEntered: {
+                            hoverTimer.stop();
+                            root.activePopout = 2;
+                        }
+
+                        onExited: {
+                            hoverTimer.restart();
+                        }
+                    }
+                }
+
+                DayWidget {
+                    font.family: "0xProto Nerd Font"
+                    font.pixelSize: 16
+                    font.bold: true
+                    color: Theme.onSurface
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Column {
+                    spacing: 2
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    ClockWidget {
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 14
+                        color: Theme.onSurface
+                    }
+
+                    DateWidget {
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 14
+                        color: Theme.onSurface
+                    }
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: hoverTimer
+        interval: 150
+        onTriggered: {
+            root.activePopout = 0;
+        }
+    }
+
+    PopoutShape {
+        id: nestedPopout
+        anchors.top: popout.bottom
+        anchors.topMargin: 0
+
+        property int lastActive: 1
+        property bool isAnimating: widthAnim.running || heightAnim.running
+
+        onVisibleChanged: {
+            if (visible && activePopout > 0) {
+                lastActive = activePopout;
+            }
+        }
+
+        readonly property real targetWidth: {
+            if (activePopout === 1) {
+                return 700;
+            }
+            if (activePopout === 2) {
+                return 380;
+            }
+            if (activePopout === 3) {
+                return 400;
+            }
+            return (lastActive === 1) ? 700 : (lastActive === 2) ? 380 : 395;
+        }
+
+        readonly property real targetHeight: {
+            if (activePopout === 1) {
+                return 240;
+            }
+            if (activePopout === 2) {
+                return 300;
+            }
+            if (activePopout === 3) {
+                return 320;
+            }
+            return 0;
+        }
+
+        readonly property real targetX: {
+            var popoutToUse = activePopout > 0 ? activePopout : lastActive;
+            if (popoutToUse === 1) {
+                return parent.width - targetWidth - 50;
+            }
+            if (popoutToUse === 2) {
+                return parent.width - targetWidth - 250;
+            }
+            if (popoutToUse === 3) {
+                return parent.width - targetWidth - 50;
+            }
+            return (parent.width - targetWidth) / 2;
+        }
+
+        width: targetWidth
+        height: targetHeight
+        x: targetX
+
+        alignment: 0
+        radius: 20
+        color: Theme.surfaceContainer
+        visible: height > 1 || isAnimating
+
+        Behavior on width {
+            enabled: activePopout > 0
+            NumberAnimation {
+                id: widthAnim
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        Behavior on height {
+            NumberAnimation {
+                id: heightAnim
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        Behavior on x {
+            enabled: activePopout > 0
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        HoverHandler {
+            onHoveredChanged: {
+                if (hovered) {
+                    hoverTimer.stop();
+                } else {
+                    hoverTimer.restart();
+                }
+            }
+        }
+
+        Item {
+            anchors.fill: parent
+            clip: true
+
+            Loader {
+                id: controlRoomLoader
+                anchors.centerIn: parent
+                width: 670
+                height: 210
+                active: activePopout === 1
+                asynchronous: true
+                opacity: activePopout === 1 ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+
+                sourceComponent: Component {
+                    ControlRoom {}
+                }
             }
 
-            Item {
-                id: contentArea
-                anchors.top: tabBar.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: contentLoader.item ? contentLoader.item.implicitHeight : 160
-                clip: true
+            Loader {
+                id: settingsLoader
+                anchors.fill: parent
+                anchors.margins: 10
+                active: activePopout === 2
+                asynchronous: true
+                opacity: activePopout === 2 ? 1 : 0
+                visible: opacity > 0
 
-                Loader {
-                    id: contentLoader
-                    anchors.fill: parent
-                    opacity: 0
-                    //unload inactive tabs to save memory
-                    active: root.isHovered || root.isPinned // probably make it true so that timerchan and other conponent stays active but ye [i dont need it for some reason cause I am not using other stuff beside controlroom and overview so]
-
-                    sourceComponent: root.tabs[root.activeTab].component
-
-                    onLoaded: {
-                        if (item) {
-                            const newWidth = item.implicitWidth || 400;
-                            root.targetWidth = newWidth;
-                        }
-                        fadeIn.restart();
-                    }
-
+                Behavior on opacity {
                     NumberAnimation {
-                        id: fadeIn
-                        target: contentLoader
-                        property: "opacity"
-                        from: 0
-                        to: 1
-                        duration: 250
-                        easing.type: Easing.OutQuad
+                        duration: 200
+                        easing.type: Easing.InOutQuad
                     }
+                }
+
+                sourceComponent: Component {
+                    Wset {}
+                }
+            }
+
+            Loader {
+                id: anilistLoader
+                anchors.fill: parent
+                anchors.margins: 10
+                active: true
+                asynchronous: false
+                opacity: activePopout === 3 ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+
+                sourceComponent: Component {
+                    Anilist {}
                 }
             }
         }
@@ -291,20 +479,9 @@ Item {
     HoverHandler {
         onHoveredChanged: {
             root.isHovered = hovered;
+            if (!hovered) {
+                root.activePopout = 0;
+            }
         }
-    }
-
-    Component {
-        id: controlRoomComponent
-        ControlRoom {}
-    }
-
-    Component {
-        id: statusComponent
-        Statuski {}
-    }
-    Component {
-        id: musicComponent
-        Controller {}
     }
 }
