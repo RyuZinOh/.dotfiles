@@ -4,7 +4,11 @@
 
 feel free to use this, I myself using others modules and stuffs with a lil bit of tweaks
 
-https://github.com/user-attachments/assets/5b0cfd0a-7a7f-4155-bd11-aade0d5853fe
+
+
+https://github.com/user-attachments/assets/6d9aae5d-787d-4acb-a924-c7aa2bf49196
+
+
 <table>
   <thead>
     <tr>
