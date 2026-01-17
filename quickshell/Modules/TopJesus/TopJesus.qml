@@ -9,19 +9,19 @@ import qs.Modules.TopJesus.Wset
 import qs.Modules.TopJesus.MAL
 import qs.Components.battery
 import qs.Components.Icon
-import Quickshell
+
+// import Quickshell
 
 Item {
     id: root
     //enable this for extra pin stuff [very interesthing]
-    PanelWindow {
-        anchors.top: true
-        implicitWidth: 0
-        implicitHeight: 0
-        exclusiveZone: 40
-        visible: root.isPinned
-    }
-
+    // PanelWindow {
+    //     anchors.top: true
+    //     implicitWidth: 0
+    //     implicitHeight: 0
+    //     exclusiveZone: 40
+    //     visible: root.isPinned
+    // }
     implicitWidth: 1440
     implicitHeight: popout.height + nestedPopout.height
     width: implicitWidth
@@ -43,7 +43,7 @@ Item {
         }
     }
 
-  // was testing but creates a good background dropshadow somehow lol
+    // was testing but creates a good background dropshadow somehow lol
     // FastBlur {
     //     anchors.fill: popout
     //     source: popout
