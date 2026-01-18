@@ -6,20 +6,42 @@ import Quickshell.Io
 
 Singleton {
     id: root
+    property bool isActive: false
 
     signal showOmnitrix
     signal hideOmnitrix
 
-    // IPC Handler for omnitrix control
+    Connections {
+        target: StateManager
+        function onStatesChanged() {
+            const newState = StateManager.get("omnitrix", false);
+            if (root.isActive !== newState) {
+                root.isActive = newState;
+                if (newState)
+                    root.showOmnitrix();
+                else
+                    root.hideOmnitrix();
+            }
+        }
+    }
+ // IPC Handler for omnitrix control
     IpcHandler {
         target: "omnitrix"
 
         function activate() {
-            root.showOmnitrix();
+            if (!root.isActive) {
+                root.isActive = true;
+                StateManager.set("omnitrix", true);
+                root.showOmnitrix();
+            }
         }
 
         function deactivate() {
-            root.hideOmnitrix();
+            if (root.isActive) {
+                root.isActive = false;
+                StateManager.set("omnitrix", false);
+                root.hideOmnitrix();
+            }
         }
     }
 }

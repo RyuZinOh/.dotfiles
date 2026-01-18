@@ -4,7 +4,6 @@
 import QtQuick
 import Warsa
 import qs.Services.Theme
-import qs.Components.Icon
 import qs.Utils
 
 Item {

@@ -2,7 +2,6 @@
 import QtQuick
 import qs.Services.Theme
 import qs.Services.Shapes
-import qs.Modules.Hut.Powerski
 import qs.Modules.Hut.Profile
 import qs.Modules.Hut.Warsa
 import qs.Modules.Hut.Evernight
@@ -67,7 +66,7 @@ Item {
             sourceComponent: Item {
                 id: contentItem
                 visible: root.isHovered
-                implicitWidth: Math.max(profileComponent.implicitWidth, areuokLoader.item ? areuokLoader.item.implicitWidth : 0, evernightLoader.item ? evernightLoader.item.implicitWidth : 0, warsaLoader.item ? warsaLoader.item.implicitWidth : 0, powerskiLoader.item ? powerskiLoader.item.implicitWidth : 0)
+                implicitWidth: Math.max(profileComponent.implicitWidth, areuokLoader.item ? areuokLoader.item.implicitWidth : 0, evernightLoader.item ? evernightLoader.item.implicitWidth : 0, warsaLoader.item ? warsaLoader.item.implicitWidth : 0)
                 implicitHeight: mainContent.implicitHeight
 
                 property real contentOpacity: root.isHovered ? 1 : 0
@@ -124,15 +123,6 @@ Item {
                         asynchronous: true
                         sourceComponent: Component {
                             Warsa {}
-                        }
-                    }
-                    Loader {
-                        id: powerskiLoader
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        active: root.isHovered
-                        asynchronous: true
-                        sourceComponent: Component {
-                            Powerski {}
                         }
                     }
                 }

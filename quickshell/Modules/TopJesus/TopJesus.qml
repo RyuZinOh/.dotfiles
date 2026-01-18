@@ -7,7 +7,9 @@ import qs.Components.workspace
 import qs.Components.ymdt
 import qs.Modules.TopJesus.Wset
 import qs.Modules.TopJesus.MAL
+import qs.Modules.TopJesus.Powerski
 import qs.Components.battery
+import qs.Modules.TopJesus.Callgorl
 import qs.Components.Icon
 
 // import Quickshell
@@ -30,6 +32,12 @@ Item {
     property bool isHovered: false
     property bool isPinned: false
     property int activePopout: 0
+
+    onActivePopoutChanged: {
+        if (activePopout > 0) {
+            nestedPopout.lastActive = activePopout;
+        }
+    }
 
     MouseArea {
         anchors.top: parent.top
@@ -64,7 +72,7 @@ Item {
 
         Behavior on height {
             NumberAnimation {
-                duration: 400
+                duration: 200
                 easing.type: Easing.OutQuad
             }
         }
@@ -86,16 +94,14 @@ Item {
                 bgOva: "transparent"
                 height: 50
                 anchors.left: parent.left
-                anchors.leftMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
                 workspaceSize: 40
-                spacing: 12
                 showNumbers: true
             }
 
             Row {
                 id: rightPanel
-                spacing: 20
+                spacing: 10
                 anchors.right: parent.right
                 anchors.rightMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
@@ -150,18 +156,20 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
-                Rectangle {
-                    id: cpuIconArea
-                    width: 28
+                Item {
+                    id: popoutIconRowContainer
+                    width: popoutIconRow.width
                     height: 28
-                    radius: 6
-                    color: "transparent"
                     anchors.verticalCenter: parent.verticalCenter
 
-                    Icon {
-                        name: "onigiri"
-                        size: 24
-                        color: cpuMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurfaceVariant
+                    Rectangle {
+                        id: popoutIconRow
+                        width: iconRowContent.width + 20
+                        height: 32
+                        radius: 8
+                        color: root.activePopout > 0 ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
+                        border.color: root.activePopout > 0 ? Theme.primaryColor : Theme.outlineVariant
+                        border.width: root.activePopout > 0 ? 1 : 0.5
                         anchors.centerIn: parent
 
                         Behavior on color {
@@ -169,105 +177,220 @@ Item {
                                 duration: 200
                             }
                         }
-                    }
 
-                    MouseArea {
-                        id: cpuMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-
-                        onEntered: {
-                            hoverTimer.stop();
-                            root.activePopout = 1;
-                        }
-
-                        onExited: {
-                            hoverTimer.restart();
-                        }
-                    }
-                }
-
-                Rectangle {
-                    id: anilistIconArea
-                    width: 28
-                    height: 28
-                    radius: 6
-                    color: "transparent"
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    Icon {
-                        name: "feather"
-                        size: 24
-                        color: anilistMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurfaceVariant
-                        anchors.centerIn: parent
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        id: anilistMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-
-                        onEntered: {
-                            hoverTimer.stop();
-                            root.activePopout = 3;
-                        }
-
-                        onExited: {
-                            hoverTimer.restart();
-                        }
-                    }
-                }
-
-                Rectangle {
-                    id: settingsIconArea
-                    width: 28
-                    height: 28
-                    radius: 6
-                    color: "transparent"
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    Icon {
-                        name: "gear"
-                        size: 24
-                        color: settingsMouseArea.containsMouse ? Theme.primaryColor : Theme.onSurfaceVariant
-                        anchors.centerIn: parent
-                        rotation: settingsMouseArea.containsMouse ? 90 : 0
-
-                        Behavior on color {
+                        Behavior on border.color {
                             ColorAnimation {
                                 duration: 200
                             }
                         }
 
-                        Behavior on rotation {
+                        Behavior on border.width {
                             NumberAnimation {
-                                duration: 400
-                                easing.type: Easing.OutCubic
+                                duration: 200
+                            }
+                        }
+
+                        Row {
+                            id: iconRowContent
+                            anchors.centerIn: parent
+
+                            Rectangle {
+                                id: cpuIconArea
+                                width: 36
+                                height: 28
+                                radius: 6
+                                color: "transparent"
+
+                                Icon {
+                                    name: "onigiri"
+                                    size: 20
+                                    color: root.activePopout === 1 ? Theme.primaryColor : (cpuMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
+                                    anchors.centerIn: parent
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: cpuMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onEntered: {
+                                        root.activePopout = 1;
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                id: settingsIconArea
+                                width: 36
+                                height: 28
+                                radius: 6
+                                color: "transparent"
+
+                                Icon {
+                                    name: "gear"
+                                    size: 20
+                                    color: root.activePopout === 2 ? Theme.primaryColor : (settingsMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
+                                    anchors.centerIn: parent
+                                    rotation: settingsMouseArea.containsMouse ? 90 : 0
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
+
+                                    Behavior on rotation {
+                                        NumberAnimation {
+                                            duration: 400
+                                            easing.type: Easing.OutCubic
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: settingsMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onEntered: {
+                                        root.activePopout = 2;
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                id: anilistIconArea
+                                width: 36
+                                height: 28
+                                radius: 6
+                                color: "transparent"
+
+                                Icon {
+                                    name: "feather"
+                                    size: 20
+                                    color: root.activePopout === 3 ? Theme.primaryColor : (anilistMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
+                                    anchors.centerIn: parent
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: anilistMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onEntered: {
+                                        root.activePopout = 3;
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                id: desktopIconArea
+                                width: 36
+                                height: 28
+                                radius: 6
+                                color: "transparent"
+
+                                Icon {
+                                    name: "desktop"
+                                    size: 20
+                                    color: root.activePopout === 4 ? Theme.primaryColor : (desktopMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
+                                    anchors.centerIn: parent
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: desktopMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onEntered: {
+                                        root.activePopout = 4;
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                id: dancerIconArea
+                                width: 36
+                                height: 28
+                                radius: 6
+                                color: "transparent"
+
+                                Icon {
+                                    name: "plug"
+                                    size: 20
+                                    color: root.activePopout === 5 ? Theme.primaryColor : (dancerMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
+                                    anchors.centerIn: parent
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: dancerMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onEntered: {
+                                        root.activePopout = 5;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    MouseArea {
-                        id: settingsMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
+                    Rectangle {
+                        id: hoverBridge
+                        anchors.top: popoutIconRow.bottom
+                        anchors.horizontalCenter: popoutIconRow.horizontalCenter
+                        width: popoutIconRow.width
+                        height: 10
+                        color: "transparent"
+                        visible: root.activePopout > 0
 
-                        onEntered: {
-                            hoverTimer.stop();
-                            root.activePopout = 2;
+                        HoverHandler {
+                            onHoveredChanged: {
+                                if (hovered) {
+                                    hoverTimer.stop();
+                                } else {
+                                    hoverTimer.restart();
+                                }
+                            }
                         }
+                    }
 
-                        onExited: {
-                            hoverTimer.restart();
+                    HoverHandler {
+                        onHoveredChanged: {
+                            if (hovered) {
+                                hoverTimer.stop();
+                            } else {
+                                hoverTimer.restart();
+                            }
                         }
                     }
                 }
@@ -323,6 +446,24 @@ Item {
         }
 
         readonly property real targetWidth: {
+            if (activePopout === 0) {
+                if (lastActive === 1) {
+                    return 700;
+                }
+                if (lastActive === 2) {
+                    return 380;
+                }
+                if (lastActive === 3) {
+                    return 400;
+                }
+                if (lastActive === 4) {
+                    return 400;
+                }
+                if (lastActive === 5) {
+                    return 320;
+                }
+                return 700;
+            }
             if (activePopout === 1) {
                 return 700;
             }
@@ -332,10 +473,19 @@ Item {
             if (activePopout === 3) {
                 return 400;
             }
-            return (lastActive === 1) ? 700 : (lastActive === 2) ? 380 : 395;
+            if (activePopout === 4) {
+                return 400;
+            }
+            if (activePopout === 5) {
+                return 320;
+            }
+            return 700;
         }
 
         readonly property real targetHeight: {
+            if (activePopout === 0) {
+                return 0;
+            }
             if (activePopout === 1) {
                 return 240;
             }
@@ -345,21 +495,33 @@ Item {
             if (activePopout === 3) {
                 return 320;
             }
+            if (activePopout === 4) {
+                return 200;
+            }
+            if (activePopout === 5) {
+                return 200;
+            }
             return 0;
         }
 
         readonly property real targetX: {
             var popoutToUse = activePopout > 0 ? activePopout : lastActive;
             if (popoutToUse === 1) {
-                return parent.width - targetWidth - 50;
+                return parent.width - targetWidth - 75;
             }
             if (popoutToUse === 2) {
-                return parent.width - targetWidth - 250;
+                return parent.width - targetWidth - 200;
             }
             if (popoutToUse === 3) {
-                return parent.width - targetWidth - 50;
+                return parent.width - targetWidth - 200;
             }
-            return (parent.width - targetWidth) / 2;
+            if (popoutToUse === 4) {
+                return parent.width - targetWidth - 225;
+            }
+            if (popoutToUse === 5) {
+                return parent.width - targetWidth - 200;
+            }
+            return parent.width - targetWidth - 50;
         }
 
         width: targetWidth
@@ -471,6 +633,48 @@ Item {
 
                 sourceComponent: Component {
                     Anilist {}
+                }
+            }
+
+            Loader {
+                id: powerLoader
+                anchors.fill: parent
+                anchors.margins: 10
+                active: activePopout === 4
+                asynchronous: true
+                opacity: activePopout === 4 ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+
+                sourceComponent: Component {
+                    Powerski {}
+                }
+            }
+
+            Loader {
+                id: callgorlLoader
+                anchors.fill: parent
+                anchors.margins: 10
+                active: activePopout === 5
+                asynchronous: true
+                opacity: activePopout === 5 ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+
+                sourceComponent: Component {
+                    Callgorl {}
                 }
             }
         }
