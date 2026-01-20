@@ -499,7 +499,7 @@ Item {
                 return 200;
             }
             if (activePopout === 5) {
-                return 200;
+                return 240;
             }
             return 0;
         }

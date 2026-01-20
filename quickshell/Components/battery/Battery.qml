@@ -42,12 +42,12 @@ Row {
 
             Item {
                 id: batteryContainer
-                width: 42
-                height: 22
+                width: 33
+                height: 18
 
                 Rectangle {
                     id: terminal
-                    width: 3
+                    width: 2
                     height: 10
                     radius: 2
                     color: batteryData.accentColor
@@ -59,8 +59,8 @@ Row {
                     id: batteryBody
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 38
-                    height: 20
+                    width: 30
+                    height: 16
                     radius: 4
                     color: "transparent"
                     border.color: batteryData.accentColor

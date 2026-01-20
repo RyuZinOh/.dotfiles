@@ -8,7 +8,9 @@ import qs.Components.Dancer
 import qs.Components.Omnitrix
 // import qs.Modules.Ash
 import qs.Components.Toolski
+import qs.Components.Artiqa
 import qs.Modules.Hut
+import qs.Modules.TopJesus.Callgorl
 
 Scope {
     Variants {
@@ -46,7 +48,7 @@ Scope {
                     x: (hyperixonLayer.width / 2) - (topJesusRef.width / 2) //now supporting width cause component lke wow has width factor so..
                     y: 0
                     width: topJesusRef.width
-                    height: (topJesusRef.isHovered || topJesusRef.isPinned) ? topJesusRef.height + 20 : 1
+                    height: (topJesusRef.isHovered || topJesusRef.isPinned) ? topJesusRef.height : 1
                 }
 
                 /*
@@ -111,6 +113,14 @@ Scope {
                 //     width: ashRef.implicitWidth
                 //     height: ashRef.implicitHeight
                 // }
+
+                /*Artiqa*/
+                Region {
+                    x: 0
+                    y: 0
+                    width: artiqaRef.active ? hyperixonLayer.width : 1
+                    height: artiqaRef.active ? hyperixonLayer.height : 1
+                }
             }
 
             //content container
@@ -186,6 +196,40 @@ Scope {
 
                         function onHideDancer() {
                             bouncingDancer.active = false;
+                        }
+                    }
+                }
+                //artiqa drawing utility
+                Artiqa {
+                    id: artiqaRef
+                    anchors.fill: parent
+                    active: false
+
+                    focus: active
+                    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Escape) {
+                            pimp.call("artiqa", "deactivate");
+                            event.accepted = true;
+                        }
+                    }
+
+                    property var pimp: Pimp {}
+
+                    onActiveChanged: {
+                        if (!active && ArtiqaConfig.isActive) {
+                            pimp.call("artiqa", "deactivate");
+                        }
+                    }
+
+                    Connections {
+                        target: ArtiqaConfig
+
+                        function onShowArtiqa() {
+                            artiqaRef.active = true;
+                        }
+
+                        function onHideArtiqa() {
+                            artiqaRef.active = false;
                         }
                     }
                 }
