@@ -2,21 +2,17 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Kraken
 
 Singleton {
     id: root
 
-    property bool isDarkMode: {
-        modeFile.reload();
-        const text = modeFile.text()?.trim();
-        return text === "dark" || text === "" || !text;
-    }
+    readonly property string themePath: Quickshell.env("HOME") + "/.cache/safalQuick/theme.json"
+    readonly property string colorsPath: Quickshell.env("HOME") + "/.cache/safalQuick/colors.json"
 
-    property string currentSchemeType: {
-        schemeTypeFile.reload();
-        const text = schemeTypeFile.text()?.trim();
-        return text || "scheme-fruit-salad";
-    }
+    property bool isDarkMode: true
+    property string currentSchemeType: "scheme-fruit-salad"
+    property string thumbPath: ""
 
     readonly property var schemeTypes: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot", "scheme-vibrant"]
 
@@ -38,8 +34,9 @@ Singleton {
     }
 
     function setSchemeType(schemeType) {
-        saveSchemeProcess.command = ["/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && echo '${schemeType}' > /home/safal726/.cache/safalQuick/scheme_type`];
-        saveSchemeProcess.running = true;
+        currentSchemeType = schemeType;
+        saveTheme();
+        generateColors();
     }
 
     /* parsed color palette from json, auto-updates on mode change */
@@ -133,107 +130,94 @@ Singleton {
     property color textColor: onBackground
     property color dimColor: outlineColor
 
-    //watches colors.json
+    // kraken for theme config
+    Kraken {
+        id: themeKraken
+        filePath: root.themePath
+
+        onDataLoaded: {
+            if (loaded && isObject) {
+                if (has("isDarkMode")) {
+                    root.isDarkMode = get("isDarkMode", true);
+                }
+                if (has("schemeType")) {
+                    root.currentSchemeType = get("schemeType", "scheme-fruit-salad");
+                }
+                if (has("thumbPath")) {
+                    root.thumbPath = get("thumbPath", "");
+                }
+                // generate colors on load if thumbPath exists
+                if (root.thumbPath) {
+                    generateColors();
+                }
+            }
+        }
+
+        onLoadFailed: error => {
+            console.warn("theme config failed:", error);
+            saveTheme();
+        }
+    }
+
     FileView {
         id: jsonFile
-        path: "file:///home/safal726/.cache/safalQuick/colors.json"
+        path: root.colorsPath
         blockLoading: true
         watchChanges: true
         onFileChanged: reloadTimer.restart()
     }
-    /* reads persisted theme mode */
-    FileView {
-        id: modeFile
-        path: "file:///home/safal726/.cache/safalQuick/mode"
-        blockLoading: true
-        watchChanges: true
-    }
 
-    // schemes
     FileView {
-        id: schemeTypeFile
-        path: "file:///home/safal726/.cache/safalQuick/scheme_type"
+        id: themeFile
+        path: root.themePath
         blockLoading: true
         watchChanges: true
         onFileChanged: {
-            schemeTypeFile.reload();
-            schemeTypeTimer.restart();
+            themeKraken.reload();
         }
     }
 
-    /* reads persisted wallpaper path */
-    FileView {
-        id: persistFile
-        // path: "file:///home/safal726/.cache/safalQuick/persist" // use this if you want to ues matugen on a real file instead of thumb
-        path: "file:///home/safal726/.cache/safalQuick/persist_thumb"
-        blockLoading: true
-        watchChanges: true
-        onFileChanged: {
-            persistFile.reload();
-            persistTimer.restart();
-        }
-    }
-
-    /* debounces scheme type changes */
-    Timer {
-        id: schemeTypeTimer
-        interval: 50
-        onTriggered: generateColors()
-    }
-
-    /* debounces persist file changes */
-    Timer {
-        id: persistTimer
-        interval: 50
-        onTriggered: generateColors()
-    }
-
-    /* debounces colors.json reload */
     Timer {
         id: reloadTimer
         interval: 100
         onTriggered: {
             jsonFile.reload();
             colorsChanged();
+            console.log("test");
         }
     }
 
-    onIsDarkModeChanged: generateColors()
+    onIsDarkModeChanged: {
+        saveTheme();
+        generateColors();
+    }
 
     Process {
         id: matugenProcess
         onExited: reloadTimer.restart()
     }
 
-    Process {
-        id: saveSchemeProcess
-        onExited: schemeTypeFile.reload()
-    }
-
     function generateColors() {
-        persistFile.reload();
-        const path = persistFile.text()?.trim();
-
-        if (!path) {
+        if (!thumbPath) {
             return;
         }
 
-        const cleanPath = path.replace("file://", "");
+        const cleanPath = thumbPath.replace("file://", "");
         const mode = isDarkMode ? "dark" : "light";
         const scheme = currentSchemeType;
 
         matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "${scheme}"`];
         matugenProcess.running = true;
     }
-    Process {
-        id: saveModeProcess
+
+    function saveTheme() {
+        themeKraken.set("isDarkMode", isDarkMode);
+        themeKraken.set("schemeType", currentSchemeType);
+        themeKraken.set("thumbPath", thumbPath);
+        themeKraken.save();
     }
+
     function toggleMode() {
         isDarkMode = !isDarkMode;
-
-        // persist the new mode
-        const mode = isDarkMode ? "dark" : "light";
-        saveModeProcess.command = ["/bin/sh", "-c", `echo '${mode}' > /home/safal726/.cache/safalQuick/mode`];
-        saveModeProcess.running = true;
     }
 }

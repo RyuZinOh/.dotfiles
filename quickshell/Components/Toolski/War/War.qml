@@ -1,36 +1,9 @@
 import QtQuick
-import qs.Components.Icon
+import Kraken
 import qs.Services.Theme
-import qs.Utils
-import Quickshell.Io
 
 /*
-format to follow:
-{
-  "languages": ["Go", "Python", "Rust", "C", "C++", "ReactJS", "Java"],
-  "challenges": [
-    {
-      "title": "Two Sum",
-      "description": "Find two numbers in an array that add up to a target.",
-      "difficulty": "Easy",
-      "tags": ["Array", "HashMap"]
-    },
-  ]
-  create a script to pick randomly, and update the warfile to read the todaywarpick json in this format:
-  {
-  "date": "2025-12-27",
-  "challenge": {
-    "title": "Climbing Stairs",
-    "description": "Count ways to climb stairs.",
-    "difficulty": "Easy",
-    "tags": [
-      "DP"
-    ]
-  },
-  "language": "C++"
-}
-}
-for daily update rely on the the systemd or some chron job to run this script daily....
+read-> https://safallama.com.np/posts/quests/
  */
 Item {
     id: root
@@ -40,48 +13,16 @@ Item {
     property string warFile: "/home/safal726/.cache/safalQuick/todaywarpick.json"
     property var war: ({})
     property bool active: false
-
     signal warLoaded
+    Kraken {
+        id: warReader
+        filePath: root.warFile
 
-    Component.onCompleted: loadWar()
-
-    Process {
-        id: warProc
-        command: ["cat", root.warFile]
-        running: false
-        property string output: ""
-
-        stdout: SplitParser {
-            onRead: data => warProc.output += data
+        onDataLoaded: {
+            root.war = warReader.data;
+            root.active = true;
+            root.warLoaded();
         }
-
-        onExited: (code, status) => {
-            if (code === 0) {
-                const trimmed = warProc.output.trim();
-                if (!trimmed) {
-                    root.active = false;
-                } else {
-                    try {
-                        root.war = JSON.parse(trimmed);
-                        root.active = true;
-                        root.warLoaded();
-                    } catch (e) {
-                        console.error("Failed to parse JSON: " + e);
-                        root.active = false;
-                    }
-                }
-            } else {
-                root.active = false;
-            }
-            warProc.output = "";
-        }
-    }
-
-    function loadWar() {
-        if (!warFile) {
-            return;
-        }
-        warProc.running = true;
     }
 
     Rectangle {

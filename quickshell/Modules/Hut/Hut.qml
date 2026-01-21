@@ -4,7 +4,7 @@ import qs.Services.Theme
 import qs.Services.Shapes
 import qs.Modules.Hut.Profile
 import qs.Modules.Hut.Warsa
-import qs.Modules.Hut.Evernight
+// import qs.Modules.Hut.Evernight
 import qs.Modules.Hut.Areuok
 
 Item {
@@ -43,7 +43,8 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         width: 400
-        height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 48 : 140) : 1
+        height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 48 : 140) : 0.1
+        visible: height > 1
         alignment: 1
         radius: 20
         color: Theme.surfaceContainerLow
@@ -66,8 +67,11 @@ Item {
             sourceComponent: Item {
                 id: contentItem
                 visible: root.isHovered
-                implicitWidth: Math.max(profileComponent.implicitWidth, areuokLoader.item ? areuokLoader.item.implicitWidth : 0, evernightLoader.item ? evernightLoader.item.implicitWidth : 0, warsaLoader.item ? warsaLoader.item.implicitWidth : 0)
-                implicitHeight: mainContent.implicitHeight
+                implicitWidth: Math.max(profileComponent.implicitWidth, areuokLoader.item ? areuokLoader.item.implicitWidth : 0,
+                // evernightLoader.item ? evernightLoader.item.implicitWidth : 0
+
+                warsaLoader.item ? warsaLoader.item.implicitWidth : 0)
+                implicitHeight: mainContent.implicitHeight + 20
 
                 property real contentOpacity: root.isHovered ? 1 : 0
                 property real contentTranslateY: root.isHovered ? 0 : -20
@@ -107,15 +111,16 @@ Item {
                             Areuok {}
                         }
                     }
-                    Loader {
-                        id: evernightLoader
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        active: root.isHovered
-                        asynchronous: true
-                        sourceComponent: Component {
-                            Evernight {}
-                        }
-                    }
+                    // [I currently don't need this...]
+                    // Loader {
+                    //     id: evernightLoader
+                    //     anchors.horizontalCenter: parent.horizontalCenter
+                    //     active: root.isHovered
+                    //     asynchronous: true
+                    //     sourceComponent: Component {
+                    //         Evernight {}
+                    //     }
+                    // }
                     Loader {
                         id: warsaLoader
                         anchors.horizontalCenter: parent.horizontalCenter

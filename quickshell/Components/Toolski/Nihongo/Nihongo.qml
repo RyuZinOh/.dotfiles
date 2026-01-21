@@ -1,6 +1,6 @@
 import QtQuick
+import Kraken
 import qs.Services.Theme
-import qs.Utils
 
 Item {
     id: root
@@ -9,7 +9,7 @@ Item {
     property string currentTab: "Hiragana"
     readonly property var tabs: ["Hiragana", "Katakana", "Kanji"]
 
-    JReader {
+    Kraken {
         id: jsonReader
         filePath: Qt.resolvedUrl("../../../Assets/jlearn.json").toString().replace("file://", "")
 
@@ -23,8 +23,6 @@ Item {
             }
             root.characters = tempChars;
         }
-
-        onLoadFailed: error => console.error("failed to load:", error, jsonReader.filePath)
     }
 
     Column {

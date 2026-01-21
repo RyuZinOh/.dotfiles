@@ -1,6 +1,5 @@
 import QtQuick
 import Qt5Compat.GraphicalEffects
-import Quickshell.Io
 import qs.Services.Theme
 
 Item {
@@ -8,45 +7,6 @@ Item {
 
     implicitWidth: profileCard.width
     implicitHeight: profileCard.height
-
-    readonly property string pictorialFile: "/home/safal726/.cache/safalQuick/pictorial"
-
-    QtObject {
-        id: profileData
-        property string pfpPath: ""
-    }
-
-    Process {
-        id: copyPfpProcess
-    }
-
-    Process {
-        id: readProcess
-        command: ["/usr/bin/sh", "-c", `cat ${pictorialFile} 2>/dev/null | sed "s|^~|$HOME|"`]
-        running: true
-
-        stdout: SplitParser {
-            onRead: data => {
-                const path = data.trim();
-                if (path) {
-                    profileData.pfpPath = path;
-                    const dest = "/home/safal726/.cache/safalQuick/pfp.jpeg";
-                    copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${path}" "${dest}"`];
-                    copyPfpProcess.running = true;
-                }
-            }
-        }
-    }
-
-    FileView {
-        id: pictorialFileWatcher
-        path: "file://" + root.pictorialFile
-        blockLoading: true
-        watchChanges: true
-        onFileChanged: {
-            readProcess.running = true;
-        }
-    }
 
     Rectangle {
         id: profileCard
@@ -81,7 +41,7 @@ Item {
 
                     Image {
                         anchors.fill: parent
-                        source: profileData.pfpPath ? "file://" + profileData.pfpPath : ""
+                        source: "/home/safal726/.cache/safalQuick/pfp.jpeg"
                         fillMode: Image.PreserveAspectCrop
                         smooth: true
                         cache: false
@@ -95,16 +55,6 @@ Item {
                                 radius: width / 2
                             }
                         }
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "󰀄"
-                        color: Theme.onSurface
-                        font.pixelSize: 28
-                        font.family: "CaskaydiaCove NF"
-                        visible: !profileData.pfpPath
-                        opacity: 0.6
                     }
                 }
             }

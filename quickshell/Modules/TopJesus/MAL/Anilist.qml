@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Kraken
 import qs.Services.Theme
 import Quickshell.Io
 
@@ -17,6 +18,41 @@ Item {
 
     ListModel {
         id: todoModel
+    }
+
+    Kraken {
+        id: malReader
+        filePath: root.malFile
+        onDataLoaded: {
+            animeModel.clear();
+            if (malReader.data.anime) {
+                const animeArray = malReader.data.anime;
+                for (let i = 0; i < animeArray.length; i++) {
+                    const name = animeArray[i];
+                    if (name) {
+                        animeModel.append({
+                            "name": name
+                        });
+                    }
+                }
+            }
+            todoModel.clear();
+            if (malReader.data.todo) {
+                const todoArray = malReader.data.todo;
+                for (let i = 0; i < todoArray.length; i++) {
+                    const name = todoArray[i];
+                    if (name) {
+                        todoModel.append({
+                            "name": name
+                        });
+                    }
+                }
+            }
+        }
+        onLoadFailed: function (error) {
+            animeModel.clear();
+            todoModel.clear();
+        }
     }
 
     Rectangle {
@@ -326,7 +362,7 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 spinAnimation.start();
-                                readProcess.running = true;
+                                malReader.reload();
                             }
                         }
                     }
@@ -534,7 +570,7 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 spinTodoAnimation.start();
-                                readProcess.running = true;
+                                malReader.reload();
                             }
                         }
                     }
@@ -626,49 +662,6 @@ Item {
 
         saveProcess.command = ["/bin/sh", "-c", `mkdir -p "$(dirname "${malFile}")" && echo '${escaped}' > "${malFile}"`];
         saveProcess.running = true;
-    }
-
-    Component.onCompleted: {
-        readProcess.running = true;
-    }
-
-    Process {
-        id: readProcess
-        command: ["/bin/sh", "-c", `mkdir -p "$(dirname "${malFile}")" && (cat "${malFile}" 2>/dev/null || echo '{"anime":[], "todo":[]}')`]
-        running: false
-
-        stdout: SplitParser {
-            onRead: function (data) {
-                const content = data.trim();
-                if (content) {
-                    try {
-                        const json = JSON.parse(content);
-
-                        animeModel.clear();
-                        if (json.anime && Array.isArray(json.anime)) {
-                            json.anime.forEach(name => {
-                                if (name) {
-                                    animeModel.append({
-                                        "name": name
-                                    });
-                                }
-                            });
-                        }
-
-                        todoModel.clear();
-                        if (json.todo && Array.isArray(json.todo)) {
-                            json.todo.forEach(name => {
-                                if (name) {
-                                    todoModel.append({
-                                        "name": name
-                                    });
-                                }
-                            });
-                        }
-                    } catch (e) {}
-                }
-            }
-        }
     }
 
     Process {

@@ -54,7 +54,7 @@ Item {
     PopoutShape {
         id: content
         width: contentLoader.item ? contentLoader.item.implicitWidth + 20 : 1200
-        height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 40 : 235) : 1
+        height: isHovered ? (contentLoader.item ? contentLoader.item.implicitHeight + 40 : 235) : 0.1
         alignment: 4
         radius: 20
         color: Theme.surfaceContainerLow
@@ -582,17 +582,18 @@ Item {
         const fileUrl = "file://" + fullPath;
         const thumbPath = root.thumbsPath + fileName;
 
-        thumbPersistProcess.command = ["/usr/bin/sh", "-c", `echo "${thumbPath}" > /home/safal726/.cache/safalQuick/persist_thumb`];
-        thumbPersistProcess.running = true;
+        Theme.thumbPath = thumbPath;
+        Theme.saveTheme();
 
+        // set wallpaper via IPC
         setWallpaperProcess.command = ["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fullPath];
         setWallpaperProcess.running = true;
 
-        // Dat.WallpaperConfigAdapter.currentWallpaper = fileUrl; // this turned out to be runtime cause singleton and I dont have a explicit savecall..
-
+        // copy wallpaper to cache
         copyProcess.command = ["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fullPath}" /home/safal726/.cache/safalQuick/bg.jpg`];
         copyProcess.running = true;
 
+        // notify user
         const wallpaperName = fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
         notifyProcess.command = ["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", wallpaperName];
         notifyProcess.running = true;
@@ -605,9 +606,6 @@ Item {
     }
     Process {
         id: copyProcess
-    }
-    Process {
-        id: thumbPersistProcess
     }
     Process {
         id: setWallpaperProcess

@@ -1,14 +1,14 @@
 /*
  https://git.safallama.com.np/ashborn/warsa [check here for the Warsa Module]
+ https://git.safallama.com.np/ashborn/kraken [check here for the Kraken Module]
  */
 import QtQuick
 import Warsa
+import Kraken
 import qs.Services.Theme
-import qs.Utils
 
 Item {
     id: root
-
     implicitWidth: calendarCard.width
     implicitHeight: calendarCard.height
 
@@ -19,31 +19,21 @@ Item {
         }
     }
 
-    Warsa {
-        id: todayReference
-        Component.onCompleted: {
-            setToday();
-        }
-    }
-
-    Plan {
+    Kraken {
         id: eventsAdapter
         filePath: "/home/safal726/.cache/safalQuick/warsa.json"
     }
 
     function getEventForDate(month, day) {
-        if (!eventsAdapter.loaded) {
-            return null;
-        }
         var key = month + "-" + day;
-        return eventsAdapter.data[key] || null;
+        return eventsAdapter.get(key, null);
     }
 
     Rectangle {
         id: eventPopup
         visible: false
-        width: popupContent.width + 20
-        height: popupContent.height + 16
+        width: 220
+        height: popupText.height + 16
         radius: 16
         color: Theme.surfaceContainerHighest
         border.width: 0
@@ -53,32 +43,17 @@ Item {
         property string title: ""
         property string description: ""
 
-        Column {
-            id: popupContent
+        Text {
+            id: popupText
             anchors.centerIn: parent
-            spacing: 4
             width: 200
-
-            Text {
-                text: eventPopup.title
-                font.pixelSize: 12
-                font.family: "CaskaydiaCove NF"
-                font.weight: Font.Medium
-                color: Theme.onSurface
-                width: parent.width
-                wrapMode: Text.WordWrap
-            }
-
-            Text {
-                text: eventPopup.description
-                font.pixelSize: 10
-                font.family: "CaskaydiaCove NF"
-                font.weight: Font.Normal
-                color: Theme.onSurfaceVariant
-                opacity: 0.7
-                width: parent.width
-                wrapMode: Text.WordWrap
-            }
+            textFormat: Text.StyledText
+            text: eventPopup.title + " -> " + eventPopup.description
+            font.pixelSize: 11
+            font.family: "CaskaydiaCove NF"
+            font.weight: Font.Medium
+            color: Theme.onSurface
+            wrapMode: Text.WordWrap
         }
 
         Behavior on opacity {
@@ -229,42 +204,60 @@ Item {
             }
 
             Grid {
+                id: daysGrid
                 width: 280
                 anchors.horizontalCenter: parent.horizontalCenter
                 columns: 7
                 columnSpacing: 3
                 rowSpacing: 3
 
-                Repeater {
-                    model: {
-                        var days = calendar.getMonthDays(calendar.month);
-                        var firstDay = calendar.getFirstDayOfMonth(calendar.month);
-                        var result = [];
+                property var cachedModel: []
 
-                        var isCurrentMonth = (calendar.month === todayReference.month && calendar.year === todayReference.year);
+                function updateModel() {
+                    var days = calendar.getMonthDays(calendar.month);
+                    var firstDay = calendar.getFirstDayOfMonth(calendar.month);
+                    var result = [];
 
-                        for (var i = 0; i < firstDay; i++) {
-                            result.push({
-                                day: 0,
-                                isToday: false,
-                                isSaturday: false,
-                                hasEvent: false
-                            });
-                        }
-
-                        for (var j = 0; j < days.length; j++) {
-                            var dayData = days[j];
-                            dayData.isToday = isCurrentMonth && (dayData.day === todayReference.day);
-
-                            var event = getEventForDate(calendar.month, dayData.day);
-                            dayData.hasEvent = event !== null;
-                            dayData.eventData = event;
-
-                            result.push(dayData);
-                        }
-
-                        return result;
+                    for (var i = 0; i < firstDay; i++) {
+                        result.push({
+                            day: 0,
+                            isToday: false,
+                            isSaturday: false,
+                            hasEvent: false
+                        });
                     }
+
+                    for (var j = 0; j < days.length; j++) {
+                        var dayData = days[j];
+                        var event = getEventForDate(calendar.month, dayData.day);
+                        dayData.hasEvent = event !== null;
+                        dayData.eventData = event;
+                        result.push(dayData);
+                    }
+
+                    cachedModel = result;
+                }
+
+                Connections {
+                    target: calendar
+                    function onMonthChanged() {
+                        daysGrid.updateModel();
+                    }
+                }
+
+                Connections {
+                    target: eventsAdapter
+                    function onDataLoaded() {
+                        daysGrid.updateModel();
+                    }
+                }
+
+                Component.onCompleted: {
+                    updateModel();
+                }
+
+                Repeater {
+                    model: daysGrid.cachedModel
 
                     Rectangle {
                         width: 38
@@ -367,8 +360,9 @@ Item {
                                     eventPopup.x = pos.x + (width - eventPopup.width) / 2;
                                     eventPopup.y = pos.y - eventPopup.height - 8;
 
-                                    if (eventPopup.x < 0)
+                                    if (eventPopup.x < 0) {
                                         eventPopup.x = 8;
+                                    }
                                     if (eventPopup.x + eventPopup.width > root.width) {
                                         eventPopup.x = root.width - eventPopup.width - 8;
                                     }

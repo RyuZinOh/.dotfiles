@@ -9,14 +9,14 @@ Item {
     Process {
         id: cleanupProcess
         command: ["bash", Qt.resolvedUrl("../../Scripts/refresh.sh").toString().replace("file://", "")]
-        // onExited: (code, status) => {
-        //     if (code === 0) {
-        //         console.log("Cache cleanup success");
-        //     } else {
-        //         console.error("Cleanup failed", code);
-        //     }
-        // }
+        onExited: (code, status) => {
+            if (code === 0) {
+                // trigger theme regeneration after cleanup
+                Theme.generateColors();
+            }
+        }
     }
+
     Rectangle {
         id: contextMenu
         width: 140
