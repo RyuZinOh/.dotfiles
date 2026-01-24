@@ -2,7 +2,7 @@
 
 SOURCE_DIR="/home/safal726/Pictures"
 THUMBS_DIR="/home/safal726/thumbs"
-THUMB_SIZE="350x200"
+THUMB_SIZE="320x260"
 
 # Colors
 RED="\033[31m"
@@ -28,7 +28,7 @@ mkdir -p "$THUMBS_DIR"
 echo -e "${CYAN}${ICON_LOADING} Preparing thumbnails folder...${RESET}"
 
 for IMG in "$SOURCE_DIR"/*.{jpg,JPG,jpeg,JPEG}; do
-    [ -e "$IMG" ] || continue  # Skip if no files match
+  [ -e "$IMG" ] || continue # Skip if no files match
 
   BASENAME=$(basename "$IMG")
   THUMB_FILE="$THUMBS_DIR/$BASENAME"

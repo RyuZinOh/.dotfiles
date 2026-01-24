@@ -1,4 +1,4 @@
-import qs.Services.Notification
+import qs.Components.notification
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
@@ -57,12 +57,11 @@ Scope {
                 grows as more cards are added
                 */
                 Region {
-                    x: hyperixonLayer.width - 400
+                    x: hyperixonLayer.width - 440
                     y: 0
-                    width: 400
-                    height: notifWindow.hasNotifications ? notifWindow.height : 1
+                    width: 440
+                    height: notifWindow.visible ? notifWindow.height : 1
                 }
-
                 Region {
                     x: (hyperixonLayer.width / 2) - 300  // 600/2 = 300 (width of omnitrix)
                     y: (hyperixonLayer.height / 2) - 300 // 600/2 = 300 (height of omnitrix)
@@ -145,12 +144,14 @@ Scope {
                 //notification [Also we can implement our own layershell overlay for this one but nah...]
                 NotificationWindow {
                     id: notifWindow
-                    //anchors.topMargin: 20
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    property bool hasNotifications: queue.length > 0
+                    anchors {
+                        right: parent.right
+                        top: parent.top
+                        bottom: parent.bottom
+                        topMargin: 50
+                        rightMargin: 20
+                    }
                 }
-
                 //toolski
                 Toolski {
                     id: toolskiRef

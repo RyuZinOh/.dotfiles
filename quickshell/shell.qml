@@ -1,13 +1,35 @@
+pragma ComponentBehavior: Bound
+import QtQuick
 import Quickshell
-
-import qs.Modules.Home
-import qs.Modules.Hyperixon
-import qs.Services.Lock
+import qs.layers
+import qs.utils
+import qs.Ipc
 
 ShellRoot {
     Scope {
-        Hyperixon {}  // ovelay
+        IpcRegistry {}
+        Hyperixon {}  //  top
         Home {} // background
-        Locker {}//Lock service
+
+        LazyLoader {
+            id: sessionLockLoader
+
+            component: Component {
+                SessionLock {
+                    onRequestUnload: {
+                        Qt.callLater(() => {
+                            sessionLockLoader.active = false;
+                        });
+                    }
+                }
+            }
+        }
+
+        Connections {
+            target: LockConfig
+            function onLockRequested() {
+                sessionLockLoader.active = true;
+            }
+        }
     }
 }

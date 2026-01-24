@@ -1,47 +1,29 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls.Fusion
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import qs.Services.Theme
 
-// import QtQuick.Effects
-
 Rectangle {
     id: root
-    required property LockContext context
+    required property var context
 
-    color: "black"
+    color: Theme.backgroundColor
 
     Image {
         anchors.fill: parent
         source: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/bg.jpg"
         fillMode: Image.PreserveAspectCrop
-        // scale: 1.0
-        //
-        // transformOrigin: Item.Center
-        // PropertyAnimation on scale {
-        //     from: 1.0
-        //     to: 1.033
-        //     duration: 300
-        //     easing.type: Easing.InOutQuad
-        // }
-        // layer.enabled: true
-        // layer.effect: MultiEffect {
-        //     blurEnabled: true
-        //     blur: 0.7
-        //     blurMultiplier: 0.2
-        //     blurMax: 26
-        // }
-        //
+
         Rectangle {
             anchors.fill: parent
-            color: "black"
+            color: Theme.backgroundColor
             opacity: 0.7
         }
     }
 
-    Label {
+    Text {
         id: quoteLabel
         anchors {
             horizontalCenter: parent.horizontalCenter
@@ -93,10 +75,9 @@ Rectangle {
 
             Item {
                 Layout.alignment: Qt.AlignHCenter
-                width: 200
-                height: 200
+                Layout.preferredWidth: 200
+                Layout.preferredHeight: 200
 
-                // Outer ring
                 Rectangle {
                     anchors.centerIn: parent
                     width: parent.width + 20
@@ -107,40 +88,24 @@ Rectangle {
                     border.width: 1
                     opacity: 0.3
                 }
-                // appear when typing
+
                 Repeater {
                     model: passwordBox.text.length
 
-                    Text {
+                    delegate: Text {
+                        id: kanjiText
+                        required property int index
+
                         property real angle: (index * 360 / Math.max(passwordBox.text.length, 1))
                         property real distance: 120 + (index % 2) * 20
+                        property var kanjis: ['雷', '龍', '火', '水', '風', '月', '星', '夢', '侍', '魂', '剣', '神', '虎', '鳳', '雲', '霊']
 
                         visible: true
 
                         x: 100 + Math.cos(angle * Math.PI / 180) * distance - width / 2
                         y: 100 + Math.sin(angle * Math.PI / 180) * distance - height / 2
 
-                        text: {
-                            //add anything you like i recommend using sanskrit or some ancient language but I like this
-                            const kanjis = ['雷' //kaminari => thundah
-                                , '龍' //ryu => doragaon
-                                , '火' //ka => fire
-                                , '水' //mizu => watah
-                                , '風' //kaze => wind
-                                , '月' //tsuki => moon
-                                , '星' //hosshi => star
-                                , '夢' //yume => dream
-                                , '侍' //samurai
-                                , '魂' //tamashi => soul
-                                , '剣' //tsurugi => sword
-                                , '神' //kami => god
-                                , '虎' //tora => tiger
-                                , '鳳' //ho => phoenix [ho-oh pokemon like]
-                                , '雲' //kumo => cloud
-                                , '霊' //rei => ghost
-                            ];
-                            return kanjis[index % kanjis.length];
-                        }
+                        text: kanjis[index % kanjis.length]
 
                         font.pointSize: 18 + (index % 2) * 4
                         color: Theme.primaryFixedDim
@@ -151,20 +116,19 @@ Rectangle {
                         transform: Rotation {
                             origin.x: 0
                             origin.y: 0
-                            angle: index * 20
+                            angle: kanjiText.index * 20
 
                             RotationAnimation on angle {
                                 running: true
                                 loops: Animation.Infinite
-                                from: index * 20
-                                to: index * 20 + 360
-                                duration: 12000 + (index * 300)
+                                from: kanjiText.index * 20
+                                to: kanjiText.index * 20 + 360
+                                duration: 12000 + (kanjiText.index * 300)
                             }
                         }
                     }
                 }
 
-                // pfp container
                 Rectangle {
                     id: pfpContainer
                     anchors.fill: parent
@@ -217,7 +181,6 @@ Rectangle {
                     }
                 }
 
-                // Main border ring
                 Rectangle {
                     anchors.fill: parent
                     radius: width / 2
@@ -227,7 +190,6 @@ Rectangle {
                 }
             }
 
-            // Password input, always focued here
             TextInput {
                 id: passwordBox
                 visible: false
@@ -255,7 +217,6 @@ Rectangle {
         }
     }
 
-    // subtle hint
     Text {
         anchors {
             horizontalCenter: parent.horizontalCenter

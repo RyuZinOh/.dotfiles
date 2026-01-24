@@ -1,9 +1,9 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Services.WallpaperService
+import qs.Services
 import qs.Modules.ContextMenu
-import qs.Modules.Wallski
+import qs.Components.Wallski
 
 Scope {
     // background layer [wallpaper]
@@ -41,24 +41,11 @@ Scope {
             //wallpaperService
             WallpaperService {
                 anchors.fill: parent
-                isHovered: wallskiRef.isHovered
             }
 
             //touchpad gestured right click contextmenu [Just like Windows]
             ContextMenu {}
-            // dim overlay when setski is open
-            Rectangle {
-                anchors.fill: parent
-                color: "black"
-                opacity: wallskiRef.isHovered ? 0.3 : 0.0
 
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 300
-                        easing.type: Easing.OutQuad
-                    }
-                }
-            }
             // wallski direct
             Wallski {
                 id: wallskiRef

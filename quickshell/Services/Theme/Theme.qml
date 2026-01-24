@@ -183,7 +183,6 @@ Singleton {
         onTriggered: {
             jsonFile.reload();
             colorsChanged();
-            console.log("test");
         }
     }
 

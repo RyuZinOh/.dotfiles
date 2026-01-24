@@ -1,30 +1,28 @@
-import qs.Components.LockScreen
-import qs.Data
-import Quickshell.Wayland
+pragma ComponentBehavior: Bound
 import QtQuick
+import Quickshell.Wayland
+import qs.Components.lockscreen
 
 Item {
-    Connections {
-        target: LockConfig
+    id: root
 
-        function onLockRequested() {
-            lock.locked = true;
-        }
+    signal requestUnload
+
+    Component.onCompleted: {
+        lock.locked = true;
     }
 
     LockContext {
         id: lockContext
-
         onUnlocked: {
             lock.locked = false;
-            // Qt.quit(); // why needing it mhm
+            root.requestUnload();
         }
     }
 
     WlSessionLock {
         id: lock
         locked: false
-
         WlSessionLockSurface {
             LockSurface {
                 anchors.fill: parent

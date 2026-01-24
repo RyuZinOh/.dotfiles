@@ -5,22 +5,9 @@ import qs.Data as Dat
 
 Item {
     id: wallpaperService
-    // public properties
-    property bool isHovered: false
 
     anchors.fill: parent
-    // scaling
-    scale: isHovered ? 1.06 : 1
-    transformOrigin: Item.Center
     clip: true
-    Behavior on scale {
-        NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
-        }
-    }
-
-    layer.enabled: isHovered
 
     Rectangle {
         id: minimalBackground
