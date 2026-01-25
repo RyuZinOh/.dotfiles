@@ -5,7 +5,7 @@ Item {
     id: root
 
     property int size: 40
-    property string assetPath: "../../Assets/bongo"
+    property string assetPath: "../bongo/"
 
     width: size
     height: size

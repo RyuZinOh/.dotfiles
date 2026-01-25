@@ -2,7 +2,7 @@ import Quickshell
 import QtQuick
 import Quickshell.Wayland
 import qs.Services
-import qs.Modules.ContextMenu
+import qs.Components.ContextMenu
 import qs.Components.Wallski
 
 Scope {

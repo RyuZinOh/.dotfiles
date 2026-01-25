@@ -10,6 +10,7 @@ Row {
     Repeater {
         model: UPower.devices
         delegate: Item {
+            id: rome
             required property UPowerDevice modelData
             visible: modelData.isLaptopBattery
             width: batteryContainer.width
@@ -17,9 +18,9 @@ Row {
 
             QtObject {
                 id: batteryData
-                property real percentage: modelData.percentage
+                property real percentage: rome.modelData.percentage
                 property int percentInt: Math.round(percentage * 100)
-                property int state: modelData.state
+                property int state: rome.modelData.state
                 property bool isCharging: state === UPowerDeviceState.Charging
                 property bool isDischarging: state === UPowerDeviceState.Discharging
                 property bool isFullyCharged: state === UPowerDeviceState.FullyCharged

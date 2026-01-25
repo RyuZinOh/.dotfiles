@@ -1,33 +1,35 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Io
 import qs.Services.Theme
-import qs.Data
+import qs.utils
+import Quickshell
 
 Item {
     id: root
 
     property var currentConfig: ({
-            mode: WallpaperConfigAdapter.displayMode,
-            transition: WallpaperConfigAdapter.transitionType,
-            panning: WallpaperConfigAdapter.enablePanning
+            mode: WallpaperConfig.displayMode,
+            transition: WallpaperConfig.transitionType,
+            panning: WallpaperConfig.enablePanning
         })
 
     Connections {
-        target: WallpaperConfigAdapter
+        target: WallpaperConfig
 
         function onDisplayModeChanged() {
-            currentConfig.mode = WallpaperConfigAdapter.displayMode;
-            currentConfigChanged();
+            root.currentConfig.mode = WallpaperConfig.displayMode;
+            root.currentConfigChanged();
         }
 
         function onTransitionTypeChanged() {
-            currentConfig.transition = WallpaperConfigAdapter.transitionType;
-            currentConfigChanged();
+            root.currentConfig.transition = WallpaperConfig.transitionType;
+            root.currentConfigChanged();
         }
 
         function onEnablePanningChanged() {
-            currentConfig.panning = WallpaperConfigAdapter.enablePanning;
-            currentConfigChanged();
+            root.currentConfig.panning = WallpaperConfig.enablePanning;
+            root.currentConfigChanged();
         }
     }
 
@@ -51,30 +53,7 @@ Item {
     }
 
     function callIpc(method, arg) {
-        var proc = ipcProcess.createObject(root, {
-            method: method,
-            argument: arg
-        });
-        proc.start();
-    }
-
-    property Component ipcProcess: Component {
-        Process {
-            id: proc
-            property string method: ""
-            property string argument: ""
-
-            command: ["quickshell", "ipc", "call", "wallpaper", method, argument]
-            running: false
-
-            onExited: function (code, status) {
-                destroy();
-            }
-
-            function start() {
-                running = true;
-            }
-        }
+        Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", method, arg]);
     }
 
     Rectangle {
@@ -95,15 +74,20 @@ Item {
                 spacing: 8
 
                 Repeater {
+                    id: displayRepeater
                     model: ["wallpaper", "minimal", "disabled"]
 
                     Rectangle {
+                        id: displayRect
+                        required property string modelData
+                        required property int index
+
                         width: 80
                         height: 80
                         radius: displayMouse.containsMouse ? 40 : 12
-                        color: currentConfig.mode === modelData ? Theme.primaryContainer : (displayMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                        border.width: currentConfig.mode === modelData ? 2 : 1
-                        border.color: currentConfig.mode === modelData ? Theme.primaryColor : Theme.outlineVariant
+                        color: root.currentConfig.mode === displayRect.modelData ? Theme.primaryContainer : (displayMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
+                        border.width: root.currentConfig.mode === displayRect.modelData ? 2 : 1
+                        border.color: root.currentConfig.mode === displayRect.modelData ? Theme.primaryColor : Theme.outlineVariant
 
                         Behavior on radius {
                             NumberAnimation {
@@ -133,11 +117,11 @@ Item {
 
                         Text {
                             anchors.centerIn: parent
-                            text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                            text: displayRect.modelData.charAt(0).toUpperCase() + displayRect.modelData.slice(1)
                             font.pixelSize: 12
                             font.family: "CaskaydiaCove NF"
-                            font.weight: currentConfig.mode === modelData ? Font.Medium : Font.Normal
-                            color: currentConfig.mode === modelData ? Theme.onPrimaryContainer : Theme.onSurface
+                            font.weight: root.currentConfig.mode === displayRect.modelData ? Font.Medium : Font.Normal
+                            color: root.currentConfig.mode === displayRect.modelData ? Theme.onPrimaryContainer : Theme.onSurface
 
                             Behavior on color {
                                 ColorAnimation {
@@ -152,7 +136,7 @@ Item {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                callIpc("setMode", modelData);
+                                root.callIpc("setMode", displayRect.modelData);
                             }
                         }
                     }
@@ -164,16 +148,21 @@ Item {
                 spacing: 8
 
                 Repeater {
+                    id: transitionRepeater
                     model: ["bubble", "instant"]
 
                     Rectangle {
+                        id: transitionRect
+                        required property string modelData
+                        required property int index
+
                         width: 80
                         height: 80
                         radius: transitionMouse.containsMouse ? 40 : 12
-                        color: currentConfig.transition === modelData ? Theme.primaryContainer : (transitionMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                        border.width: currentConfig.transition === modelData ? 2 : 1
-                        border.color: currentConfig.transition === modelData ? Theme.primaryColor : Theme.outlineVariant
-                        opacity: currentConfig.mode === "wallpaper" ? 1.0 : 0.3
+                        color: root.currentConfig.transition === transitionRect.modelData ? Theme.primaryContainer : (transitionMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
+                        border.width: root.currentConfig.transition === transitionRect.modelData ? 2 : 1
+                        border.color: root.currentConfig.transition === transitionRect.modelData ? Theme.primaryColor : Theme.outlineVariant
+                        opacity: root.currentConfig.mode === "wallpaper" ? 1.0 : 0.3
 
                         Behavior on opacity {
                             NumberAnimation {
@@ -209,11 +198,11 @@ Item {
 
                         Text {
                             anchors.centerIn: parent
-                            text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                            text: transitionRect.modelData.charAt(0).toUpperCase() + transitionRect.modelData.slice(1)
                             font.pixelSize: 12
                             font.family: "CaskaydiaCove NF"
-                            font.weight: currentConfig.transition === modelData ? Font.Medium : Font.Normal
-                            color: currentConfig.transition === modelData ? Theme.onPrimaryContainer : Theme.onSurface
+                            font.weight: root.currentConfig.transition === transitionRect.modelData ? Font.Medium : Font.Normal
+                            color: root.currentConfig.transition === transitionRect.modelData ? Theme.onPrimaryContainer : Theme.onSurface
 
                             Behavior on color {
                                 ColorAnimation {
@@ -226,11 +215,11 @@ Item {
                             id: transitionMouse
                             anchors.fill: parent
                             hoverEnabled: true
-                            enabled: currentConfig.mode === "wallpaper"
-                            cursorShape: currentConfig.mode === "wallpaper" ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            enabled: root.currentConfig.mode === "wallpaper"
+                            cursorShape: root.currentConfig.mode === "wallpaper" ? Qt.PointingHandCursor : Qt.ArrowCursor
                             onClicked: {
-                                if (currentConfig.mode === "wallpaper") {
-                                    callIpc("setTransition", modelData);
+                                if (root.currentConfig.mode === "wallpaper") {
+                                    root.callIpc("setTransition", transitionRect.modelData);
                                 }
                             }
                         }
@@ -238,13 +227,14 @@ Item {
                 }
 
                 Rectangle {
+                    id: panningRect
                     width: 80
                     height: 80
                     radius: panningMouse.containsMouse ? 40 : 12
-                    color: currentConfig.panning ? Theme.primaryContainer : (panningMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                    border.width: currentConfig.panning ? 2 : 1
-                    border.color: currentConfig.panning ? Theme.primaryColor : Theme.outlineVariant
-                    opacity: currentConfig.mode === "wallpaper" ? 1.0 : 0.3
+                    color: root.currentConfig.panning ? Theme.primaryContainer : (panningMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
+                    border.width: root.currentConfig.panning ? 2 : 1
+                    border.color: root.currentConfig.panning ? Theme.primaryColor : Theme.outlineVariant
+                    opacity: root.currentConfig.mode === "wallpaper" ? 1.0 : 0.3
 
                     Behavior on opacity {
                         NumberAnimation {
@@ -280,11 +270,11 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: currentConfig.panning ? "Pan On" : "Pan Off"
+                        text: root.currentConfig.panning ? "Pan On" : "Pan Off"
                         font.pixelSize: 12
                         font.family: "CaskaydiaCove NF"
-                        font.weight: currentConfig.panning ? Font.Medium : Font.Normal
-                        color: currentConfig.panning ? Theme.onPrimaryContainer : Theme.onSurface
+                        font.weight: root.currentConfig.panning ? Font.Medium : Font.Normal
+                        color: root.currentConfig.panning ? Theme.onPrimaryContainer : Theme.onSurface
 
                         Behavior on color {
                             ColorAnimation {
@@ -297,11 +287,11 @@ Item {
                         id: panningMouse
                         anchors.fill: parent
                         hoverEnabled: true
-                        enabled: currentConfig.mode === "wallpaper"
-                        cursorShape: currentConfig.mode === "wallpaper" ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        enabled: root.currentConfig.mode === "wallpaper"
+                        cursorShape: root.currentConfig.mode === "wallpaper" ? Qt.PointingHandCursor : Qt.ArrowCursor
                         onClicked: {
-                            if (currentConfig.mode === "wallpaper") {
-                                callIpc("setPanning", currentConfig.panning ? "false" : "true");
+                            if (root.currentConfig.mode === "wallpaper") {
+                                root.callIpc("setPanning", root.currentConfig.panning ? "false" : "true");
                             }
                         }
                     }

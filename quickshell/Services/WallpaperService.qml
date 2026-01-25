@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell.Widgets
 import qs.Services.Theme
-import qs.Data as Dat
+import qs.utils
 
 Item {
     id: wallpaperService
@@ -13,13 +13,13 @@ Item {
         id: minimalBackground
         anchors.fill: parent
         color: Theme.primaryColor
-        visible: Dat.WallpaperConfigAdapter.displayMode === "minimal"
+        visible: WallpaperConfig.displayMode === "minimal"
     }
 
     Loader {
         id: wallpaperLoader
         anchors.fill: parent
-        active: Dat.WallpaperConfigAdapter.displayMode === "wallpaper"
+        active: WallpaperConfig.displayMode === "wallpaper"
         asynchronous: true
 
         sourceComponent: Item {
@@ -43,7 +43,7 @@ Item {
                     if (!parent || !wallpaperContainer || !wallpaperContainer.componentActive) {
                         return;
                     }
-                    if (status === Image.Ready && Dat.WallpaperConfigAdapter.transitionType === "instant") {
+                    if (status === Image.Ready && WallpaperConfig.transitionType === "instant") {
                         wallpaper.source = source;
                     }
                 }
@@ -78,10 +78,10 @@ Item {
                         const imgAspect = implicitWidth / implicitHeight;
                         const screenAspect = parent.width / parent.height;
                         const isWide = imgAspect > screenAspect * 1.1;
-                        isPannable = isWide && Dat.WallpaperConfigAdapter.enablePanning;
+                        isPannable = isWide && WallpaperConfig.enablePanning;
                         calculatedWidth = isWide ? implicitWidth * (parent.height / implicitHeight) : parent.width;
 
-                        if (Dat.WallpaperConfigAdapter.transitionType === "bubble" && isTransitioning) {
+                        if (WallpaperConfig.transitionType === "bubble" && isTransitioning) {
                             isTransitioning = false;
                             bubbleTransitionItem.cleanup();
                         }
@@ -117,8 +117,9 @@ Item {
                         }
                     }
                 }
+
                 Connections {
-                    target: Dat.WallpaperConfigAdapter
+                    target: WallpaperConfig
 
                     function onEnablePanningChanged() {
                         if (!wallpaperContainer || !wallpaperContainer.componentActive) {
@@ -127,45 +128,46 @@ Item {
                         const imgAspect = wallpaper.implicitWidth / wallpaper.implicitHeight;
                         const screenAspect = wallpaper.parent.width / wallpaper.parent.height;
                         const isWide = imgAspect > screenAspect * 1.1;
-                        wallpaper.isPannable = isWide && Dat.WallpaperConfigAdapter.enablePanning;
+                        wallpaper.isPannable = isWide && WallpaperConfig.enablePanning;
 
-                        if (!Dat.WallpaperConfigAdapter.enablePanning) {
+                        if (!WallpaperConfig.enablePanning) {
                             wallpaper.mouseXNormalized = 0.5;
                         }
                     }
                 }
+
                 Component.onCompleted: {
                     const setInitialWallpaper = () => {
-                        if (Dat.WallpaperConfigAdapter.currentWallpaper) {
-                            source = Dat.WallpaperConfigAdapter.currentWallpaper;
+                        if (WallpaperConfig.currentWallpaper) {
+                            source = WallpaperConfig.currentWallpaper;
                         }
                     };
 
-                    if (Dat.WallpaperConfigAdapter.loaded) {
+                    if (WallpaperConfig.loaded) {
                         setInitialWallpaper();
                     } else {
-                        const connection = Dat.WallpaperConfigAdapter.loadedChanged.connect(() => {
-                            if (Dat.WallpaperConfigAdapter.loaded) {
+                        const connection = WallpaperConfig.loadedChanged.connect(() => {
+                            if (WallpaperConfig.loaded) {
                                 setInitialWallpaper();
                                 connection.disconnect();
                             }
                         });
                     }
 
-                    Dat.WallpaperConfigAdapter.currentWallpaperChanged.connect(() => {
+                    WallpaperConfig.currentWallpaperChanged.connect(() => {
                         if (!wallpaperContainer || !wallpaperContainer.componentActive) {
                             return;
                         }
 
-                        const newWallpaper = Dat.WallpaperConfigAdapter.currentWallpaper;
+                        const newWallpaper = WallpaperConfig.currentWallpaper;
                         //skipping if same wallpaper
                         if (newWallpaper === wallpaper.source) {
                             return;
                         }
 
-                        if (Dat.WallpaperConfigAdapter.transitionType === "instant") {
+                        if (WallpaperConfig.transitionType === "instant") {
                             preloadWallpaper.source = newWallpaper;
-                        } else if (Dat.WallpaperConfigAdapter.transitionType === "bubble") {
+                        } else if (WallpaperConfig.transitionType === "bubble") {
                             wallpaper.bubbleTransitionActive = true;
                             bubbleTransitionItem.startTransition(newWallpaper);
                         }
@@ -188,7 +190,7 @@ Item {
             Item {
                 id: bubbleTransitionItem
                 anchors.fill: parent
-                visible: Dat.WallpaperConfigAdapter.transitionType === "bubble" && bubbleWallpaper.source !== ""
+                visible: WallpaperConfig.transitionType === "bubble" && bubbleWallpaper.source !== ""
                 clip: true
 
                 function startTransition(newWallpaper) {
@@ -241,7 +243,7 @@ Item {
                             const maxDy = Math.max(dy1, dy2);
                             return Math.sqrt(maxDx * maxDx + maxDy * maxDy) * 2.2;
                         }
-                        duration: Dat.WallpaperConfigAdapter.bubbleDuration
+                        duration: WallpaperConfig.bubbleDuration
                         easing.type: Easing.Bezier
                         easing.bezierCurve: [0.4, 0.0, 0.2, 1.0]
                         running: wallpaperContainer && wallpaperContainer.componentActive

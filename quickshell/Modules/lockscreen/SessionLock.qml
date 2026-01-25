@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Wayland
-import qs.Components.lockscreen
 
 Item {
     id: root

@@ -7,10 +7,12 @@ import Kraken
 
 Singleton {
     id: root
+
     property string currentWallpaper: ""
     property string displayMode: "wallpaper"
     property string transitionType: "bubble"
     property bool enablePanning: true
+
     readonly property int bubbleDuration: transitionType === "bubble" ? 1000 : 0
     readonly property string configPath: Quickshell.env("HOME") + "/.cache/safalQuick/wallpaper-config.json"
     property bool loaded: false
@@ -38,7 +40,7 @@ Singleton {
         }
 
         onLoadFailed: error => {
-            console.warn("config failed:", error);
+            console.warn("wallpaper config failed:", error);
             saveConfig();
         }
     }
@@ -49,57 +51,6 @@ Singleton {
         watchChanges: true
         onFileChanged: {
             configKraken.reload();
-        }
-    }
-
-    IpcHandler {
-        target: "wallpaper"
-
-        function setWallpaper(path: string): string {
-            const fullPath = path.startsWith("file://") ? path : "file://" + path;
-            root.currentWallpaper = fullPath;
-            saveConfig();
-            return "ok";
-        }
-
-        function setMode(mode: string): string {
-            if (mode === "wallpaper" || mode === "minimal" || mode === "disabled") {
-                root.displayMode = mode;
-                if (mode === "minimal" || mode === "disabled") {
-                    root.transitionType = "instant";
-                    root.enablePanning = false;
-                }
-                saveConfig();
-                return "ok";
-            }
-            return "invalid mode";
-        }
-
-        function setTransition(type: string): string {
-            if (root.displayMode !== "wallpaper") {
-                return "wallpaper mode only";
-            }
-
-            if (type === "bubble" || type === "instant") {
-                root.transitionType = type;
-                saveConfig();
-                return "ok";
-            }
-            return "invalid transition";
-        }
-
-        function setPanning(enabled: string): string {
-            if (root.displayMode !== "wallpaper") {
-                return "wallpaper mode only";
-            }
-
-            root.enablePanning = (enabled === "true" || enabled === "1");
-            saveConfig();
-            return "ok";
-        }
-
-        function getConfig(): string {
-            return "wallpaper: " + root.currentWallpaper + "\n" + "mode: " + root.displayMode + "\n" + "transition: " + root.transitionType + "\n" + "panning: " + root.enablePanning;
         }
     }
 

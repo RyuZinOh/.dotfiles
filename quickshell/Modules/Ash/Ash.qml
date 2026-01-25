@@ -1,5 +1,5 @@
 import QtQuick
-import qs.Services.Theme
+// import qs.Services.Theme
 
 Item {
     id: ashRoot

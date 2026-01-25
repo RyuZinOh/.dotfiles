@@ -2,15 +2,14 @@ import QtQuick
 // import Qt5Compat.GraphicalEffects
 import qs.Services.Shapes
 import qs.Services.Theme
-import qs.Modules.TopJesus.ControlRoom
-import qs.Components.workspace
-import qs.Components.ymdt
-import qs.Modules.TopJesus.Wset
-import qs.Modules.TopJesus.MAL
-import qs.Modules.TopJesus.Powerski
-import qs.Components.battery
-import qs.Modules.TopJesus.Callgorl
 import qs.Components.Icon
+import qs.Components.topjesus
+/*I dont want to use qs for importing in modules for some weird reasons, well*/
+import "./Callgorl/"
+import "./MAL/"
+import "./Powerski/"
+import "./ControlRoom/"
+import "./Wset/"
 
 // import Quickshell
 

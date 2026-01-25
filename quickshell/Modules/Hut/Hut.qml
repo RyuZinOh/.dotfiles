@@ -2,10 +2,10 @@
 import QtQuick
 import qs.Services.Theme
 import qs.Services.Shapes
-import qs.Modules.Hut.Profile
-import qs.Modules.Hut.Warsa
-// import qs.Modules.Hut.Evernight
-import qs.Modules.Hut.Areuok
+import "./Profile/"
+// import "./Evernight/"
+import "./Warsa/"
+import "./Areuok/"
 
 Item {
     id: root

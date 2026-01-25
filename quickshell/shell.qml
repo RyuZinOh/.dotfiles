@@ -4,6 +4,7 @@ import Quickshell
 import qs.layers
 import qs.utils
 import qs.Ipc
+import qs.Modules.lockscreen
 
 ShellRoot {
     Scope {

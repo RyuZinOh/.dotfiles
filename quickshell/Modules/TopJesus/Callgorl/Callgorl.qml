@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Services.Theme
-import qs.Data
+import qs.utils
 
 Item {
     id: root

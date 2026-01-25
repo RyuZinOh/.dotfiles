@@ -1,8 +1,6 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
-import Qt5Compat.GraphicalEffects
 import "Components"
 
 Pane {
@@ -162,11 +160,11 @@ Pane {
 
         Rectangle {
             id: pfpContainer
-            width: 250
-            height: 250
+            width: 200
+            height: 200
             anchors.centerIn: parent
             radius: width / 2
-            color: form.failed ? "#ff0000" : "#00008B"
+            color: form.failed ? "#ff0000" : "white"
             antialiasing: true
 
             Image {
@@ -221,7 +219,7 @@ Pane {
             anchors.fill: pfpContainer
             radius: width / 2
             color: "transparent"
-            border.color: form.failed ? "#ff0000" : "#00008B"
+            border.color: form.failed ? "#ff0000" : "white"
             border.width: 3
         }
     }
