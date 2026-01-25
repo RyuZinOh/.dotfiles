@@ -1,146 +1,68 @@
+pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell
 import Quickshell.Hyprland
 import qs.Services.Theme
 
 Item {
     id: root
-    //properties
-    property int workspaceSize
-    property int spacing
+
+    required property var parentScreen
+
+    property int workspaceSize: 0
+    property int spacing: 0
     property color activeColor: Theme.primaryColor
     property color occupiedColor: Theme.onSurface
-    property bool showNumbers: true
-    property color bgOva: "transparent"
-
-    //japanese mapping
-    readonly property var jpN: ({
-            1: "一",
-            2: "二",
-            3: "三",
-            4: "四",
-            5: "五",
-            6: "六",
-            7: "七",
-            8: "八",
-            9: "九",
-            10: "十"
-        })
-
-    //internal
-    readonly property var monitor: Hyprland.monitorFor(root.QsWindow.window?.screen)
+    readonly property var jpN: ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
+    readonly property var monitor: Hyprland.monitorFor(root.parentScreen)
     readonly property int activeWorkspaceId: monitor?.activeWorkspace?.id ?? 1
+    property var occupiedWorkspaces: new Set()
     readonly property var workspaces: {
-        var filtered = [];
-        for (var i = 1; i <= 10; i++) {
-            if (i == root.activeWorkspaceId || root.workspacewithWindows[i]) {
+        let filtered = [];
+        for (let i = 1; i <= 10; i++) {
+            if (i === activeWorkspaceId || occupiedWorkspaces.has(i)) {
                 filtered.push(i);
             }
         }
         return filtered;
     }
-
-    //tracking workspace which has clients
-    property var workspacewithWindows: ({})
-    property bool componentActive: true
-
-    function updtateWWW() {
-        if (!componentActive) {
-            return;
+    function updateWorkspaces() {
+        let occupied = new Set();
+        let allWorkspaces = Hyprland.workspaces.values;
+        for (let i = 0; i < allWorkspaces.length; i++) {
+            let ws = allWorkspaces[i];
+            if (ws?.id)
+                occupied.add(ws.id);
         }
-
-        var occupied = {};
-        //check clients
-        var allWorkspaces = Hyprland.workspaces.values;
-        for (var i = 0; i < allWorkspaces.length; i++) {
-            var ws = allWorkspaces[i];
-            if (ws && ws.id) {
-                occupied[ws.id] = true;
-            }
-        }
-        workspacewithWindows = occupied;
+        occupiedWorkspaces = occupied;
     }
-
-    Component.onCompleted: updtateWWW()
-
-    Component.onDestruction: {
-        componentActive = false;
-    }
-
-    //emit the signal whenever the changes occur
+    Component.onCompleted: root.updateWorkspaces()
     Connections {
         target: Hyprland.workspaces
-        enabled: componentActive
         function onValuesChanged() {
-            if (componentActive) {
-                updtateWWW();
-            }
+            root.updateWorkspaces();
         }
     }
-
-    Connections {
-        target: Hyprland
-        enabled: componentActive
-        function onFocusedWorkspaceChanged() {
-            if (componentActive) {
-                updtateWWW();
-            }
-        }
-    }
-
-    implicitWidth: workspaces.length * (workspaceSize + spacing)
-    implicitHeight: workspaceSize + spacing
-    Rectangle {
-        anchors.fill: parent
-        color: root.bgOva
-    }
-
+    implicitWidth: workspaces.length * workspaceSize + Math.max(0, workspaces.length - 1) * spacing
+    implicitHeight: workspaceSize
     Row {
         anchors.centerIn: parent
-        //spacing: root.spacing
-        visible: root.showNumbers
+        spacing: root.spacing
         Repeater {
             model: root.workspaces
-
             Item {
+                required property int modelData
                 width: root.workspaceSize
                 height: root.workspaceSize
-
                 property bool isHovered: false
-                property bool hasWindows: !!root.workspacewithWindows[modelData] //convert to false if undefined with !!
+                property bool hasWindows: root.occupiedWorkspaces.has(modelData)
                 property bool isActive: modelData === root.activeWorkspaceId
-
                 Text {
                     anchors.centerIn: parent
-                    visible: root.showNumbers
-                    text: root.jpN[modelData]
+                    text: root.jpN[parent.modelData]
                     font.bold: true
                     font.pixelSize: parent.isActive ? 24 : 20
-                    color: {
-                        if (parent.isHovered) {
-                            return root.activeColor;
-                        }
-                        if (parent.isActive) {
-                            return root.activeColor;
-                        }
-                        if (parent.hasWindows) {
-                            return root.occupiedColor;
-                        }
-                        return root.occupiedColor;
-                    }
-                    opacity: {
-                        if (parent.isHovered) {
-                            return 0.85;
-                        }
-                        if (parent.isActive) {
-                            return 1;
-                        }
-                        if (parent.hasWindows) {
-                            return 0.9;
-                        }
-                        return 0.6;
-                    }
-
+                    color: parent.isActive || parent.isHovered ? root.activeColor : root.occupiedColor
+                    opacity: parent.isHovered ? 0.85 : parent.isActive ? 1 : parent.hasWindows ? 0.9 : 0.6
                     Behavior on color {
                         ColorAnimation {
                             duration: 100
@@ -157,25 +79,17 @@ Item {
                         }
                     }
                 }
-
                 MouseArea {
-                    hoverEnabled: true
                     anchors.fill: parent
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        if (modelData && !parent.isActive) {
-                            Hyprland.dispatch("workspace " + modelData); // wow we need space lol
+                        if (!parent.isActive) {
+                            Hyprland.dispatch("workspace " + parent.modelData);
                         }
                     }
-                    onEntered: {
-                        if (parent)
-                            parent.isHovered = true; //checks
-                    }
-                    onExited: {
-                        if (parent) {
-                            parent.isHovered = false;
-                        }
-                    }
+                    onEntered: parent.isHovered = true
+                    onExited: parent.isHovered = false
                 }
             }
         }

@@ -15,6 +15,7 @@ import "./Wset/"
 
 Item {
     id: root
+    required property var parentScreen
     //enable this for extra pin stuff [very interesthing]
     // PanelWindow {
     //     anchors.top: true
@@ -33,8 +34,8 @@ Item {
     property int activePopout: 0
 
     onActivePopoutChanged: {
-        if (activePopout > 0) {
-            nestedPopout.lastActive = activePopout;
+        if (root.activePopout > 0) {
+            nestedPopout.lastActive = root.activePopout;
         }
     }
 
@@ -63,7 +64,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         width: 1440
-        height: (isHovered || isPinned) ? 40 : 0
+        height: (root.isHovered || root.isPinned) ? 40 : 0
 
         alignment: 0
         radius: 20
@@ -79,7 +80,7 @@ Item {
         Item {
             anchors.fill: parent
             anchors.margins: 10
-            opacity: (isHovered || isPinned) ? 1 : 0
+            opacity: (root.isHovered || root.isPinned) ? 1 : 0
 
             Behavior on opacity {
                 NumberAnimation {
@@ -87,15 +88,13 @@ Item {
                     easing.type: Easing.OutQuad
                 }
             }
-
             Workspace {
                 id: workspaces
-                bgOva: "transparent"
-                height: 50
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
+                parentScreen: root.parentScreen
                 workspaceSize: 40
-                showNumbers: true
+                spacing: 0
             }
 
             Row {
@@ -439,101 +438,101 @@ Item {
         property bool isAnimating: widthAnim.running || heightAnim.running
 
         onVisibleChanged: {
-            if (visible && activePopout > 0) {
-                lastActive = activePopout;
+            if (visible && root.activePopout > 0) {
+                nestedPopout.lastActive = root.activePopout;
             }
         }
 
         readonly property real targetWidth: {
-            if (activePopout === 0) {
-                if (lastActive === 1) {
+            if (root.activePopout === 0) {
+                if (nestedPopout.lastActive === 1) {
                     return 700;
                 }
-                if (lastActive === 2) {
+                if (nestedPopout.lastActive === 2) {
                     return 380;
                 }
-                if (lastActive === 3) {
+                if (nestedPopout.lastActive === 3) {
                     return 400;
                 }
-                if (lastActive === 4) {
+                if (nestedPopout.lastActive === 4) {
                     return 400;
                 }
-                if (lastActive === 5) {
+                if (nestedPopout.lastActive === 5) {
                     return 320;
                 }
                 return 700;
             }
-            if (activePopout === 1) {
+            if (root.activePopout === 1) {
                 return 700;
             }
-            if (activePopout === 2) {
+            if (root.activePopout === 2) {
                 return 380;
             }
-            if (activePopout === 3) {
+            if (root.activePopout === 3) {
                 return 400;
             }
-            if (activePopout === 4) {
+            if (root.activePopout === 4) {
                 return 400;
             }
-            if (activePopout === 5) {
+            if (root.activePopout === 5) {
                 return 320;
             }
             return 700;
         }
 
         readonly property real targetHeight: {
-            if (activePopout === 0) {
+            if (root.activePopout === 0) {
                 return 0;
             }
-            if (activePopout === 1) {
+            if (root.activePopout === 1) {
                 return 240;
             }
-            if (activePopout === 2) {
+            if (root.activePopout === 2) {
                 return 300;
             }
-            if (activePopout === 3) {
+            if (root.activePopout === 3) {
                 return 320;
             }
-            if (activePopout === 4) {
+            if (root.activePopout === 4) {
                 return 200;
             }
-            if (activePopout === 5) {
+            if (root.activePopout === 5) {
                 return 240;
             }
             return 0;
         }
 
         readonly property real targetX: {
-            var popoutToUse = activePopout > 0 ? activePopout : lastActive;
+            var popoutToUse = root.activePopout > 0 ? root.activePopout : nestedPopout.lastActive;
             if (popoutToUse === 1) {
-                return parent.width - targetWidth - 75;
+                return parent.width - nestedPopout.targetWidth - 75;
             }
             if (popoutToUse === 2) {
-                return parent.width - targetWidth - 200;
+                return parent.width - nestedPopout.targetWidth - 200;
             }
             if (popoutToUse === 3) {
-                return parent.width - targetWidth - 200;
+                return parent.width - nestedPopout.targetWidth - 200;
             }
             if (popoutToUse === 4) {
-                return parent.width - targetWidth - 225;
+                return parent.width - nestedPopout.targetWidth - 225;
             }
             if (popoutToUse === 5) {
-                return parent.width - targetWidth - 200;
+                return parent.width - nestedPopout.targetWidth - 200;
             }
-            return parent.width - targetWidth - 50;
+            return parent.width - nestedPopout.targetWidth - 50;
         }
 
-        width: targetWidth
-        height: targetHeight
-        x: targetX
+        width: nestedPopout.targetWidth
+        height: nestedPopout.targetHeight
+        x: nestedPopout.targetX
 
         alignment: 0
         radius: 20
         color: Theme.surfaceContainer
-        visible: height > 1 || isAnimating
+        visible: height > 1 || nestedPopout.isAnimating
 
         Behavior on width {
-            enabled: activePopout > 0
+            enabled: root.activePopout > 0
             NumberAnimation {
                 id: widthAnim
                 duration: 300
@@ -550,7 +549,7 @@ Item {
         }
 
         Behavior on x {
-            enabled: activePopout > 0
+            enabled: root.activePopout > 0
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.InOutQuad
@@ -576,9 +575,9 @@ Item {
                 anchors.centerIn: parent
                 width: 670
                 height: 210
-                active: activePopout === 1
+                active: root.activePopout === 1
                 asynchronous: true
-                opacity: activePopout === 1 ? 1 : 0
+                opacity: root.activePopout === 1 ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -597,9 +596,9 @@ Item {
                 id: settingsLoader
                 anchors.fill: parent
                 anchors.margins: 10
-                active: activePopout === 2
+                active: root.activePopout === 2
                 asynchronous: true
-                opacity: activePopout === 2 ? 1 : 0
+                opacity: root.activePopout === 2 ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -620,7 +619,7 @@ Item {
                 anchors.margins: 10
                 active: true
                 asynchronous: false
-                opacity: activePopout === 3 ? 1 : 0
+                opacity: root.activePopout === 3 ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -639,9 +638,9 @@ Item {
                 id: powerLoader
                 anchors.fill: parent
                 anchors.margins: 10
-                active: activePopout === 4
+                active: root.activePopout === 4
                 asynchronous: true
-                opacity: activePopout === 4 ? 1 : 0
+                opacity: root.activePopout === 4 ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -660,9 +659,9 @@ Item {
                 id: callgorlLoader
                 anchors.fill: parent
                 anchors.margins: 10
-                active: activePopout === 5
+                active: root.activePopout === 5
                 asynchronous: true
-                opacity: activePopout === 5 ? 1 : 0
+                opacity: root.activePopout === 5 ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {

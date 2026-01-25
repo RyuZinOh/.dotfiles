@@ -139,6 +139,7 @@ Scope {
                     id: topJesusRef
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
+                    parentScreen: hyperixonLayer.screen
                 }
 
                 //notification [Also we can implement our own layershell overlay for this one but nah...]
@@ -146,10 +147,7 @@ Scope {
                     id: notifWindow
                     anchors {
                         right: parent.right
-                        top: parent.top
-                        bottom: parent.bottom
                         topMargin: 50
-                        rightMargin: 20
                     }
                 }
                 //toolski
