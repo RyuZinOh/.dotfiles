@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Qt5Compat.GraphicalEffects
 import qs.Services.Theme
@@ -10,7 +11,7 @@ Item {
 
     Rectangle {
         id: profileCard
-        width: profileRow.width + 100
+        width: profileRow.width  + 80
         height: profileRow.height + 16
         radius: 14
         color: Theme.surfaceContainerHigh

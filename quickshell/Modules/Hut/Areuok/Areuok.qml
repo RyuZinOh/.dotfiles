@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import Quickshell.Io
@@ -12,25 +13,25 @@ Item {
     property var activeProcesses: ({})
     property bool componentActive: true
 
-    Component.onCompleted: checkAllServices()
+    Component.onCompleted: root.checkAllServices()
 
     Component.onDestruction: {
-        componentActive = false;
+        root.componentActive = false;
         serviceCheckTimer.running = false;
-        Object.keys(activeProcesses).forEach(key => {
-            if (activeProcesses[key])
-                activeProcesses[key].destroy();
+        Object.keys(root.activeProcesses).forEach(key => {
+            if (root.activeProcesses[key])
+                root.activeProcesses[key].destroy();
         });
     }
 
     Timer {
         id: serviceCheckTimer
         interval: 5000
-        running: componentActive
+        running: root.componentActive
         repeat: true
         onTriggered: {
-            if (componentActive) {
-                checkAllServices();
+            if (root.componentActive) {
+                root.checkAllServices();
             }
         }
     }
@@ -41,19 +42,19 @@ Item {
     }
 
     function checkAllServices() {
-        if (!componentActive)
+        if (!root.componentActive)
             return;
         ["docker", "mariadb", "nginx", "httpd"].forEach(service => {
-            checkService(service);
+            root.checkService(service);
         });
     }
 
     function checkService(name) {
-        if (!componentActive)
+        if (!root.componentActive)
             return;
 
-        if (activeProcesses[name])
-            activeProcesses[name].destroy();
+        if (root.activeProcesses[name])
+            root.activeProcesses[name].destroy();
 
         var proc = processComponent.createObject(root, {
             command: ["systemctl", "is-active", name],
@@ -61,18 +62,18 @@ Item {
         });
 
         proc.exited.connect(function (code) {
-            if (!componentActive) {
+            if (!root.componentActive) {
                 proc.destroy();
                 return;
             }
-            var newServices = Object.assign({}, services);
+            var newServices = Object.assign({}, root.services);
             newServices[name] = (code === 0);
-            services = newServices;
+            root.services = newServices;
             proc.destroy();
-            delete activeProcesses[name];
+            delete root.activeProcesses[name];
         });
 
-        activeProcesses[name] = proc;
+        root.activeProcesses[name] = proc;
     }
 
     Row {
@@ -104,13 +105,17 @@ Item {
                 }
             ]
 
-            Rectangle {
+            delegate: Rectangle {
+                id: serviceRect
+                required property var modelData
+                required property int index
+
                 width: 70
                 height: 40
                 radius: mouseArea.containsMouse ? 20 : 10
 
                 color: {
-                    var running = services[modelData.name] === true;
+                    var running = root.services[serviceRect.modelData.name] === true;
                     if (mouseArea.containsMouse)
                         return running ? Theme.primaryContainer : Theme.errorContainer;
                     return running ? Theme.surfaceContainerHigh : Theme.surfaceContainerHighest;
@@ -118,7 +123,7 @@ Item {
 
                 border.width: 1
                 border.color: {
-                    var running = services[modelData.name] === true;
+                    var running = root.services[serviceRect.modelData.name] === true;
                     return running ? Theme.primaryColor : Theme.errorColor;
                 }
 
@@ -144,11 +149,11 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: modelData.icon || ""
+                    text: serviceRect.modelData.icon || ""
                     font.pixelSize: 20
                     font.family: "0xProto Nerd Font"
                     color: {
-                        var running = services[modelData.name] === true;
+                        var running = root.services[serviceRect.modelData.name] === true;
                         if (mouseArea.containsMouse)
                             return running ? Theme.onPrimaryContainer : Theme.onErrorContainer;
                         return Theme.onSurface;
@@ -166,8 +171,8 @@ Item {
                     visible: mouseArea.containsMouse
                     delay: 150
                     text: {
-                        var running = services[modelData.name] === true;
-                        return (modelData.display || "") + (running ? " is running" : " is not running");
+                        var running = root.services[serviceRect.modelData.name] === true;
+                        return (serviceRect.modelData.display || "") + (running ? " is running" : " is not running");
                     }
 
                     background: Rectangle {

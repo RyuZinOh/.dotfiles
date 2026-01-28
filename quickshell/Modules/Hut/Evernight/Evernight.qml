@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Qt5Compat.GraphicalEffects
 import Quickshell.Services.Mpris
@@ -12,7 +13,7 @@ Item {
     property bool componentActive: true
 
     Component.onDestruction: {
-        componentActive = false;
+        root.componentActive = false;
         positionTimer.running = false;
         root.player = null;
     }
@@ -21,6 +22,7 @@ Item {
         model: Mpris.players
         delegate: Item {
             required property MprisPlayer modelData
+            required property int index
 
             width: 0
             height: 0
@@ -39,9 +41,10 @@ Item {
 
                 if (root.player === modelData) {
                     root.player = null;
-                    for (var i = 0; i < Mpris.players.length; i++) {
-                        if (Mpris.players[i] !== modelData) {
-                            root.player = Mpris.players[i];
+                    var playersModel = Mpris.players;
+                    for (var i = 0; i < playersModel.values.length; i++) {
+                        if (playersModel.values[i] !== modelData) {
+                            root.player = playersModel.values[i];
                             break;
                         }
                     }
@@ -92,7 +95,7 @@ Item {
                     visible: false
 
                     Component.onDestruction: {
-                        source = "";
+                        albumArtBg.source = "";
                     }
                 }
 
@@ -120,7 +123,7 @@ Item {
                 bottom: parent.bottom
             }
             width: parent.width * 0.4
-            active: root.player !== null && root.player.playbackState === MprisPlaybackState.Playing && componentActive
+            active: root.player !== null && root.player.playbackState === MprisPlaybackState.Playing && root.componentActive
             asynchronous: true
 
             sourceComponent: Item {
@@ -138,8 +141,8 @@ Item {
                     visible: false
 
                     Component.onDestruction: {
-                        playing = false;
-                        source = "";
+                        animatedBg.playing = false;
+                        animatedBg.source = "";
                     }
                 }
 
@@ -181,7 +184,7 @@ Item {
             font.weight: Font.Bold
             color: Theme.onSurfaceVariant
             opacity: 0.3
-            visible: !root.player && componentActive
+            visible: !root.player && root.componentActive
         }
 
         Loader {
@@ -196,7 +199,7 @@ Item {
                 bottom: parent.bottom
                 bottomMargin: 16
             }
-            active: root.player !== null && componentActive
+            active: root.player !== null && root.componentActive
             asynchronous: true
 
             sourceComponent: Item {
@@ -241,8 +244,8 @@ Item {
                     }
                     text: {
                         var pos = (root.player && root.player.position) ? root.player.position : 0;
-                        var len = (root.player && root.player.length) ? root.player.length : 0;
-                        return formatTime(pos) + " / " + formatTime(len);
+                        var len = (root.player && root.player.length && root.player.length > 0) ? root.player.length : 0;
+                        return root.formatTime(pos) + " / " + root.formatTime(len);
                     }
                     font.pixelSize: 10
                     color: Theme.onSurfaceVariant
@@ -273,11 +276,11 @@ Item {
                         color: Theme.primaryColor
 
                         property real currentPosition: (root.player && root.player.position) ? root.player.position : 0
-                        property real trackLength: (root.player && root.player.length) ? root.player.length : 1
+                        property real trackLength: (root.player && root.player.length && root.player.length > 0) ? root.player.length : 1
 
                         width: {
-                            if (trackLength > 0) {
-                                return Math.min((currentPosition / trackLength) * parent.width, parent.width);
+                            if (progressBar.trackLength > 0) {
+                                return Math.min((progressBar.currentPosition / progressBar.trackLength) * parent.width, parent.width);
                             }
                             return 0;
                         }

@@ -1,8 +1,9 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
-import qs.Components.Toolski.Nihongo
-import qs.Components.Toolski.War
-import qs.Components.Toolski.Wow
+import "./Nihongo/"
+import "./War"
+import "./Wow/"
 
 Item {
     id: root
@@ -30,7 +31,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: 0.1
         height: 100
-        visible: openedBladeIndex === -1
+        visible: root.openedBladeIndex === -1
 
         HoverHandler {
             onHoveredChanged: {
@@ -204,19 +205,22 @@ Item {
 
             Rectangle {
                 id: blade
+                required property int index
+                required property var modelData
+
                 width: 120
                 height: 40
                 radius: 10
                 color: Theme.surfaceContainer
                 border.color: bladeHoverHandler.hovered ? Theme.onSurface : Theme.outlineColor
                 border.width: bladeHoverHandler.hovered ? 2 : 1
-                visible: (root.isExpanded || targetRotation !== 0) && openedBladeIndex !== index
+                visible: (root.isExpanded || targetRotation !== 0) && root.openedBladeIndex !== blade.index
 
                 transformOrigin: Item.Left
                 x: 0
                 y: bladesContainer.height / 2 - height / 2
 
-                property real targetRotation: root.isExpanded ? (index - 1.5) * 20 : 0
+                property real targetRotation: root.isExpanded ? (blade.index - 1.5) * 20 : 0
                 property real targetX: root.isExpanded ? 15 : 0
                 property real hoverScale: bladeHoverHandler.hovered ? 1.15 : 1.0
 
@@ -257,7 +261,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: modelData.icon
+                    text: blade.modelData.icon
                     color: Theme.onSurface
                     font.pixelSize: 20
                     font.family: "CaskaydiaCove NF"
@@ -282,27 +286,27 @@ Item {
                     property real dragStartX: 0
 
                     onPressed: mouse => {
-                        startX = blade.x;
-                        dragStartX = mouse.x;
+                        bladeMouseArea.startX = blade.x;
+                        bladeMouseArea.dragStartX = mouse.x;
                     }
 
                     onPositionChanged: mouse => {
                         if (pressed) {
-                            var delta = mouse.x - dragStartX;
+                            var delta = mouse.x - bladeMouseArea.dragStartX;
                             if (delta > 0) {
-                                blade.x = startX + delta;
+                                blade.x = bladeMouseArea.startX + delta;
                             }
                         }
                     }
 
                     onReleased: mouse => {
-                        var delta = mouse.x - dragStartX;
+                        var delta = mouse.x - bladeMouseArea.dragStartX;
                         if (delta > 50) {
-                            root.openedBladeIndex = index;
-                            root.currentCardHeight = modelData.cardHeight;
-                            root.currentCardWidth = modelData.cardWidth;
+                            root.openedBladeIndex = blade.index;
+                            root.currentCardHeight = blade.modelData.cardHeight;
+                            root.currentCardWidth = blade.modelData.cardWidth;
                         }
-                        blade.x = Qt.binding(() => startX);
+                        blade.x = Qt.binding(() => bladeMouseArea.startX);
                     }
                 }
 
@@ -318,7 +322,7 @@ Item {
 
     Item {
         id: fullScreenCard
-        visible: openedBladeIndex !== -1
+        visible: root.openedBladeIndex !== -1
         clip: true
         focus: visible
 
@@ -326,16 +330,17 @@ Item {
         property real dragRotation: 0
         property bool isFalling: false
 
-        property real targetX: openedBladeIndex !== -1 ? parent.width / 2 : (mainCircle.x + mainCircle.width + 5 + 60)
-        property real targetY: parent.height / 2
-        property real targetWidth: openedBladeIndex !== -1 ? root.currentCardWidth : 0
-        property real targetHeight: openedBladeIndex !== -1 ? root.currentCardHeight : 0
+        property real targetX: root.openedBladeIndex !== -1 ? root.parent.width / 2 : (mainCircle.x + mainCircle.width + 5 + 60)
+        property real targetY: root.parent.height / 2
+        property real targetWidth: root.openedBladeIndex !== -1 ? root.currentCardWidth : 0
+        property real targetHeight: root.openedBladeIndex !== -1 ? root.currentCardHeight : 0
 
         x: targetX - targetWidth / 2
         y: targetY - targetHeight / 2 + dragOffsetY
         width: targetWidth
         height: targetHeight
         rotation: dragRotation
+
         Behavior on targetX {
             enabled: !fullScreenCard.isFalling
             SpringAnimation {
@@ -374,11 +379,11 @@ Item {
                 id: cardLoader
                 anchors.fill: parent
                 anchors.margins: 20
-                active: openedBladeIndex !== -1 && fullScreenCard.width > 400
+                active: root.openedBladeIndex !== -1 && fullScreenCard.width > 400
                 asynchronous: true
 
                 sourceComponent: {
-                    switch (openedBladeIndex) {
+                    switch (root.openedBladeIndex) {
                     case 0:
                         return nihongoComponent;
                     case 1:

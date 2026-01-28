@@ -7,9 +7,9 @@ QtObject {
     function call(target, method) {
         const proc = ipcProcess.createObject(root, {
             target: target,
-            method: method
+            method: method,
+            running: true
         });
-        proc.start();
     }
 
     property Component ipcProcess: Component {
@@ -20,6 +20,7 @@ QtObject {
             command: ["quickshell", "ipc", "call", target, method]
             running: false
 
+            //this shit was always ass.
             onExited: (code, status) => {
                 destroy();
             }

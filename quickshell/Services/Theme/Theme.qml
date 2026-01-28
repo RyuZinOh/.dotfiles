@@ -16,7 +16,7 @@ Singleton {
 
     readonly property var schemeTypes: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot", "scheme-vibrant"]
 
-    readonly property string currentSchemeName: getSchemeDisplayName(currentSchemeType)
+    readonly property string currentSchemeName: root.getSchemeDisplayName(root.currentSchemeType)
 
     function getSchemeDisplayName(schemeType) {
         const names = {
@@ -34,15 +34,15 @@ Singleton {
     }
 
     function setSchemeType(schemeType) {
-        currentSchemeType = schemeType;
-        saveTheme();
-        generateColors();
+        root.currentSchemeType = schemeType;
+        root.saveTheme();
+        root.generateColors();
     }
 
     /* parsed color palette from json, auto-updates on mode change */
     property var colors: {
         const text = jsonFile.text();
-        if (!text?.trim())
+        if (!text || !text.trim())
             return {};
 
         try {
@@ -54,81 +54,81 @@ Singleton {
     }
 
     /* surface colors */
-    property color backgroundColor: colors.background
-    property color surfaceColor: colors.surface
-    property color surfaceBright: colors.surface_bright
-    property color surfaceContainer: colors.surface_container
-    property color surfaceContainerLow: colors.surface_container_low
-    property color surfaceContainerHigh: colors.surface_container_high
-    property color surfaceContainerHighest: colors.surface_container_highest
-    property color surfaceDim: colors.surface_dim
+    property color backgroundColor: root.colors.background
+    property color surfaceColor: root.colors.surface
+    property color surfaceBright: root.colors.surface_bright
+    property color surfaceContainer: root.colors.surface_container
+    property color surfaceContainerLow: root.colors.surface_container_low
+    property color surfaceContainerHigh: root.colors.surface_container_high
+    property color surfaceContainerHighest: root.colors.surface_container_highest
+    property color surfaceDim: root.colors.surface_dim
 
     /* primary palette */
-    property color primaryColor: colors.primary
-    property color primaryContainer: colors.primary_container
-    property color primaryFixed: colors.primary_fixed
-    property color primaryFixedDim: colors.primary_fixed_dim
+    property color primaryColor: root.colors.primary
+    property color primaryContainer: root.colors.primary_container
+    property color primaryFixed: root.colors.primary_fixed
+    property color primaryFixedDim: root.colors.primary_fixed_dim
 
     /* secondary palette */
-    property color secondaryColor: colors.secondary
-    property color secondaryContainer: colors.secondary_container
-    property color secondaryFixed: colors.secondary_fixed
-    property color secondaryFixedDim: colors.secondary_fixed_dim
+    property color secondaryColor: root.colors.secondary
+    property color secondaryContainer: root.colors.secondary_container
+    property color secondaryFixed: root.colors.secondary_fixed
+    property color secondaryFixedDim: root.colors.secondary_fixed_dim
 
     /* tertiary palette */
-    property color tertiaryColor: colors.tertiary
-    property color tertiaryContainer: colors.tertiary_container
-    property color tertiaryFixed: colors.tertiary_fixed
-    property color tertiaryFixedDim: colors.tertiary_fixed_dim
+    property color tertiaryColor: root.colors.tertiary
+    property color tertiaryContainer: root.colors.tertiary_container
+    property color tertiaryFixed: root.colors.tertiary_fixed
+    property color tertiaryFixedDim: root.colors.tertiary_fixed_dim
 
     /* error palette */
-    property color errorColor: colors.error
-    property color errorContainer: colors.error_container
+    property color errorColor: root.colors.error
+    property color errorContainer: root.colors.error_container
 
     /* text colors on surfaces */
-    property color onBackground: colors.on_background
-    property color onSurface: colors.on_surface
-    property color onSurfaceVariant: colors.on_surface_variant
+    property color onBackground: root.colors.on_background
+    property color onSurface: root.colors.on_surface
+    property color onSurfaceVariant: root.colors.on_surface_variant
 
     /* text colors on primary */
-    property color onPrimary: colors.on_primary
-    property color onPrimaryContainer: colors.on_primary_container
-    property color onPrimaryFixed: colors.on_primary_fixed
-    property color onPrimaryFixedVariant: colors.on_primary_fixed_variant
+    property color onPrimary: root.colors.on_primary
+    property color onPrimaryContainer: root.colors.on_primary_container
+    property color onPrimaryFixed: root.colors.on_primary_fixed
+    property color onPrimaryFixedVariant: root.colors.on_primary_fixed_variant
 
     /* text colors on secondary */
-    property color onSecondary: colors.on_secondary
-    property color onSecondaryContainer: colors.on_secondary_container
-    property color onSecondaryFixed: colors.on_secondary_fixed
-    property color onSecondaryFixedVariant: colors.on_secondary_fixed_variant
+    property color onSecondary: root.colors.on_secondary
+    property color onSecondaryContainer: root.colors.on_secondary_container
+    property color onSecondaryFixed: root.colors.on_secondary_fixed
+    property color onSecondaryFixedVariant: root.colors.on_secondary_fixed_variant
 
     /* text colors on tertiary */
-    property color onTertiary: colors.on_tertiary
-    property color onTertiaryContainer: colors.on_tertiary_container
-    property color onTertiaryFixed: colors.on_tertiary_fixed
-    property color onTertiaryFixedVariant: colors.on_tertiary_fixed_variant
+    property color onTertiary: root.colors.on_tertiary
+    property color onTertiaryContainer: root.colors.on_tertiary_container
+    property color onTertiaryFixed: root.colors.on_tertiary_fixed
+    property color onTertiaryFixedVariant: root.colors.on_tertiary_fixed_variant
 
     /* text colors on error */
-    property color onError: colors.on_error
-    property color onErrorContainer: colors.on_error_container
+    property color onError: root.colors.on_error
+    property color onErrorContainer: root.colors.on_error_container
 
     /* border colors */
-    property color outlineColor: colors.outline
-    property color outlineVariant: colors.outline_variant
+    property color outlineColor: root.colors.outline
+    property color outlineVariant: root.colors.outline_variant
 
     /* inverse theme colors */
-    property color inverseSurface: colors.inverse_surface
-    property color inverseOnSurface: colors.inverse_on_surface
-    property color inversePrimary: colors.inverse_primary
+    property color inverseSurface: root.colors.inverse_surface
+    property color inverseOnSurface: root.colors.inverse_on_surface
+    property color inversePrimary: root.colors.inverse_primary
 
     /* overlay colors */
-    property color scrimColor: colors.scrim
-    property color shadowColor: colors.shadow
+    property color scrimColor: root.colors.scrim
+    property color shadowColor: root.colors.shadow
 
     /* legacy aliases for backward compatibility */
-    property color accentColor: primaryColor
-    property color textColor: onBackground
-    property color dimColor: outlineColor
+    property color accentColor: root.primaryColor
+    property color textColor: root.onBackground
+    property color dimColor: root.outlineColor
 
     // kraken for theme config
     Kraken {
@@ -136,26 +136,26 @@ Singleton {
         filePath: root.themePath
 
         onDataLoaded: {
-            if (loaded && isObject) {
-                if (has("isDarkMode")) {
-                    root.isDarkMode = get("isDarkMode", true);
+            if (themeKraken.loaded && themeKraken.isObject) {
+                if (themeKraken.has("isDarkMode")) {
+                    root.isDarkMode = themeKraken.get("isDarkMode", true);
                 }
-                if (has("schemeType")) {
-                    root.currentSchemeType = get("schemeType", "scheme-fruit-salad");
+                if (themeKraken.has("schemeType")) {
+                    root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
                 }
-                if (has("thumbPath")) {
-                    root.thumbPath = get("thumbPath", "");
+                if (themeKraken.has("thumbPath")) {
+                    root.thumbPath = themeKraken.get("thumbPath", "");
                 }
                 // generate colors on load if thumbPath exists
                 if (root.thumbPath) {
-                    generateColors();
+                    root.generateColors();
                 }
             }
         }
 
         onLoadFailed: error => {
             console.warn("theme config failed:", error);
-            saveTheme();
+            root.saveTheme();
         }
     }
 
@@ -182,41 +182,41 @@ Singleton {
         interval: 100
         onTriggered: {
             jsonFile.reload();
-            colorsChanged();
+            root.colorsChanged();
         }
     }
 
     onIsDarkModeChanged: {
-        saveTheme();
-        generateColors();
+        root.saveTheme();
+        root.generateColors();
     }
 
     Process {
         id: matugenProcess
-        onExited: reloadTimer.restart()
+        onExited: reloadTimer.restart() //dogass
     }
 
     function generateColors() {
-        if (!thumbPath) {
+        if (!root.thumbPath) {
             return;
         }
 
-        const cleanPath = thumbPath.replace("file://", "");
-        const mode = isDarkMode ? "dark" : "light";
-        const scheme = currentSchemeType;
+        const cleanPath = root.thumbPath.replace("file://", "");
+        const mode = root.isDarkMode ? "dark" : "light";
+        const scheme = root.currentSchemeType;
 
         matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "${scheme}"`];
         matugenProcess.running = true;
     }
 
     function saveTheme() {
-        themeKraken.set("isDarkMode", isDarkMode);
-        themeKraken.set("schemeType", currentSchemeType);
-        themeKraken.set("thumbPath", thumbPath);
+        themeKraken.set("isDarkMode", root.isDarkMode);
+        themeKraken.set("schemeType", root.currentSchemeType);
+        themeKraken.set("thumbPath", root.thumbPath);
         themeKraken.save();
     }
 
     function toggleMode() {
-        isDarkMode = !isDarkMode;
+        root.isDarkMode = !root.isDarkMode;
     }
 }

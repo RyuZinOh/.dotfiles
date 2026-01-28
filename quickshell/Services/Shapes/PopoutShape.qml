@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 
@@ -16,14 +17,14 @@ Item {
     antialiasing: true
     smooth: true
 
-    readonly property real _halfW: width * 0.5
-    readonly property real _halfH: height * 0.5
-    readonly property real _thirdH: height / 3
-    readonly property real _r: radius
-    readonly property real _r2: radius * 2
-    readonly property real _clampedRW: Math.min(_r, _halfW)
-    readonly property real _clampedRH: Math.min(_r, _halfH)
-    readonly property real _clampedRH3: Math.min(_r, _thirdH)
+    readonly property real _halfW: root.width * 0.5
+    readonly property real _halfH: root.height * 0.5
+    readonly property real _thirdH: root.height / 3
+    readonly property real _r: root.radius
+    readonly property real _r2: root.radius * 2
+    readonly property real _clampedRW: Math.min(root._r, root._halfW)
+    readonly property real _clampedRH: Math.min(root._r, root._halfH)
+    readonly property real _clampedRH3: Math.min(root._r, root._thirdH)
 
     Loader {
         anchors.fill: parent
@@ -31,7 +32,7 @@ Item {
 
         sourceComponent: {
             const shapes = [attachedTop, attachedTopRight, attachedRight, attachedBottomRight, attachedBottom, attachedBottomLeft, attachedLeft, attachedTopLeft];
-            return alignment >= 0 && alignment < 8 ? shapes[alignment] : null;
+            return root.alignment >= 0 && root.alignment < 8 ? shapes[root.alignment] : null;
         }
     }
 
@@ -65,47 +66,48 @@ Item {
     Component {
         id: attachedTop
         BubbleShape {
+            id: topShape
             PathMove {
                 x: 0
                 y: 0
             }
             PathArc {
-                x: _r
-                y: _clampedRH
-                radiusX: _r
-                radiusY: _clampedRH
+                x: root._r
+                y: root._clampedRH
+                radiusX: root._r
+                radiusY: root._clampedRH
             }
             PathLine {
-                x: _r
-                y: Math.max(height - _r, _halfH)
+                x: root._r
+                y: Math.max(topShape.height - root._r, root._halfH)
             }
             PathArc {
-                x: _r2
-                y: height
-                radiusX: _r
-                radiusY: _clampedRH
+                x: root._r2
+                y: topShape.height
+                radiusX: root._r
+                radiusY: root._clampedRH
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: width - _r2
-                y: height
+                x: topShape.width - root._r2
+                y: topShape.height
             }
             PathArc {
-                x: width - _r
-                y: Math.max(height - _r, _halfH)
-                radiusX: _r
-                radiusY: _clampedRH
+                x: topShape.width - root._r
+                y: Math.max(topShape.height - root._r, root._halfH)
+                radiusX: root._r
+                radiusY: root._clampedRH
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: width - _r
-                y: _clampedRH
+                x: topShape.width - root._r
+                y: root._clampedRH
             }
             PathArc {
-                x: width
+                x: topShape.width
                 y: 0
-                radiusX: _r
-                radiusY: _clampedRH
+                radiusX: root._r
+                radiusY: root._clampedRH
             }
             PathLine {
                 x: 0
@@ -117,39 +119,40 @@ Item {
     Component {
         id: attachedTopRight
         BubbleShape {
+            id: topRightShape
             PathMove {
                 x: 0
                 y: 0
             }
             PathArc {
-                x: _r
-                y: _clampedRH3
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: root._r
+                y: root._clampedRH3
+                radiusX: root._r
+                radiusY: root._clampedRH3
             }
             PathLine {
-                x: _r
-                y: Math.max(height - _r2, _thirdH)
+                x: root._r
+                y: Math.max(topRightShape.height - root._r2, root._thirdH)
             }
             PathArc {
-                x: _r2
-                y: Math.max(height - _r, 2 * _thirdH)
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: root._r2
+                y: Math.max(topRightShape.height - root._r, 2 * root._thirdH)
+                radiusX: root._r
+                radiusY: root._clampedRH3
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: width - _r
-                y: Math.max(height - _r, 2 * _thirdH)
+                x: topRightShape.width - root._r
+                y: Math.max(topRightShape.height - root._r, 2 * root._thirdH)
             }
             PathArc {
-                x: width
-                y: height
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: topRightShape.width
+                y: topRightShape.height
+                radiusX: root._r
+                radiusY: root._clampedRH3
             }
             PathLine {
-                x: width
+                x: topRightShape.width
                 y: 0
             }
             PathLine {
@@ -162,51 +165,52 @@ Item {
     Component {
         id: attachedRight
         BubbleShape {
+            id: rightShape
             PathMove {
-                x: width
-                y: height
+                x: rightShape.width
+                y: rightShape.height
             }
             PathArc {
-                x: Math.max(width - _r, _halfW)
-                y: height - _r
-                radiusX: _clampedRW
-                radiusY: _r
+                x: Math.max(rightShape.width - root._r, root._halfW)
+                y: rightShape.height - root._r
+                radiusX: root._clampedRW
+                radiusY: root._r
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: _clampedRW
-                y: height - _r
+                x: root._clampedRW
+                y: rightShape.height - root._r
             }
             PathArc {
                 x: 0
-                y: height - _r2
-                radiusX: _clampedRW
-                radiusY: _r
+                y: rightShape.height - root._r2
+                radiusX: root._clampedRW
+                radiusY: root._r
             }
             PathLine {
                 x: 0
-                y: _r2
+                y: root._r2
             }
             PathArc {
-                x: _clampedRW
-                y: _r
-                radiusX: _clampedRW
-                radiusY: _r
+                x: root._clampedRW
+                y: root._r
+                radiusX: root._clampedRW
+                radiusY: root._r
             }
             PathLine {
-                x: Math.max(width - _r, _halfW)
-                y: _r
+                x: Math.max(rightShape.width - root._r, root._halfW)
+                y: root._r
             }
             PathArc {
-                x: width
+                x: rightShape.width
                 y: 0
-                radiusX: _clampedRW
-                radiusY: _r
+                radiusX: root._clampedRW
+                radiusY: root._r
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: width
-                y: height
+                x: rightShape.width
+                y: rightShape.height
             }
         }
     }
@@ -214,45 +218,46 @@ Item {
     Component {
         id: attachedBottomRight
         BubbleShape {
+            id: bottomRightShape
             PathMove {
                 x: 0
-                y: height
+                y: bottomRightShape.height
             }
             PathArc {
-                x: _r
-                y: Math.max(height - _r, 2 * _thirdH)
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: root._r
+                y: Math.max(bottomRightShape.height - root._r, 2 * root._thirdH)
+                radiusX: root._r
+                radiusY: root._clampedRH3
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: _r
-                y: _r2
+                x: root._r
+                y: root._r2
             }
             PathArc {
-                x: _r2
-                y: _r
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: root._r2
+                y: root._r
+                radiusX: root._r
+                radiusY: root._clampedRH3
             }
             PathLine {
-                x: width - _r
-                y: _r
+                x: bottomRightShape.width - root._r
+                y: root._r
             }
             PathArc {
-                x: width
+                x: bottomRightShape.width
                 y: 0
-                radiusX: _r
-                radiusY: _clampedRH3
+                radiusX: root._r
+                radiusY: root._clampedRH3
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: width
-                y: height
+                x: bottomRightShape.width
+                y: bottomRightShape.height
             }
             PathLine {
                 x: 0
-                y: height
+                y: bottomRightShape.height
             }
         }
     }
@@ -260,51 +265,52 @@ Item {
     Component {
         id: attachedBottom
         BubbleShape {
+            id: bottomShape
             PathMove {
                 x: 0
-                y: height
+                y: bottomShape.height
             }
             PathArc {
-                x: _r
-                y: Math.max(height - _r, _halfH)
-                radiusX: _r
-                radiusY: _clampedRH
+                x: root._r
+                y: Math.max(bottomShape.height - root._r, root._halfH)
+                radiusX: root._r
+                radiusY: root._clampedRH
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: _r
-                y: _clampedRH
+                x: root._r
+                y: root._clampedRH
             }
             PathArc {
-                x: _r2
+                x: root._r2
                 y: 0
-                radiusX: _r
-                radiusY: _clampedRH
+                radiusX: root._r
+                radiusY: root._clampedRH
             }
             PathLine {
-                x: width - _r2
+                x: bottomShape.width - root._r2
                 y: 0
             }
             PathArc {
-                x: width - _r
-                y: _clampedRH
-                radiusX: _r
-                radiusY: _clampedRH
+                x: bottomShape.width - root._r
+                y: root._clampedRH
+                radiusX: root._r
+                radiusY: root._clampedRH
             }
             PathLine {
-                x: width - _r
-                y: Math.max(height - _r, _halfH)
+                x: bottomShape.width - root._r
+                y: Math.max(bottomShape.height - root._r, root._halfH)
             }
             PathArc {
-                x: width
-                y: height
-                radiusX: _r
-                radiusY: _clampedRH
+                x: bottomShape.width
+                y: bottomShape.height
+                radiusX: root._r
+                radiusY: root._clampedRH
                 direction: PathArc.Counterclockwise
             }
             PathLine {
                 x: 0
-                y: height
+                y: bottomShape.height
             }
         }
     }
@@ -312,44 +318,45 @@ Item {
     Component {
         id: attachedBottomLeft
         BubbleShape {
+            id: bottomLeftShape
             PathMove {
-                x: width
-                y: height
+                x: bottomLeftShape.width
+                y: bottomLeftShape.height
             }
             PathArc {
-                x: width - _r
-                y: Math.max(height - _r, 2 * _thirdH)
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: bottomLeftShape.width - root._r
+                y: Math.max(bottomLeftShape.height - root._r, 2 * root._thirdH)
+                radiusX: root._r
+                radiusY: root._clampedRH3
             }
             PathLine {
-                x: width - _r
-                y: _r2
+                x: bottomLeftShape.width - root._r
+                y: root._r2
             }
             PathArc {
-                x: width - _r2
-                y: _r
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: bottomLeftShape.width - root._r2
+                y: root._r
+                radiusX: root._r
+                radiusY: root._clampedRH3
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: _r
-                y: _r
+                x: root._r
+                y: root._r
             }
             PathArc {
                 x: 0
                 y: 0
-                radiusX: _r
-                radiusY: _clampedRH3
+                radiusX: root._r
+                radiusY: root._clampedRH3
             }
             PathLine {
                 x: 0
-                y: height
+                y: bottomLeftShape.height
             }
             PathLine {
-                x: width
-                y: height
+                x: bottomLeftShape.width
+                y: bottomLeftShape.height
             }
         }
     }
@@ -357,46 +364,47 @@ Item {
     Component {
         id: attachedLeft
         BubbleShape {
+            id: leftShape
             PathMove {
                 x: 0
                 y: 0
             }
             PathArc {
-                x: _clampedRW
-                y: _r
-                radiusX: _clampedRW
-                radiusY: _r
+                x: root._clampedRW
+                y: root._r
+                radiusX: root._clampedRW
+                radiusY: root._r
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: Math.max(width - _r, _halfW)
-                y: _r
+                x: Math.max(leftShape.width - root._r, root._halfW)
+                y: root._r
             }
             PathArc {
-                x: width
-                y: _r2
-                radiusX: _clampedRW
-                radiusY: _r
+                x: leftShape.width
+                y: root._r2
+                radiusX: root._clampedRW
+                radiusY: root._r
             }
             PathLine {
-                x: width
-                y: height - _r2
+                x: leftShape.width
+                y: leftShape.height - root._r2
             }
             PathArc {
-                x: Math.max(width - _r, _halfW)
-                y: height - _r
-                radiusX: _clampedRW
-                radiusY: _r
+                x: Math.max(leftShape.width - root._r, root._halfW)
+                y: leftShape.height - root._r
+                radiusX: root._clampedRW
+                radiusY: root._r
             }
             PathLine {
-                x: _clampedRW
-                y: height - _r
+                x: root._clampedRW
+                y: leftShape.height - root._r
             }
             PathArc {
                 x: 0
-                y: height
-                radiusX: _clampedRW
-                radiusY: _r
+                y: leftShape.height
+                radiusX: root._clampedRW
+                radiusY: root._r
                 direction: PathArc.Counterclockwise
             }
             PathLine {
@@ -409,36 +417,37 @@ Item {
     Component {
         id: attachedTopLeft
         BubbleShape {
+            id: topLeftShape
             PathMove {
-                x: width
+                x: topLeftShape.width
                 y: 0
             }
             PathArc {
-                x: width - _r
-                y: _clampedRH3
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: topLeftShape.width - root._r
+                y: root._clampedRH3
+                radiusX: root._r
+                radiusY: root._clampedRH3
                 direction: PathArc.Counterclockwise
             }
             PathLine {
-                x: width - _r
-                y: Math.max(height - _r2, _thirdH)
+                x: topLeftShape.width - root._r
+                y: Math.max(topLeftShape.height - root._r2, root._thirdH)
             }
             PathArc {
-                x: width - _r2
-                y: Math.max(height - _r, 2 * _thirdH)
-                radiusX: _r
-                radiusY: _clampedRH3
+                x: topLeftShape.width - root._r2
+                y: Math.max(topLeftShape.height - root._r, 2 * root._thirdH)
+                radiusX: root._r
+                radiusY: root._clampedRH3
             }
             PathLine {
-                x: _r
-                y: Math.max(height - _r, 2 * _thirdH)
+                x: root._r
+                y: Math.max(topLeftShape.height - root._r, 2 * root._thirdH)
             }
             PathArc {
                 x: 0
-                y: height
-                radiusX: _r
-                radiusY: _clampedRH3
+                y: topLeftShape.height
+                radiusX: root._r
+                radiusY: root._clampedRH3
                 direction: PathArc.Counterclockwise
             }
             PathLine {
@@ -446,7 +455,7 @@ Item {
                 y: 0
             }
             PathLine {
-                x: width
+                x: topLeftShape.width
                 y: 0
             }
         }

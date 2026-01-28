@@ -2,13 +2,13 @@ import qs.Components.notification
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Modules.TopJesus
 import qs.Components.Dancer
 import qs.Components.Omnitrix
 // import qs.Modules.Ash
-import qs.Components.Toolski
 import qs.Components.Artiqa
 import qs.Modules.Hut
+import qs.Modules.Toolski
+import qs.Modules.TopJesus
 import qs.Modules.TopJesus.Callgorl
 import qs.utils
 

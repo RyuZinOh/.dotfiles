@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Kraken
@@ -89,9 +90,9 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        color: currentTab === 0 ? Theme.primaryContainer : "transparent"
+                        color: root.currentTab === 0 ? Theme.primaryContainer : "transparent"
                         radius: 8
-                        border.width: currentTab === 0 ? 1 : 0
+                        border.width: root.currentTab === 0 ? 1 : 0
                         border.color: Theme.outlineVariant
 
                         Behavior on color {
@@ -109,10 +110,10 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "Anime"
-                            color: currentTab === 0 ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
+                            color: root.currentTab === 0 ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
-                            font.weight: currentTab === 0 ? Font.Medium : Font.Normal
+                            font.weight: root.currentTab === 0 ? Font.Medium : Font.Normal
 
                             Behavior on color {
                                 ColorAnimation {
@@ -125,7 +126,7 @@ Item {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                currentTab = 0;
+                                root.currentTab = 0;
                             }
                         }
                     }
@@ -133,9 +134,9 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        color: currentTab === 1 ? Theme.primaryContainer : "transparent"
+                        color: root.currentTab === 1 ? Theme.primaryContainer : "transparent"
                         radius: 8
-                        border.width: currentTab === 1 ? 1 : 0
+                        border.width: root.currentTab === 1 ? 1 : 0
                         border.color: Theme.outlineVariant
 
                         Behavior on color {
@@ -153,10 +154,10 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "Tasks"
-                            color: currentTab === 1 ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
+                            color: root.currentTab === 1 ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
-                            font.weight: currentTab === 1 ? Font.Medium : Font.Normal
+                            font.weight: root.currentTab === 1 ? Font.Medium : Font.Normal
 
                             Behavior on color {
                                 ColorAnimation {
@@ -169,7 +170,7 @@ Item {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                currentTab = 1;
+                                root.currentTab = 1;
                             }
                         }
                     }
@@ -178,7 +179,6 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
                 color: Theme.outlineVariant
             }
 
@@ -195,7 +195,7 @@ Item {
                         id: slidingContent
                         width: parent.width * 2
                         height: parent.height
-                        x: -currentTab * parent.width
+                        x: -root.currentTab * contentContainer.width
 
                         Behavior on x {
                             NumberAnimation {
@@ -241,6 +241,10 @@ Item {
                 spacing: 8
 
                 delegate: Rectangle {
+                    id: animeDelegate
+                    required property string name
+                    required property int index
+
                     width: ListView.view.width
                     height: 48
                     color: Theme.surfaceContainer
@@ -255,7 +259,7 @@ Item {
                         spacing: 12
 
                         Text {
-                            text: model.name
+                            text: animeDelegate.name
                             color: Theme.onSurface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
@@ -303,8 +307,8 @@ Item {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    animeModel.remove(index);
-                                    saveData();
+                                    animeModel.remove(animeDelegate.index);
+                                    root.saveData();
                                 }
                             }
                         }
@@ -415,7 +419,7 @@ Item {
                                         "name": text
                                     });
                                     animeInputField.text = "";
-                                    saveData();
+                                    root.saveData();
                                 }
                             }
                         }
@@ -449,6 +453,10 @@ Item {
                 spacing: 8
 
                 delegate: Rectangle {
+                    id: todoDelegate
+                    required property string name
+                    required property int index
+
                     width: ListView.view.width
                     height: 48
                     color: Theme.surfaceContainer
@@ -463,7 +471,7 @@ Item {
                         spacing: 12
 
                         Text {
-                            text: model.name
+                            text: todoDelegate.name
                             color: Theme.onSurface
                             font.pixelSize: 14
                             font.family: "CaskaydiaCove NF"
@@ -511,8 +519,8 @@ Item {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    todoModel.remove(index);
-                                    saveData();
+                                    todoModel.remove(todoDelegate.index);
+                                    root.saveData();
                                 }
                             }
                         }
@@ -623,7 +631,7 @@ Item {
                                         "name": text
                                     });
                                     todoInputField.text = "";
-                                    saveData();
+                                    root.saveData();
                                 }
                             }
                         }
@@ -660,7 +668,7 @@ Item {
         const jsonString = JSON.stringify(finalObj);
         const escaped = jsonString.replace(/'/g, "'\\''");
 
-        saveProcess.command = ["/bin/sh", "-c", `mkdir -p "$(dirname "${malFile}")" && echo '${escaped}' > "${malFile}"`];
+        saveProcess.command = ["/bin/sh", "-c", `mkdir -p "$(dirname "${root.malFile}")" && echo '${escaped}' > "${root.malFile}"`];
         saveProcess.running = true;
     }
 

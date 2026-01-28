@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
 import qs.Services.Overview
@@ -71,21 +72,21 @@ Item {
                 id: workspaceRect
                 required property int index
 
-                readonly property int workspaceId: index + 1
-                readonly property int col: index % root.columns
-                readonly property int row: Math.floor(index / root.columns)
-                readonly property bool isActive: root.activeWorkspaceId === workspaceId
+                readonly property int workspaceId: workspaceRect.index + 1
+                readonly property int col: workspaceRect.index % root.columns
+                readonly property int row: Math.floor(workspaceRect.index / root.columns)
+                readonly property bool isActive: root.activeWorkspaceId === workspaceRect.workspaceId
                 property bool isDropTarget: false
 
-                x: col * (root.workspaceWidth + root.workspaceSpacing)
-                y: row * (root.workspaceHeight + root.workspaceSpacing)
+                x: workspaceRect.col * (root.workspaceWidth + root.workspaceSpacing)
+                y: workspaceRect.row * (root.workspaceHeight + root.workspaceSpacing)
                 width: root.workspaceWidth
                 height: root.workspaceHeight
 
-                color: isActive ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                color: workspaceRect.isActive ? Theme.surfaceContainerHigh : Theme.surfaceContainer
                 radius: 12
-                border.width: isActive ? 2 : 0
-                border.color: isActive ? Theme.primaryColor : "transparent"
+                border.width: workspaceRect.isActive ? 2 : 0
+                border.color: workspaceRect.isActive ? Theme.primaryColor : "transparent"
                 clip: true
 
                 Behavior on color {
@@ -110,7 +111,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: root.jpN[parent.workspaceId] ?? parent.workspaceId
+                    text: root.jpN[workspaceRect.workspaceId] ?? workspaceRect.workspaceId
                     color: Theme.onSurface
                     font.pixelSize: 36
                     font.weight: Font.DemiBold
@@ -121,7 +122,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     anchors.margins: 10
-                    text: parent.workspaceId
+                    text: workspaceRect.workspaceId
                     color: Theme.onSurfaceVariant
                     font.pixelSize: 13
                     font.weight: Font.Medium
@@ -130,12 +131,12 @@ Item {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: parent.radius
+                    radius: workspaceRect.radius
                     color: "transparent"
-                    border.width: isDropTarget ? 3 : 0
+                    border.width: workspaceRect.isDropTarget ? 3 : 0
                     border.color: Theme.primaryColor
                     opacity: 0.8
-                    visible: isDropTarget
+                    visible: workspaceRect.isDropTarget
 
                     Behavior on border.width {
                         NumberAnimation {
@@ -147,15 +148,15 @@ Item {
                 DropArea {
                     anchors.fill: parent
                     onEntered: {
-                        root.draggingTargetWorkspace = parent.workspaceId;
+                        root.draggingTargetWorkspace = workspaceRect.workspaceId;
                         root.isDraggingToClose = false;
-                        if (root.draggingFromWorkspace !== parent.workspaceId) {
-                            parent.isDropTarget = true;
+                        if (root.draggingFromWorkspace !== workspaceRect.workspaceId) {
+                            workspaceRect.isDropTarget = true;
                         }
                     }
                     onExited: {
-                        parent.isDropTarget = false;
-                        if (root.draggingTargetWorkspace === parent.workspaceId) {
+                        workspaceRect.isDropTarget = false;
+                        if (root.draggingTargetWorkspace === workspaceRect.workspaceId) {
                             root.draggingTargetWorkspace = -1;
                         }
                     }
@@ -164,7 +165,7 @@ Item {
                 //     anchors.fill: parent
                 //     cursorShape: Qt.PointingHandCursor
                 //     onClicked: {
-                //         hyprlandData.dispatch(`workspace ${parent.workspaceId}`);
+                //         hyprlandData.dispatch(`workspace ${workspaceRect.workspaceId}`);
                 //     }
                 // }
             }
@@ -178,50 +179,50 @@ Item {
                 required property var modelData
                 required property int index
 
-                readonly property int workspaceId: modelData.workspace?.id ?? 1
-                readonly property int workspaceIndex: workspaceId - 1
-                readonly property bool isVisible: workspaceIndex >= 0 && workspaceIndex < root.workspacesShown
+                readonly property int workspaceId: windowItem.modelData.workspace?.id ?? 1
+                readonly property int workspaceIndex: windowItem.workspaceId - 1
+                readonly property bool isVisible: windowItem.workspaceIndex >= 0 && windowItem.workspaceIndex < root.workspacesShown
 
-                visible: isVisible
+                visible: windowItem.isVisible
 
-                readonly property int col: workspaceIndex % root.columns
-                readonly property int row: Math.floor(workspaceIndex / root.columns)
-                readonly property real baseX: col * (root.workspaceWidth + root.workspaceSpacing)
-                readonly property real baseY: row * (root.workspaceHeight + root.workspaceSpacing)
+                readonly property int col: windowItem.workspaceIndex % root.columns
+                readonly property int row: Math.floor(windowItem.workspaceIndex / root.columns)
+                readonly property real baseX: windowItem.col * (root.workspaceWidth + root.workspaceSpacing)
+                readonly property real baseY: windowItem.row * (root.workspaceHeight + root.workspaceSpacing)
 
-                readonly property var atArray: modelData.at ?? [0, 0]
-                readonly property var sizeArray: modelData.size ?? [100, 100]
+                readonly property var atArray: windowItem.modelData.at ?? [0, 0]
+                readonly property var sizeArray: windowItem.modelData.size ?? [100, 100]
 
-                readonly property real windowX: atArray[0] ?? 0
-                readonly property real windowY: atArray[1] ?? 0
-                readonly property real windowWidth: sizeArray[0] ?? 100
-                readonly property real windowHeight: sizeArray[1] ?? 100
+                readonly property real windowX: windowItem.atArray[0] ?? 0
+                readonly property real windowY: windowItem.atArray[1] ?? 0
+                readonly property real windowWidth: windowItem.sizeArray[0] ?? 100
+                readonly property real windowHeight: windowItem.sizeArray[1] ?? 100
 
-                readonly property real scaledX: windowX * root.scaleX
-                readonly property real scaledY: windowY * root.scaleY
-                readonly property real scaledW: Math.max(20, windowWidth * root.scaleX)
-                readonly property real scaledH: Math.max(20, windowHeight * root.scaleY)
+                readonly property real scaledX: windowItem.windowX * root.scaleX
+                readonly property real scaledY: windowItem.windowY * root.scaleY
+                readonly property real scaledW: Math.max(20, windowItem.windowWidth * root.scaleX)
+                readonly property real scaledH: Math.max(20, windowItem.windowHeight * root.scaleY)
 
-                readonly property bool isActiveWorkspace: root.activeWorkspaceId === workspaceId
-                readonly property real borderWidth: isActiveWorkspace ? 2 : 0
-                readonly property real contentPadding: borderWidth + 4
+                readonly property bool isActiveWorkspace: root.activeWorkspaceId === windowItem.workspaceId
+                readonly property real borderWidth: windowItem.isActiveWorkspace ? 2 : 0
+                readonly property real contentPadding: windowItem.borderWidth + 4
 
-                readonly property real clampedW: Math.min(scaledW, root.workspaceWidth - (contentPadding * 2))
-                readonly property real clampedH: Math.min(scaledH, root.workspaceHeight - (contentPadding * 2))
-                readonly property real clampedX: Math.max(contentPadding, Math.min(scaledX + contentPadding, root.workspaceWidth - clampedW - contentPadding))
-                readonly property real clampedY: Math.max(contentPadding, Math.min(scaledY + contentPadding, root.workspaceHeight - clampedH - contentPadding))
+                readonly property real clampedW: Math.min(windowItem.scaledW, root.workspaceWidth - (windowItem.contentPadding * 2))
+                readonly property real clampedH: Math.min(windowItem.scaledH, root.workspaceHeight - (windowItem.contentPadding * 2))
+                readonly property real clampedX: Math.max(windowItem.contentPadding, Math.min(windowItem.scaledX + windowItem.contentPadding, root.workspaceWidth - windowItem.clampedW - windowItem.contentPadding))
+                readonly property real clampedY: Math.max(windowItem.contentPadding, Math.min(windowItem.scaledY + windowItem.contentPadding, root.workspaceHeight - windowItem.clampedH - windowItem.contentPadding))
 
-                readonly property real targetX: baseX + clampedX
-                readonly property real targetY: baseY + clampedY
+                readonly property real targetX: windowItem.baseX + windowItem.clampedX
+                readonly property real targetY: windowItem.baseY + windowItem.clampedY
 
                 property bool isDragging: false
                 property bool hovered: false
 
-                x: targetX
-                y: targetY
-                width: clampedW
-                height: clampedH
-                z: isDragging ? 100 : ((modelData.floating ?? false) ? 2 : 1)
+                x: windowItem.targetX
+                y: windowItem.targetY
+                width: windowItem.clampedW
+                height: windowItem.clampedH
+                z: windowItem.isDragging ? 100 : ((windowItem.modelData.floating ?? false) ? 2 : 1)
 
                 Drag.active: dragArea.drag.active
                 Drag.hotSpot.x: width / 2
@@ -291,7 +292,7 @@ Item {
                     hoverEnabled: true
                     cursorShape: pressed ? Qt.ClosedHandCursor : (containsMouse ? Qt.OpenHandCursor : Qt.ArrowCursor)
 
-                    drag.target: parent
+                    drag.target: windowItem
                     drag.axis: Drag.XAndYAxis
                     drag.threshold: 4
 
@@ -301,7 +302,7 @@ Item {
                     onExited: windowItem.hovered = false
 
                     onPressed: mouse => {
-                        wasDragging = false;
+                        dragArea.wasDragging = false;
                         windowItem.isDragging = true;
                         root.draggingFromWorkspace = windowItem.workspaceId;
                         windowItem.Drag.hotSpot.x = mouse.x;
@@ -310,9 +311,9 @@ Item {
 
                     onPositionChanged: {
                         if (windowItem.isDragging) {
-                            wasDragging = true;
+                            dragArea.wasDragging = true;
 
-                            const globalPos = windowItem.mapToItem(workspaceContainer, width / 2, height / 2);
+                            const globalPos = windowItem.mapToItem(workspaceContainer, windowItem.width / 2, windowItem.height / 2);
                             const isOutside = globalPos.x < 0 || globalPos.x > workspaceContainer.width || globalPos.y < 0 || globalPos.y > workspaceContainer.height;
 
                             if (isOutside && root.draggingTargetWorkspace === -1) {
@@ -333,20 +334,20 @@ Item {
                         root.draggingTargetWorkspace = -1;
                         root.isDraggingToClose = false;
 
-                        if (shouldClose && wasDragging) {
+                        if (shouldClose && dragArea.wasDragging) {
                             hyprlandData.dispatch(`closewindow address:${windowItem.modelData.address}`);
-                        } else if (targetWs !== -1 && targetWs !== fromWs && wasDragging) {
+                        } else if (targetWs !== -1 && targetWs !== fromWs && dragArea.wasDragging) {
                             hyprlandData.dispatch(`movetoworkspacesilent ${targetWs},address:${windowItem.modelData.address}`);
                         } else {
                             windowItem.x = windowItem.targetX;
                             windowItem.y = windowItem.targetY;
                         }
 
-                        wasDragging = false;
+                        dragArea.wasDragging = false;
                     }
 
                     // onClicked: {
-                    //     if (!wasDragging) {
+                    //     if (!dragArea.wasDragging) {
                     //         // hyprlandData.dispatch(`focuswindow address:${windowItem.modelData.address}`);
                     //     }
                     // }
