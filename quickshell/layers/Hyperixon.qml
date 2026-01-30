@@ -1,4 +1,5 @@
 import qs.Components.notification
+import qs.Components.osd
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
@@ -230,6 +231,16 @@ Scope {
                         function onHideArtiqa() {
                             artiqaRef.active = false;
                         }
+                    }
+                }
+                //osd
+                Osd {
+                    id: osdWindow
+                    anchors {
+                        right: parent.right
+                        top: parent.top
+                        rightMargin: 20
+                        topMargin: 20
                     }
                 }
             }

@@ -17,7 +17,7 @@ Item {
     property bool componentActive: true
 
     Component.onDestruction: {
-        root.componentActive = false;
+        componentActive = false;
         updateTimer.running = false;
     }
 
@@ -31,27 +31,27 @@ Item {
         property int index: 0
         property bool done: false
         property string fileName: "name"
-        path: folderListModel.status === FolderListModel.Ready ? `file:///sys/class/hwmon/hwmon${Math.min(hwmon.index, folderListModel.count - 1)}/${hwmon.fileName}` : ""
+        path: folderListModel.status === FolderListModel.Ready ? `file:///sys/class/hwmon/hwmon${Math.min(index, folderListModel.count - 1)}/${fileName}` : ""
 
         onLoaded: {
-            if (!root.componentActive)
+            if (!componentActive)
                 return;
-            if (!hwmon.done) {
-                if (hwmon.text().includes("coretemp")) {
+            if (!done) {
+                if (text().includes("coretemp")) {
                     Qt.callLater(() => {
-                        if (root.componentActive) {
-                            hwmon.done = true;
-                            hwmon.fileName = "temp1_input";
+                        if (componentActive) {
+                            done = true;
+                            fileName = "temp1_input";
                         }
                     });
-                } else if (hwmon.index < folderListModel.count - 1) {
+                } else if (index < folderListModel.count - 1) {
                     Qt.callLater(() => {
-                        if (root.componentActive)
-                            ++hwmon.index;
+                        if (componentActive)
+                            ++index;
                     });
                 }
             } else {
-                root.cpuTemp = Number(hwmon.text()) / 1000;
+                cpuTemp = Number(text()) / 1000;
             }
         }
     }
@@ -60,16 +60,16 @@ Item {
         id: procStat
         path: "file:///proc/stat"
         onLoaded: {
-            if (!root.componentActive)
+            if (!componentActive)
                 return;
-            const cpuTimes = procStat.text().split(' ').slice(2, 9).map(Number);
+            const cpuTimes = text().split(' ').slice(2, 9).map(Number);
             const idle = cpuTimes[3] + cpuTimes[4];
             const total = cpuTimes.reduce((acc, cur) => acc + cur, 0);
-            const idleDiff = idle - root.lastCpuIdle;
-            const totalDiff = total - root.lastCpuTotal;
-            root.cpuPerc = root.lastCpuTotal > 0 && totalDiff > 0 ? 1 - idleDiff / totalDiff : 0;
-            root.lastCpuIdle = idle;
-            root.lastCpuTotal = total;
+            const idleDiff = idle - lastCpuIdle;
+            const totalDiff = total - lastCpuTotal;
+            cpuPerc = lastCpuTotal > 0 && totalDiff > 0 ? 1 - idleDiff / totalDiff : 0;
+            lastCpuIdle = idle;
+            lastCpuTotal = total;
         }
     }
 
@@ -77,20 +77,20 @@ Item {
         id: procMemInfo
         path: "file:///proc/meminfo"
         onLoaded: {
-            if (!root.componentActive)
+            if (!componentActive)
                 return;
-            const memNumbers = procMemInfo.text().split('\n').map(m => parseInt(m.split(':')[1]));
-            root.usedMemoryPerc = 1 - memNumbers[2] / memNumbers[0];
+            const memNumbers = text().split('\n').map(m => parseInt(m.split(':')[1]));
+            usedMemoryPerc = 1 - memNumbers[2] / memNumbers[0];
         }
     }
 
     Timer {
         id: updateTimer
         interval: 1000
-        running: root.componentActive
+        running: componentActive
         repeat: true
         onTriggered: {
-            if (root.componentActive) {
+            if (componentActive) {
                 hwmon.reload();
                 procStat.reload();
                 procMemInfo.reload();
@@ -111,14 +111,13 @@ Item {
             spacing: 15
 
             Item {
-                id: memoryItem
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 property string itemType: "memory"
                 property string itemIcon: "memory"
                 property string itemLabel: "RAM"
-                property real itemValue: root.usedMemoryPerc
+                property real itemValue: usedMemoryPerc
 
                 Rectangle {
                     anchors.fill: parent
@@ -168,13 +167,12 @@ Item {
                                 capStyle: ShapePath.RoundCap
 
                                 PathAngleArc {
-                                    id: memoryArc
                                     centerX: shape1.width / 2
                                     centerY: shape1.height / 2
                                     radiusX: (shape1.width - 10) / 2
                                     radiusY: (shape1.height - 10) / 2
                                     startAngle: ringContainer1.gapCenterAngle + ringContainer1.gapAngle / 2
-                                    sweepAngle: (360 - ringContainer1.gapAngle) * root.usedMemoryPerc
+                                    sweepAngle: (360 - ringContainer1.gapAngle) * usedMemoryPerc
 
                                     Behavior on sweepAngle {
                                         NumberAnimation {
@@ -187,29 +185,27 @@ Item {
                         }
 
                         Icon {
-                            id: memoryIcon
                             name: "memory"
                             size: 24
                             color: Theme.secondaryColor
 
                             property real radius: (ringContainer1.width - 10) / 2
 
-                            x: ringContainer1.width / 2 + memoryIcon.radius * Math.cos(ringContainer1.gapCenterAngle * Math.PI / 180) - memoryIcon.width / 2
-                            y: ringContainer1.height / 2 + memoryIcon.radius * Math.sin(ringContainer1.gapCenterAngle * Math.PI / 180) - memoryIcon.height / 2
+                            x: ringContainer1.width / 2 + radius * Math.cos(ringContainer1.gapCenterAngle * Math.PI / 180) - width / 2
+                            y: ringContainer1.height / 2 + radius * Math.sin(ringContainer1.gapCenterAngle * Math.PI / 180) - height / 2
                         }
 
                         Column {
-                            id: memoryColumn
                             anchors.centerIn: parent
                             spacing: 2
 
                             Text {
-                                text: Math.round(root.usedMemoryPerc * 100) + "%"
+                                text: Math.round(usedMemoryPerc * 100) + "%"
                                 color: Theme.onSurface
                                 font.pixelSize: 20
                                 font.family: "CaskaydiaCove NF"
                                 font.bold: true
-                                anchors.horizontalCenter: memoryColumn.horizontalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
 
@@ -219,7 +215,7 @@ Item {
                                 font.pixelSize: 12
                                 font.family: "CaskaydiaCove NF"
                                 opacity: 0.7
-                                anchors.horizontalCenter: memoryColumn.horizontalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
                         }
@@ -228,14 +224,13 @@ Item {
             }
 
             Item {
-                id: cpuItem
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 property string itemType: "cpu"
                 property string itemIcon: "cpu"
                 property string itemLabel: "CPU"
-                property real itemValue: root.cpuPerc
+                property real itemValue: cpuPerc
 
                 Rectangle {
                     anchors.fill: parent
@@ -285,13 +280,12 @@ Item {
                                 capStyle: ShapePath.RoundCap
 
                                 PathAngleArc {
-                                    id: cpuArc
                                     centerX: shape2.width / 2
                                     centerY: shape2.height / 2
                                     radiusX: (shape2.width - 10) / 2
                                     radiusY: (shape2.height - 10) / 2
                                     startAngle: ringContainer2.gapCenterAngle + ringContainer2.gapAngle / 2
-                                    sweepAngle: (360 - ringContainer2.gapAngle) * root.cpuPerc
+                                    sweepAngle: (360 - ringContainer2.gapAngle) * cpuPerc
 
                                     Behavior on sweepAngle {
                                         NumberAnimation {
@@ -304,29 +298,27 @@ Item {
                         }
 
                         Icon {
-                            id: cpuIcon
                             name: "cpu"
                             size: 28
                             color: Theme.primaryColor
 
                             property real radius: (ringContainer2.width - 10) / 2
 
-                            x: ringContainer2.width / 2 + cpuIcon.radius * Math.cos(ringContainer2.gapCenterAngle * Math.PI / 180) - cpuIcon.width / 2
-                            y: ringContainer2.height / 2 + cpuIcon.radius * Math.sin(ringContainer2.gapCenterAngle * Math.PI / 180) - cpuIcon.height / 2
+                            x: ringContainer2.width / 2 + radius * Math.cos(ringContainer2.gapCenterAngle * Math.PI / 180) - width / 2
+                            y: ringContainer2.height / 2 + radius * Math.sin(ringContainer2.gapCenterAngle * Math.PI / 180) - height / 2
                         }
 
                         Column {
-                            id: cpuColumn
                             anchors.centerIn: parent
                             spacing: 2
 
                             Text {
-                                text: Math.round(root.cpuPerc * 100) + "%"
+                                text: Math.round(cpuPerc * 100) + "%"
                                 color: Theme.onSurface
                                 font.pixelSize: 24
                                 font.family: "CaskaydiaCove NF"
                                 font.bold: true
-                                anchors.horizontalCenter: cpuColumn.horizontalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
 
@@ -336,7 +328,7 @@ Item {
                                 font.pixelSize: 13
                                 font.family: "CaskaydiaCove NF"
                                 opacity: 0.7
-                                anchors.horizontalCenter: cpuColumn.horizontalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
                         }
@@ -345,14 +337,13 @@ Item {
             }
 
             Item {
-                id: tempItem
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 property string itemType: "temp"
                 property string itemIcon: "popcorn"
                 property string itemLabel: "TEMP"
-                property real itemValue: Math.min(root.cpuTemp / 100, 1.0)
+                property real itemValue: Math.min(cpuTemp / 100, 1.0)
 
                 Rectangle {
                     anchors.fill: parent
@@ -402,13 +393,12 @@ Item {
                                 capStyle: ShapePath.RoundCap
 
                                 PathAngleArc {
-                                    id: tempArc
                                     centerX: shape3.width / 2
                                     centerY: shape3.height / 2
                                     radiusX: (shape3.width - 10) / 2
                                     radiusY: (shape3.height - 10) / 2
                                     startAngle: ringContainer3.gapCenterAngle + ringContainer3.gapAngle / 2
-                                    sweepAngle: (360 - ringContainer3.gapAngle) * Math.min(root.cpuTemp / 100, 1.0)
+                                    sweepAngle: (360 - ringContainer3.gapAngle) * Math.min(cpuTemp / 100, 1.0)
 
                                     Behavior on sweepAngle {
                                         NumberAnimation {
@@ -421,29 +411,27 @@ Item {
                         }
 
                         Icon {
-                            id: tempIcon
                             name: "popcorn"
                             size: 24
                             color: Theme.tertiaryColor
 
                             property real radius: (ringContainer3.width - 10) / 2
 
-                            x: ringContainer3.width / 2 + tempIcon.radius * Math.cos(ringContainer3.gapCenterAngle * Math.PI / 180) - tempIcon.width / 2
-                            y: ringContainer3.height / 2 + tempIcon.radius * Math.sin(ringContainer3.gapCenterAngle * Math.PI / 180) - tempIcon.height / 2
+                            x: ringContainer3.width / 2 + radius * Math.cos(ringContainer3.gapCenterAngle * Math.PI / 180) - width / 2
+                            y: ringContainer3.height / 2 + radius * Math.sin(ringContainer3.gapCenterAngle * Math.PI / 180) - height / 2
                         }
 
                         Column {
-                            id: tempColumn
                             anchors.centerIn: parent
                             spacing: 2
 
                             Text {
-                                text: Math.round(root.cpuTemp) + "°C"
+                                text: Math.round(cpuTemp) + "°C"
                                 color: Theme.onSurface
                                 font.pixelSize: 20
                                 font.family: "CaskaydiaCove NF"
                                 font.bold: true
-                                anchors.horizontalCenter: tempColumn.horizontalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
 
@@ -453,7 +441,7 @@ Item {
                                 font.pixelSize: 12
                                 font.family: "CaskaydiaCove NF"
                                 opacity: 0.7
-                                anchors.horizontalCenter: tempColumn.horizontalCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
                         }
