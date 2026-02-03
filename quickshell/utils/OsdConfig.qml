@@ -9,6 +9,7 @@ QtObject {
     property int currentValue: 0
     property bool isMuted: false
     property bool isVisible: false
+    property string character: "Chasca"
 
     readonly property int maxLimit: 100
 }

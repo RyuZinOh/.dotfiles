@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Shapes
 import qs.Services.Theme
 import qs.utils
+import "./variants"
 
 Item {
     id: root
@@ -10,7 +11,7 @@ Item {
     height: 600
     visible: OsdConfig.isVisible
 
-    readonly property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Chasca"
+    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/" + OsdConfig.character
 
     readonly property int segmentCount: 15
     property real normalizedValue: 0
@@ -48,6 +49,7 @@ Item {
         root.normalizedValue = Math.max(0, Math.min(1, OsdConfig.currentValue / 100));
     }
 
+    // Ring at the top (common for both)
     Item {
         id: ringContainer
         anchors.top: parent.top
@@ -138,79 +140,29 @@ Item {
         }
     }
 
-    Item {
-        id: chascaBar
+    // Character-specific bar loader
+    Loader {
+        id: barLoader
         anchors.top: ringContainer.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        width: 120
-        height: width * 1.42
-        z: 1
 
-        ShaderEffect {
-            anchors.centerIn: parent
-            width: parent.width * 1.4
-            anchors.horizontalCenterOffset: -15
-            anchors.verticalCenterOffset: -25
-            height: parent.height * 1.6
-            z: -1
+        sourceComponent: OsdConfig.character === "Chasca" ? chascaComponent : skirkComponent
+    }
 
-            property variant source: Image {
-                source: root.spriteCache + "/UI_NyxStateBar_Chasca_EffColor_02.png"
-            }
-            property real time: 0
-
-            NumberAnimation on time {
-                from: 0
-                to: 100
-                duration: 100000
-                loops: Animation.Infinite
-                running: true
-            }
-
-            vertexShader: root.spriteCache + "/flame.vert.qsb"
-            fragmentShader: root.spriteCache + "/flame.frag.qsb"
+    Component {
+        id: chascaComponent
+        Chasca {
+            normalizedValue: root.normalizedValue
+            spriteCache: root.spriteCache
         }
+    }
 
-        Image {
-            anchors.fill: parent
-            source: root.spriteCache + "/UI_NyxStateBar_Chasca_BarBg.png"
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Item {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: parent.height * root.normalizedValue
-            clip: true
-
-            Image {
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                width: chascaBar.width
-                height: chascaBar.height
-                source: root.spriteCache + "/UI_NyxStateBar_Chasca_BarFill.png"
-                fillMode: Image.PreserveAspectFit
-            }
-        }
-
-        Image {
-            anchors.fill: parent
-            source: root.spriteCache + "/UI_NyxStateBar_Chasca_BarMask.png"
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Image {
-            anchors.fill: parent
-            source: root.spriteCache + "/UI_NyxStateBar_Chasca_BarBg02.png"
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Image {
-            anchors.fill: parent
-            source: root.spriteCache + "/UI_NyxStateBar_Chasca_Mask_02.png"
-            fillMode: Image.PreserveAspectFit
+    Component {
+        id: skirkComponent
+        Skirk {
+            normalizedValue: root.normalizedValue
+            spriteCache: root.spriteCache
         }
     }
 }
