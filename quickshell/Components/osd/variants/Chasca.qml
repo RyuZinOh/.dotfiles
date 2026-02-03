@@ -7,7 +7,16 @@ Item {
     height: width * 1.42
 
     property real normalizedValue: 0
-    property string spriteCache: ""
+
+    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Chasca/"
+
+    Component.onCompleted: {
+        console.log("Chasca variant created");
+    }
+
+    Component.onDestruction: {
+        console.log("Chasca variant destroyed");
+    }
 
     ShaderEffect {
         anchors.centerIn: parent

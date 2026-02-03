@@ -62,5 +62,26 @@ Item {
             brightnessExec.running = true;
             return "Brightness adjusted";
         }
+
+        function setCharacter(name: string): string {
+            const lowerName = name.toLowerCase();
+            const index = OsdConfig.characterNames.findIndex(n => n.toLowerCase() === lowerName);
+            if (index !== -1) {
+                OsdConfig.character = index;
+                OsdConfig.saveConfig();
+                return "Character set to " + OsdConfig.characterNames[index];
+            }
+            return "Invalid character. Available: " + OsdConfig.characterNames.join(", ");
+        }
+
+        function nextCharacter(): string {
+            OsdConfig.character = (OsdConfig.character + 1) % OsdConfig.characterNames.length;
+            OsdConfig.saveConfig();
+            return "Character set to " + OsdConfig.currentCharacterName;
+        }
+
+        function getConfig(): string {
+            return "character: " + OsdConfig.currentCharacterName;
+        }
     }
 }

@@ -3,7 +3,7 @@ import QtQuick
 import QtQuick.Shapes
 import qs.Services.Theme
 import qs.utils
-import "./variants"
+import "./variants/"
 
 Item {
     id: root
@@ -11,8 +11,7 @@ Item {
     height: 600
     visible: OsdConfig.isVisible
 
-    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/" + OsdConfig.character
-
+    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/" + OsdConfig.currentCharacterName
     readonly property int segmentCount: 15
     property real normalizedValue: 0
     readonly property int filledSegments: Math.floor(normalizedValue * segmentCount)
@@ -45,11 +44,21 @@ Item {
         }
     }
 
-    Component.onCompleted: {
-        root.normalizedValue = Math.max(0, Math.min(1, OsdConfig.currentValue / 100));
+    Connections {
+        target: OsdConfig
+        function onCharacterChanged() {
+            console.log("Character changed to:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
+            console.log("Sprite cache path:", root.spriteCache);
+        }
     }
 
-    // Ring at the top (common for both)
+    Component.onCompleted: {
+        root.normalizedValue = Math.max(0, Math.min(1, OsdConfig.currentValue / 100));
+        console.log("OSD loaded. Character:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
+        console.log("Activating variant loader...");
+        variantLoader.active = true;
+    }
+
     Item {
         id: ringContainer
         anchors.top: parent.top
@@ -140,21 +149,49 @@ Item {
         }
     }
 
-    // Character-specific bar loader
     Loader {
-        id: barLoader
+        id: variantLoader
         anchors.top: ringContainer.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
 
-        sourceComponent: OsdConfig.character === "Chasca" ? chascaComponent : skirkComponent
+        property int currentCharacter: OsdConfig.character
+
+        sourceComponent: {
+            switch (currentCharacter) {
+            case OsdConfig.Character.Chasca:
+                return chascaComponent;
+            case OsdConfig.Character.Skirk:
+                return skirkComponent;
+            case OsdConfig.Character.Ororon:
+                return ororonComponent;
+            default:
+                return ororonComponent;
+            }
+        }
+
+        onCurrentCharacterChanged: {
+            console.log("Loader: Character changed to index", currentCharacter);
+        }
+
+        onLoaded: {
+            if (item) {
+                console.log("Variant loaded:", OsdConfig.currentCharacterName);
+                item.normalizedValue = Qt.binding(() => root.normalizedValue);
+            }
+        }
+
+        onStatusChanged: {
+            if (status === Loader.Error) {
+                console.error("Loader error for character:", OsdConfig.currentCharacterName);
+            }
+        }
     }
 
     Component {
         id: chascaComponent
         Chasca {
             normalizedValue: root.normalizedValue
-            spriteCache: root.spriteCache
         }
     }
 
@@ -162,7 +199,13 @@ Item {
         id: skirkComponent
         Skirk {
             normalizedValue: root.normalizedValue
-            spriteCache: root.spriteCache
+        }
+    }
+
+    Component {
+        id: ororonComponent
+        Ororon {
+            normalizedValue: root.normalizedValue
         }
     }
 }

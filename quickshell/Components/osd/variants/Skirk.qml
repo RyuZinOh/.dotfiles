@@ -8,7 +8,7 @@ Item {
     y: -120
 
     property real normalizedValue: 0
-    property string spriteCache: ""
+    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Skirk"
 
     readonly property int zBarBg: 1
     readonly property int zBarFillOutline: 2
@@ -17,6 +17,14 @@ Item {
     readonly property int zBarShadow: -1
     readonly property int zBarEffMask: 6
     readonly property int zDots: 7
+
+    Component.onCompleted: {
+        console.log("Skirk variant created");
+    }
+
+    Component.onDestruction: {
+        console.log("Skirk variant destroyed");
+    }
 
     ShaderEffect {
         x: 40
