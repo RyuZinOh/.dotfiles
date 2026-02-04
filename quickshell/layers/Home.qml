@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell.Wayland
 import qs.Services
 import qs.Components.ContextMenu
+// import qs.Components.paimonclock
 import qs.Components.Wallski
 
 Scope {
@@ -52,6 +53,13 @@ Scope {
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
             }
+
+            // PaimonClock {
+            //     anchors.top: parent.top
+            //     anchors.left: parent.left
+            //     offsetX: -400
+            //     offsetY: -160
+            // }
         }
     }
 }
