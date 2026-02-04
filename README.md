@@ -6,7 +6,10 @@ feel free to use this, I myself using others modules and stuffs with a lil bit o
 
 
 
-https://github.com/user-attachments/assets/6d9aae5d-787d-4acb-a924-c7aa2bf49196
+
+
+https://github.com/user-attachments/assets/99633253-eafb-4708-9e12-f8c02cc3e264
+
 
 
 <table>
