@@ -46,16 +46,16 @@ Item {
 
     Connections {
         target: OsdConfig
-        function onCharacterChanged() {
-            console.log("Character changed to:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
-            console.log("Sprite cache path:", root.spriteCache);
-        }
+        // function onCharacterChanged() {
+        // console.log("Character changed to:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
+        // console.log("Sprite cache path:", root.spriteCache);
+        // }
     }
 
     Component.onCompleted: {
         root.normalizedValue = Math.max(0, Math.min(1, OsdConfig.currentValue / 100));
-        console.log("OSD loaded. Character:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
-        console.log("Activating variant loader...");
+        // console.log("OSD loaded. Character:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
+        // console.log("Activating variant loader...");
         variantLoader.active = true;
     }
 
@@ -171,12 +171,12 @@ Item {
         }
 
         onCurrentCharacterChanged: {
-            console.log("Loader: Character changed to index", currentCharacter);
+            // console.log("Loader: Character changed to index", currentCharacter);
         }
 
         onLoaded: {
             if (item) {
-                console.log("Variant loaded:", OsdConfig.currentCharacterName);
+                // console.log("Variant loaded:", OsdConfig.currentCharacterName);
                 item.normalizedValue = Qt.binding(() => root.normalizedValue);
             }
         }

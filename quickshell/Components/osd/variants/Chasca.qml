@@ -11,11 +11,11 @@ Item {
     property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Chasca/"
 
     Component.onCompleted: {
-        console.log("Chasca variant created");
+        // console.log("Chasca variant created");
     }
 
     Component.onDestruction: {
-        console.log("Chasca variant destroyed");
+        // console.log("Chasca variant destroyed");
     }
 
     ShaderEffect {
