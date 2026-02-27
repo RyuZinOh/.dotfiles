@@ -149,6 +149,7 @@ Scope {
                     anchors {
                         right: parent.right
                         topMargin: 50
+                        top: parent.top
                     }
                 }
                 //toolski

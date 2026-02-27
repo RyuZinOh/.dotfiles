@@ -6,8 +6,11 @@ import Quickshell.Services.Notifications
 QtObject {
     id: root
 
-    signal notificationReceived(notification: var)
-    signal dismissNotification(id: var)
+    signal notificationReady(var n)
+    signal dismissNotification(int id)
+
+    property var queue: []
+    property bool processing: false
 
     property NotificationServer server: NotificationServer {
         actionIconsSupported: true
@@ -19,13 +22,35 @@ QtObject {
         imageSupported: true
         keepOnReload: false
         persistenceSupported: true
+        onNotification: n => root.enqueue(n)
+    }
 
-        onNotification: notification => {
-            root.notificationReceived(notification);
+    function enqueue(n) {
+        queue.push({
+            id: n.id,
+            summary: n.summary || "Notification",
+            body: n.body || "",
+            appName: n.appName || ""
+        });
+        if (!processing) {
+            processNext();
         }
     }
 
-    function dismiss(notificationId) {
-        root.dismissNotification(notificationId);
+    function processNext() {
+        if (queue.length === 0) {
+            processing = false;
+            return;
+        }
+        processing = true;
+        root.notificationReady(queue.shift());
+    }
+
+    function onItemEntered() {
+        Qt.callLater(processNext);
+    }
+
+    function dismiss(id) {
+        root.dismissNotification(id);
     }
 }
