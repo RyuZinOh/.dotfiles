@@ -7,6 +7,7 @@ import qs.Components.Dancer
 import qs.Components.Omnitrix
 // import qs.Modules.Ash
 import qs.Components.Artiqa
+import qs.Components.Wow
 import qs.Modules.Hut
 import qs.Modules.Toolski
 import qs.Modules.TopJesus
@@ -121,6 +122,14 @@ Scope {
                     width: artiqaRef.active ? hyperixonLayer.width : 1
                     height: artiqaRef.active ? hyperixonLayer.height : 1
                 }
+
+                /*wow*/
+                Region {
+                    x: (hyperixonLayer.width / 2) - (wowRef.width / 2)
+                    y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
+                    width: WowConfig.isActive ? wowRef.width : 1
+                    height: WowConfig.isActive ? wowRef.height : 1
+                }
             }
 
             //content container
@@ -157,6 +166,14 @@ Scope {
                     id: toolskiRef
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
+                }
+
+                //overview -wow
+                Loader {
+                    id: wowRef
+                    anchors.centerIn: parent
+                    active: WowConfig.isActive
+                    sourceComponent: Wow {}
                 }
                 //hut
                 Hut {

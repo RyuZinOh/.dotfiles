@@ -3,7 +3,6 @@ import QtQuick
 import qs.Services.Theme
 import "./Nihongo/"
 import "./War"
-import "./Wow/"
 
 Item {
     id: root
@@ -195,12 +194,6 @@ Item {
                     cardHeight: 420,
                     cardWidth: 450
                 },
-                {
-                    icon: "󱗻",
-                    blade: 3,
-                    cardHeight: 400,
-                    cardWidth: 1440
-                }
             ]
 
             Rectangle {
@@ -388,8 +381,6 @@ Item {
                         return nihongoComponent;
                     case 1:
                         return warComponent;
-                    case 2:
-                        return wowComponent;
                     default:
                         return null;
                     }
@@ -412,11 +403,6 @@ Item {
             Component {
                 id: warComponent
                 War {}
-            }
-
-            Component {
-                id: wowComponent
-                Wow {}
             }
         }
 

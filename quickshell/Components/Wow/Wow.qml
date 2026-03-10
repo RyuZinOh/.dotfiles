@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
 import qs.Services.Overview
+import qs.utils
 
 Item {
     id: root
@@ -12,6 +13,14 @@ Item {
     property real workspaceWidth: 260
     property real workspaceHeight: 150
     property real workspaceSpacing: 14
+
+    visible: WowConfig.isActive
+    enabled: WowConfig.isActive
+
+    width: (workspaceWidth + workspaceSpacing) * columns - workspaceSpacing
+    height: (workspaceHeight + workspaceSpacing) * rows - workspaceSpacing
+
+    anchors.centerIn: parent
 
     //japanese mapping
     readonly property var jpN: ({
@@ -59,11 +68,7 @@ Item {
 
     Item {
         id: workspaceContainer
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        width: (root.workspaceWidth + root.workspaceSpacing) * root.columns - root.workspaceSpacing
-        height: (root.workspaceHeight + root.workspaceSpacing) * root.rows - root.workspaceSpacing
-
+        anchors.fill: parent
         //Windows overlay
         Repeater {
             model: root.workspacesShown
@@ -72,21 +77,21 @@ Item {
                 id: workspaceRect
                 required property int index
 
-                readonly property int workspaceId: workspaceRect.index + 1
-                readonly property int col: workspaceRect.index % root.columns
-                readonly property int row: Math.floor(workspaceRect.index / root.columns)
-                readonly property bool isActive: root.activeWorkspaceId === workspaceRect.workspaceId
+                readonly property int workspaceId: index + 1
+                readonly property int col: index % root.columns
+                readonly property int row: Math.floor(index / root.columns)
+                readonly property bool isActive: root.activeWorkspaceId === workspaceId
                 property bool isDropTarget: false
 
-                x: workspaceRect.col * (root.workspaceWidth + root.workspaceSpacing)
-                y: workspaceRect.row * (root.workspaceHeight + root.workspaceSpacing)
+                x: col * (root.workspaceWidth + root.workspaceSpacing)
+                y: row * (root.workspaceHeight + root.workspaceSpacing)
                 width: root.workspaceWidth
                 height: root.workspaceHeight
 
-                color: workspaceRect.isActive ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                color: isActive ? Theme.surfaceContainerHigh : Theme.surfaceContainer
                 radius: 12
-                border.width: workspaceRect.isActive ? 2 : 0
-                border.color: workspaceRect.isActive ? Theme.primaryColor : "transparent"
+                border.width: isActive ? 2 : 0
+                border.color: isActive ? Theme.primaryColor : "transparent"
                 clip: true
 
                 Behavior on color {
@@ -95,14 +100,12 @@ Item {
                         easing.type: Easing.OutQuad
                     }
                 }
-
                 Behavior on border.width {
                     NumberAnimation {
                         duration: 150
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 150
@@ -170,7 +173,6 @@ Item {
                 // }
             }
         }
-
         Repeater {
             model: hyprlandData.windowList
 
@@ -179,50 +181,50 @@ Item {
                 required property var modelData
                 required property int index
 
-                readonly property int workspaceId: windowItem.modelData.workspace?.id ?? 1
-                readonly property int workspaceIndex: windowItem.workspaceId - 1
-                readonly property bool isVisible: windowItem.workspaceIndex >= 0 && windowItem.workspaceIndex < root.workspacesShown
+                readonly property int workspaceId: modelData.workspace?.id ?? 1
+                readonly property int workspaceIndex: workspaceId - 1
+                readonly property bool isVisible: workspaceIndex >= 0 && workspaceIndex < root.workspacesShown
 
-                visible: windowItem.isVisible
+                visible: isVisible
 
-                readonly property int col: windowItem.workspaceIndex % root.columns
-                readonly property int row: Math.floor(windowItem.workspaceIndex / root.columns)
-                readonly property real baseX: windowItem.col * (root.workspaceWidth + root.workspaceSpacing)
-                readonly property real baseY: windowItem.row * (root.workspaceHeight + root.workspaceSpacing)
+                readonly property int col: workspaceIndex % root.columns
+                readonly property int row: Math.floor(workspaceIndex / root.columns)
+                readonly property real baseX: col * (root.workspaceWidth + root.workspaceSpacing)
+                readonly property real baseY: row * (root.workspaceHeight + root.workspaceSpacing)
 
-                readonly property var atArray: windowItem.modelData.at ?? [0, 0]
-                readonly property var sizeArray: windowItem.modelData.size ?? [100, 100]
+                readonly property var atArray: modelData.at ?? [0, 0]
+                readonly property var sizeArray: modelData.size ?? [100, 100]
 
-                readonly property real windowX: windowItem.atArray[0] ?? 0
-                readonly property real windowY: windowItem.atArray[1] ?? 0
-                readonly property real windowWidth: windowItem.sizeArray[0] ?? 100
-                readonly property real windowHeight: windowItem.sizeArray[1] ?? 100
+                readonly property real windowX: atArray[0] ?? 0
+                readonly property real windowY: atArray[1] ?? 0
+                readonly property real windowWidth: sizeArray[0] ?? 100
+                readonly property real windowHeight: sizeArray[1] ?? 100
 
-                readonly property real scaledX: windowItem.windowX * root.scaleX
-                readonly property real scaledY: windowItem.windowY * root.scaleY
-                readonly property real scaledW: Math.max(20, windowItem.windowWidth * root.scaleX)
-                readonly property real scaledH: Math.max(20, windowItem.windowHeight * root.scaleY)
+                readonly property real scaledX: windowX * root.scaleX
+                readonly property real scaledY: windowY * root.scaleY
+                readonly property real scaledW: Math.max(20, windowWidth * root.scaleX)
+                readonly property real scaledH: Math.max(20, windowHeight * root.scaleY)
 
-                readonly property bool isActiveWorkspace: root.activeWorkspaceId === windowItem.workspaceId
-                readonly property real borderWidth: windowItem.isActiveWorkspace ? 2 : 0
-                readonly property real contentPadding: windowItem.borderWidth + 4
+                readonly property bool isActiveWorkspace: root.activeWorkspaceId === workspaceId
+                readonly property real borderWidth: isActiveWorkspace ? 2 : 0
+                readonly property real contentPadding: borderWidth + 4
 
-                readonly property real clampedW: Math.min(windowItem.scaledW, root.workspaceWidth - (windowItem.contentPadding * 2))
-                readonly property real clampedH: Math.min(windowItem.scaledH, root.workspaceHeight - (windowItem.contentPadding * 2))
-                readonly property real clampedX: Math.max(windowItem.contentPadding, Math.min(windowItem.scaledX + windowItem.contentPadding, root.workspaceWidth - windowItem.clampedW - windowItem.contentPadding))
-                readonly property real clampedY: Math.max(windowItem.contentPadding, Math.min(windowItem.scaledY + windowItem.contentPadding, root.workspaceHeight - windowItem.clampedH - windowItem.contentPadding))
+                readonly property real clampedW: Math.min(scaledW, root.workspaceWidth - (contentPadding * 2))
+                readonly property real clampedH: Math.min(scaledH, root.workspaceHeight - (contentPadding * 2))
+                readonly property real clampedX: Math.max(contentPadding, Math.min(scaledX + contentPadding, root.workspaceWidth - clampedW - contentPadding))
+                readonly property real clampedY: Math.max(contentPadding, Math.min(scaledY + contentPadding, root.workspaceHeight - clampedH - contentPadding))
 
-                readonly property real targetX: windowItem.baseX + windowItem.clampedX
-                readonly property real targetY: windowItem.baseY + windowItem.clampedY
+                readonly property real targetX: baseX + clampedX
+                readonly property real targetY: baseY + clampedY
 
                 property bool isDragging: false
                 property bool hovered: false
 
-                x: windowItem.targetX
-                y: windowItem.targetY
-                width: windowItem.clampedW
-                height: windowItem.clampedH
-                z: windowItem.isDragging ? 100 : ((windowItem.modelData.floating ?? false) ? 2 : 1)
+                x: targetX
+                y: targetY
+                width: clampedW
+                height: clampedH
+                z: isDragging ? 100 : ((modelData.floating ?? false) ? 2 : 1)
 
                 Drag.active: dragArea.drag.active
                 Drag.hotSpot.x: width / 2
@@ -242,13 +244,11 @@ Item {
                             easing.type: Easing.OutQuad
                         }
                     }
-
                     Behavior on border.width {
                         NumberAnimation {
                             duration: 150
                         }
                     }
-
                     Behavior on border.color {
                         ColorAnimation {
                             duration: 150
@@ -278,7 +278,6 @@ Item {
                             duration: 150
                         }
                     }
-
                     Behavior on color {
                         ColorAnimation {
                             duration: 150
@@ -302,7 +301,7 @@ Item {
                     onExited: windowItem.hovered = false
 
                     onPressed: mouse => {
-                        dragArea.wasDragging = false;
+                        wasDragging = false;
                         windowItem.isDragging = true;
                         root.draggingFromWorkspace = windowItem.workspaceId;
                         windowItem.Drag.hotSpot.x = mouse.x;
@@ -311,16 +310,10 @@ Item {
 
                     onPositionChanged: {
                         if (windowItem.isDragging) {
-                            dragArea.wasDragging = true;
-
+                            wasDragging = true;
                             const globalPos = windowItem.mapToItem(workspaceContainer, windowItem.width / 2, windowItem.height / 2);
                             const isOutside = globalPos.x < 0 || globalPos.x > workspaceContainer.width || globalPos.y < 0 || globalPos.y > workspaceContainer.height;
-
-                            if (isOutside && root.draggingTargetWorkspace === -1) {
-                                root.isDraggingToClose = true;
-                            } else {
-                                root.isDraggingToClose = false;
-                            }
+                            root.isDraggingToClose = isOutside && root.draggingTargetWorkspace === -1;
                         }
                     }
 
@@ -334,18 +327,17 @@ Item {
                         root.draggingTargetWorkspace = -1;
                         root.isDraggingToClose = false;
 
-                        if (shouldClose && dragArea.wasDragging) {
+                        if (shouldClose && wasDragging) {
                             hyprlandData.dispatch(`closewindow address:${windowItem.modelData.address}`);
-                        } else if (targetWs !== -1 && targetWs !== fromWs && dragArea.wasDragging) {
+                        } else if (targetWs !== -1 && targetWs !== fromWs && wasDragging) {
                             hyprlandData.dispatch(`movetoworkspacesilent ${targetWs},address:${windowItem.modelData.address}`);
                         } else {
                             windowItem.x = windowItem.targetX;
                             windowItem.y = windowItem.targetY;
                         }
 
-                        dragArea.wasDragging = false;
+                        wasDragging = false;
                     }
-
                     // onClicked: {
                     //     if (!dragArea.wasDragging) {
                     //         // hyprlandData.dispatch(`focuswindow address:${windowItem.modelData.address}`);
