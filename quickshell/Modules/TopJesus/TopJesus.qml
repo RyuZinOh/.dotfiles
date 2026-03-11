@@ -1,8 +1,8 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 // import Qt5Compat.GraphicalEffects
 import qs.Services.Shapes
 import qs.Services.Theme
-import qs.Components.Icon
 import qs.Components.topjesus
 /*I dont want to use qs for importing in modules for some weird reasons, well*/
 import "./Callgorl/"
@@ -11,19 +11,9 @@ import "./Powerski/"
 import "./ControlRoom/"
 import "./Wset/"
 
-// import Quickshell
-
 Item {
     id: root
     required property var parentScreen
-    //enable this for extra pin stuff [very interesthing]
-    // PanelWindow {
-    //     anchors.top: true
-    //     implicitWidth: 0
-    //     implicitHeight: 0
-    //     exclusiveZone: 40
-    //     visible: root.isPinned
-    // }
     implicitWidth: 1440
     implicitHeight: popout.height + nestedPopout.height
     width: implicitWidth
@@ -39,16 +29,74 @@ Item {
         }
     }
 
+    readonly property var popoutIcons: [
+        {
+            id: 1,
+            icon: "\udb81\udfea",
+            xOff: 75,
+            w: 580,
+            h: 180
+        },
+        {
+            id: 2,
+            icon: "\uefa7",
+            xOff: 200,
+            w: 380,
+            h: 250
+        },
+        {
+            id: 3,
+            icon: "\uee34",
+            xOff: 200,
+            w: 420,
+            h: 280
+        },
+        {
+            id: 4,
+            icon: "\uee82",
+            xOff: 225,
+            w: 350,
+            h: 140
+        },
+        {
+            id: 5,
+            icon: "\udb81\udce0",
+            xOff: 200,
+            w: 260,
+            h: 230
+        },
+    ]
+
+    readonly property var popoutComponents: [null, controlRoomComp, wsetComp, anilistComp, powerskiComp, callgorlComp]
+
+    Component {
+        id: controlRoomComp
+        ControlRoom {}
+    }
+    Component {
+        id: wsetComp
+        Wset {}
+    }
+    Component {
+        id: anilistComp
+        Anilist {}
+    }
+    Component {
+        id: powerskiComp
+        Powerski {}
+    }
+    Component {
+        id: callgorlComp
+        Callgorl {}
+    }
+
     MouseArea {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: 1
         hoverEnabled: true
-
-        onEntered: {
-            root.isHovered = true;
-        }
+        onEntered: root.isHovered = true
     }
 
     // was testing but creates a good background dropshadow somehow lol
@@ -81,15 +129,14 @@ Item {
             anchors.fill: parent
             anchors.margins: 10
             opacity: (root.isHovered || root.isPinned) ? 1 : 0
-
             Behavior on opacity {
                 NumberAnimation {
                     duration: 300
                     easing.type: Easing.OutQuad
                 }
             }
+
             Workspace {
-                id: workspaces
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 parentScreen: root.parentScreen
@@ -98,7 +145,6 @@ Item {
             }
 
             Row {
-                id: rightPanel
                 spacing: 10
                 anchors.right: parent.right
                 anchors.rightMargin: 15
@@ -108,9 +154,8 @@ Item {
                     width: 28
                     height: 28
                     radius: 6
-                    color: pinMouseArea.containsMouse ? Theme.surfaceBright : "transparent"
+                    color: pinArea.containsMouse ? Theme.surfaceBright : "transparent"
                     anchors.verticalCenter: parent.verticalCenter
-
                     Behavior on color {
                         ColorAnimation {
                             duration: 150
@@ -119,18 +164,16 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "󰐃"
+                        text: "\uf08d"
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 16
                         color: root.isPinned ? Theme.primaryColor : Theme.onSurfaceVariant
                         rotation: root.isPinned ? 0 : 45
-
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
                         }
-
                         Behavior on rotation {
                             NumberAnimation {
                                 duration: 200
@@ -138,15 +181,12 @@ Item {
                             }
                         }
                     }
-
                     MouseArea {
-                        id: pinMouseArea
+                        id: pinArea
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            root.isPinned = !root.isPinned;
-                        }
+                        onClicked: root.isPinned = !root.isPinned
                     }
                 }
 
@@ -155,33 +195,29 @@ Item {
                 }
 
                 Item {
-                    id: popoutIconRowContainer
-                    width: popoutIconRow.width
                     height: 28
+                    width: iconRow.width
                     anchors.verticalCenter: parent.verticalCenter
 
                     Rectangle {
-                        id: popoutIconRow
-                        width: iconRowContent.width + 20
+                        id: iconRow
                         height: 32
                         radius: 8
+                        width: iconRowContent.width + 20
+                        anchors.centerIn: parent
                         color: root.activePopout > 0 ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
                         border.color: root.activePopout > 0 ? Theme.primaryColor : Theme.outlineVariant
                         border.width: root.activePopout > 0 ? 1 : 0.5
-                        anchors.centerIn: parent
-
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
                         }
-
                         Behavior on border.color {
                             ColorAnimation {
                                 duration: 200
                             }
                         }
-
                         Behavior on border.width {
                             NumberAnimation {
                                 duration: 200
@@ -192,170 +228,42 @@ Item {
                             id: iconRowContent
                             anchors.centerIn: parent
 
-                            Rectangle {
-                                id: cpuIconArea
-                                width: 36
-                                height: 28
-                                radius: 6
-                                color: "transparent"
+                            Repeater {
+                                model: root.popoutIcons
+                                Rectangle {
+                                    id: iconRect
+                                    required property var modelData
+                                    width: 36
+                                    height: 28
+                                    radius: 6
+                                    color: "transparent"
+                                    readonly property bool isGear: iconRect.modelData.id === 2
 
-                                Icon {
-                                    name: "onigiri"
-                                    size: 20
-                                    color: root.activePopout === 1 ? Theme.primaryColor : (cpuMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
-                                    anchors.centerIn: parent
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: iconRect.modelData.icon
+                                        font.family: "CaskaydiaCove NF"
+                                        font.pixelSize: 20
+                                        color: root.activePopout === iconRect.modelData.id ? Theme.primaryColor : iMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
+                                        rotation: iconRect.isGear && iMouse.containsMouse ? 90 : 0
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 200
+                                            }
+                                        }
+                                        Behavior on rotation {
+                                            NumberAnimation {
+                                                duration: 500
+                                                easing.type: Easing.OutCubic
+                                            }
                                         }
                                     }
-                                }
-
-                                MouseArea {
-                                    id: cpuMouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        root.activePopout = 1;
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                id: settingsIconArea
-                                width: 36
-                                height: 28
-                                radius: 6
-                                color: "transparent"
-
-                                Icon {
-                                    name: "gear"
-                                    size: 20
-                                    color: root.activePopout === 2 ? Theme.primaryColor : (settingsMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
-                                    anchors.centerIn: parent
-                                    rotation: settingsMouseArea.containsMouse ? 90 : 0
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
-
-                                    Behavior on rotation {
-                                        NumberAnimation {
-                                            duration: 400
-                                            easing.type: Easing.OutCubic
-                                        }
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: settingsMouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        root.activePopout = 2;
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                id: anilistIconArea
-                                width: 36
-                                height: 28
-                                radius: 6
-                                color: "transparent"
-
-                                Icon {
-                                    name: "feather"
-                                    size: 20
-                                    color: root.activePopout === 3 ? Theme.primaryColor : (anilistMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
-                                    anchors.centerIn: parent
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: anilistMouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        root.activePopout = 3;
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                id: desktopIconArea
-                                width: 36
-                                height: 28
-                                radius: 6
-                                color: "transparent"
-
-                                Icon {
-                                    name: "desktop"
-                                    size: 20
-                                    color: root.activePopout === 4 ? Theme.primaryColor : (desktopMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
-                                    anchors.centerIn: parent
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: desktopMouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        root.activePopout = 4;
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                id: dancerIconArea
-                                width: 36
-                                height: 28
-                                radius: 6
-                                color: "transparent"
-
-                                Icon {
-                                    name: "plug"
-                                    size: 20
-                                    color: root.activePopout === 5 ? Theme.primaryColor : (dancerMouseArea.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant)
-                                    anchors.centerIn: parent
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: dancerMouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onEntered: {
-                                        root.activePopout = 5;
+                                    MouseArea {
+                                        id: iMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onEntered: root.activePopout = iconRect.modelData.id
                                     }
                                 }
                             }
@@ -363,33 +271,18 @@ Item {
                     }
 
                     Rectangle {
-                        id: hoverBridge
-                        anchors.top: popoutIconRow.bottom
-                        anchors.horizontalCenter: popoutIconRow.horizontalCenter
-                        width: popoutIconRow.width
+                        anchors.top: iconRow.bottom
+                        anchors.horizontalCenter: iconRow.horizontalCenter
+                        width: iconRow.width
                         height: 10
                         color: "transparent"
                         visible: root.activePopout > 0
-
                         HoverHandler {
-                            onHoveredChanged: {
-                                if (hovered) {
-                                    hoverTimer.stop();
-                                } else {
-                                    hoverTimer.restart();
-                                }
-                            }
+                            onHoveredChanged: hovered ? hoverTimer.stop() : hoverTimer.restart()
                         }
                     }
-
                     HoverHandler {
-                        onHoveredChanged: {
-                            if (hovered) {
-                                hoverTimer.stop();
-                            } else {
-                                hoverTimer.restart();
-                            }
-                        }
+                        onHoveredChanged: hovered ? hoverTimer.stop() : hoverTimer.restart()
                     }
                 }
 
@@ -404,13 +297,11 @@ Item {
                 Column {
                     spacing: 2
                     anchors.verticalCenter: parent.verticalCenter
-
                     ClockWidget {
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 14
                         color: Theme.onSurface
                     }
-
                     DateWidget {
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 14
@@ -424,112 +315,26 @@ Item {
     Timer {
         id: hoverTimer
         interval: 150
-        onTriggered: {
-            root.activePopout = 0;
-        }
+        onTriggered: root.activePopout = 0
     }
 
     PopoutShape {
         id: nestedPopout
         anchors.top: popout.bottom
-        anchors.topMargin: 0
 
         property int lastActive: 1
         property bool isAnimating: widthAnim.running || heightAnim.running
 
-        onVisibleChanged: {
-            if (visible && root.activePopout > 0) {
-                nestedPopout.lastActive = root.activePopout;
-            }
-        }
+        // resolved cfg from predefined dims in popoutIcons
+        readonly property var cfg: root.popoutIcons.find(p => p.id === (root.activePopout > 0 ? root.activePopout : lastActive)) ?? root.popoutIcons[0]
 
-        readonly property real targetWidth: {
-            if (root.activePopout === 0) {
-                if (nestedPopout.lastActive === 1) {
-                    return 700;
-                }
-                if (nestedPopout.lastActive === 2) {
-                    return 380;
-                }
-                if (nestedPopout.lastActive === 3) {
-                    return 400;
-                }
-                if (nestedPopout.lastActive === 4) {
-                    return 400;
-                }
-                if (nestedPopout.lastActive === 5) {
-                    return 320;
-                }
-                return 700;
-            }
-            if (root.activePopout === 1) {
-                return 700;
-            }
-            if (root.activePopout === 2) {
-                return 380;
-            }
-            if (root.activePopout === 3) {
-                return 400;
-            }
-            if (root.activePopout === 4) {
-                return 400;
-            }
-            if (root.activePopout === 5) {
-                return 320;
-            }
-            return 700;
-        }
-
-        readonly property real targetHeight: {
-            if (root.activePopout === 0) {
-                return 0;
-            }
-            if (root.activePopout === 1) {
-                return 240;
-            }
-            if (root.activePopout === 2) {
-                return 300;
-            }
-            if (root.activePopout === 3) {
-                return 320;
-            }
-            if (root.activePopout === 4) {
-                return 200;
-            }
-            if (root.activePopout === 5) {
-                return 240;
-            }
-            return 0;
-        }
-
-        readonly property real targetX: {
-            var popoutToUse = root.activePopout > 0 ? root.activePopout : nestedPopout.lastActive;
-            if (popoutToUse === 1) {
-                return parent.width - nestedPopout.targetWidth - 75;
-            }
-            if (popoutToUse === 2) {
-                return parent.width - nestedPopout.targetWidth - 200;
-            }
-            if (popoutToUse === 3) {
-                return parent.width - nestedPopout.targetWidth - 200;
-            }
-            if (popoutToUse === 4) {
-                return parent.width - nestedPopout.targetWidth - 225;
-            }
-            if (popoutToUse === 5) {
-                return parent.width - nestedPopout.targetWidth - 200;
-            }
-            return parent.width - nestedPopout.targetWidth - 50;
-        }
-
-        width: nestedPopout.targetWidth
-        height: nestedPopout.targetHeight
-        x: nestedPopout.targetX
-
+        width: cfg.w
+        height: root.activePopout > 0 ? cfg.h : 0
+        x: parent.width - cfg.w - cfg.xOff
         alignment: 0
         radius: 20
         color: Theme.surfaceContainer
-        visible: height > 1 || nestedPopout.isAnimating
+        visible: height > 1 || isAnimating
 
         Behavior on width {
             enabled: root.activePopout > 0
@@ -539,7 +344,6 @@ Item {
                 easing.type: Easing.InOutQuad
             }
         }
-
         Behavior on height {
             NumberAnimation {
                 id: heightAnim
@@ -547,7 +351,6 @@ Item {
                 easing.type: Easing.InOutQuad
             }
         }
-
         Behavior on x {
             enabled: root.activePopout > 0
             NumberAnimation {
@@ -557,122 +360,31 @@ Item {
         }
 
         HoverHandler {
-            onHoveredChanged: {
-                if (hovered) {
-                    hoverTimer.stop();
-                } else {
-                    hoverTimer.restart();
-                }
-            }
+            onHoveredChanged: hovered ? hoverTimer.stop() : hoverTimer.restart()
         }
 
         Item {
             anchors.fill: parent
-            clip: true
-
-            Loader {
-                id: controlRoomLoader
-                anchors.centerIn: parent
-                width: 670
-                height: 210
-                active: root.activePopout === 1
-                asynchronous: true
-                opacity: root.activePopout === 1 ? 1 : 0
-                visible: opacity > 0
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.InOutQuad
+            Repeater {
+                model: root.popoutIcons
+                Loader {
+                    id: popoutLoader
+                    required property var modelData
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    active: popoutLoader.modelData.id === 3 ? true : root.activePopout === popoutLoader.modelData.id
+                    asynchronous: popoutLoader.modelData.id !== 3
+                    opacity: root.activePopout === popoutLoader.modelData.id ? 1 : 0
+                    visible: opacity > 0
+                    sourceComponent: root.popoutComponents[popoutLoader.modelData.id]
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.InOutQuad
+                        }
                     }
-                }
-
-                sourceComponent: Component {
-                    ControlRoom {}
-                }
-            }
-
-            Loader {
-                id: settingsLoader
-                anchors.fill: parent
-                anchors.margins: 10
-                active: root.activePopout === 2
-                asynchronous: true
-                opacity: root.activePopout === 2 ? 1 : 0
-                visible: opacity > 0
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.InOutQuad
-                    }
-                }
-
-                sourceComponent: Component {
-                    Wset {}
-                }
-            }
-
-            Loader {
-                id: anilistLoader
-                anchors.fill: parent
-                anchors.margins: 10
-                active: true
-                asynchronous: false
-                opacity: root.activePopout === 3 ? 1 : 0
-                visible: opacity > 0
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.InOutQuad
-                    }
-                }
-
-                sourceComponent: Component {
-                    Anilist {}
-                }
-            }
-
-            Loader {
-                id: powerLoader
-                anchors.fill: parent
-                anchors.margins: 10
-                active: root.activePopout === 4
-                asynchronous: true
-                opacity: root.activePopout === 4 ? 1 : 0
-                visible: opacity > 0
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.InOutQuad
-                    }
-                }
-
-                sourceComponent: Component {
-                    Powerski {}
-                }
-            }
-
-            Loader {
-                id: callgorlLoader
-                anchors.fill: parent
-                anchors.margins: 10
-                active: root.activePopout === 5
-                asynchronous: true
-                opacity: root.activePopout === 5 ? 1 : 0
-                visible: opacity > 0
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.InOutQuad
-                    }
-                }
-
-                sourceComponent: Component {
-                    Callgorl {}
                 }
             }
         }
@@ -681,9 +393,8 @@ Item {
     HoverHandler {
         onHoveredChanged: {
             root.isHovered = hovered;
-            if (!hovered) {
+            if (!hovered)
                 root.activePopout = 0;
-            }
         }
     }
 }

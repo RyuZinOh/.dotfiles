@@ -29,7 +29,7 @@ Item {
             if (hovered) {
                 unloadTimer.stop();
                 contentWrapper.visible = true;
-            } else {
+            } else{
                 unloadTimer.restart();
             }
         }
@@ -57,6 +57,13 @@ Item {
         }
     }
 
+    FolderListModel {
+        id: folderModel
+        folder: root.thumbsPath
+        nameFilters: ["*.jpg", "*.jpeg"]
+        showDirs: false
+    }
+
     PopoutShape {
         id: content
         width: 1600
@@ -78,11 +85,8 @@ Item {
             anchors.fill: parent
             anchors.margins: 12
             visible: false
-
-            onVisibleChanged: {
-                if (contentWrapper.visible) {
-                    Qt.callLater(root.positionToCurrentWallpaper);
-                }
+            onVisibleChanged: if (visible){
+                Qt.callLater(root.positionToCurrentWallpaper)                
             }
 
             Column {
@@ -119,7 +123,7 @@ Item {
                         }
 
                         delegate: Item {
-                            id: delegateRoot
+                            id: del
                             required property string fileName
                             required property int index
 
@@ -145,7 +149,7 @@ Item {
 
                                     Image {
                                         anchors.fill: parent
-                                        source: root.thumbsPath + delegateRoot.fileName
+                                        source: root.thumbsPath + del.fileName
                                         fillMode: Image.PreserveAspectCrop
                                         smooth: true
                                         asynchronous: true
@@ -154,14 +158,14 @@ Item {
                                 }
 
                                 Rectangle {
-                                    visible: delegateRoot.isCurrent
+                                    visible: del.isCurrent
                                     anchors.fill: parent
                                     color: "black"
                                     opacity: 0.7
 
                                     Text {
                                         anchors.centerIn: parent
-                                        text: delegateRoot.fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ")
+                                        text: del.fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ")
                                         color: "white"
                                         font.pixelSize: 13
                                         font.family: "CaskaydiaCove NF"
@@ -175,9 +179,9 @@ Item {
 
                             MouseArea {
                                 anchors.fill: parent
-                                cursorShape: delegateRoot.isCurrent ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                enabled: delegateRoot.isCurrent
-                                onClicked: root.applyWallpaper(delegateRoot.index)
+                                cursorShape: del.isCurrent ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                enabled: del.isCurrent
+                                onClicked: root.applyWallpaper(del.index)
                             }
                         }
                     }
@@ -186,24 +190,16 @@ Item {
                         anchors.fill: parent
                         z: -1
                         acceptedButtons: Qt.NoButton
-
-                        property real accumulatedDelta: 0
-                        readonly property int threshold: 50
-
+                        property real acc: 0
                         onWheel: wheel => {
-                            const deltaX = wheel.pixelDelta.x;
-                            if (deltaX === 0)
+                            if (wheel.pixelDelta.x === 0){
                                 return;
 
-                            accumulatedDelta -= deltaX;
-
-                            if (Math.abs(accumulatedDelta) >= threshold) {
-                                if (accumulatedDelta > 0) {
-                                    listView.incrementCurrentIndex();
-                                } else {
-                                    listView.decrementCurrentIndex();
-                                }
-                                accumulatedDelta = 0;
+                            }
+                            acc -= wheel.pixelDelta.x;
+                            if (Math.abs(acc) >= 50) {
+                                acc > 0 ? listView.incrementCurrentIndex() : listView.decrementCurrentIndex();
+                                acc = 0;
                             }
                             wheel.accepted = true;
                         }
@@ -222,7 +218,7 @@ Item {
                             font.family: "CaskaydiaCove NF"
                             font.weight: Font.Medium
                         }
-
+                        
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: searchInput.text ? "Try a different search term" : "Add images to ~/Pictures/"
@@ -240,7 +236,7 @@ Item {
                     Row {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: 8
+                        spacing: 10
 
                         Rectangle {
                             width: 320
@@ -277,8 +273,8 @@ Item {
                                     selectionColor: Theme.primaryContainer
 
                                     onTextChanged: {
-                                        const query = text.toLowerCase().trim();
-                                        folderModel.nameFilters = query ? [`*${query}*.jpg`, `*${query}*.jpeg`] : ["*.jpg", "*.jpeg"];
+                                        const q = text.toLowerCase().trim();
+                                        folderModel.nameFilters = q ? [`*${q}*.jpg`, `*${q}*.jpeg`, `*${q.charAt(0).toUpperCase() + q.slice(1)}*.jpg`, `*${q.charAt(0).toUpperCase() + q.slice(1)}*.jpeg`, `*${q.toUpperCase()}*.jpg`, `*${q.toUpperCase()}*.jpeg`] : ["*.jpg", "*.jpeg"];
                                         if (listView.count > 0) {
                                             listView.currentIndex = 0;
                                             listView.positionViewAtIndex(0, ListView.Center);
@@ -320,28 +316,121 @@ Item {
                             }
                         }
 
-                        Repeater {
-                            model: Theme.schemeTypes
-
-                            ControlButton {
-                                required property string modelData
-                                text: Theme.getSchemeDisplayName(modelData)
-                                isActive: Theme.currentSchemeType === modelData
-                                onClicked: Theme.setSchemeType(modelData)
+                        Item {
+                            height: 44
+                            width: schemeRow.width
+                            anchors.verticalCenter: parent.verticalCenter
+                            Row {
+                                id: schemeRow
+                                spacing: 4
+                                property int hoveredIndex: -1
+                                Repeater {
+                                    model: Theme.schemeTypes
+                                    delegate: Rectangle {
+                                        id: sb
+                                        required property string modelData
+                                        required property int index
+                                        readonly property bool active: Theme.currentSchemeType === modelData
+                                        readonly property bool isHov: schemeRow.hoveredIndex === index
+                                        readonly property bool isNeighbor: Math.abs(schemeRow.hoveredIndex - index) === 1
+                                        readonly property real bw: sbTxt.implicitWidth + 20
+                                        height: 44
+                                        width: isHov ? bw + 14 : isNeighbor ? bw - 7 : bw
+                                        Behavior on width {
+                                            NumberAnimation {
+                                                duration: 220
+                                                easing.type: Easing.OutCubic
+                                            }
+                                        }
+                                        topLeftRadius: index === 0 ? 22 : 6
+                                        bottomLeftRadius: index === 0 ? 22 : 6
+                                        topRightRadius: index === Theme.schemeTypes.length - 1 ? 22 : 6
+                                        bottomRightRadius: index === Theme.schemeTypes.length - 1 ? 22 : 6
+                                        color: active ? Theme.primaryContainer : isHov ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
+                                        border.width: 1
+                                        border.color: active ? Theme.primaryColor : Theme.outlineVariant
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 200
+                                            }
+                                        }
+                                        Behavior on border.color {
+                                            ColorAnimation {
+                                                duration: 200
+                                            }
+                                        }
+                                        Text {
+                                            id: sbTxt
+                                            anchors.centerIn: parent
+                                            text: Theme.getSchemeDisplayName(sb.modelData)
+                                            color: sb.active ? Theme.onPrimaryContainer : Theme.onSurface
+                                            font.pixelSize: 12
+                                            font.family: "CaskaydiaCove NF"
+                                            font.weight: sb.active ? Font.Medium : Font.Normal
+                                            Behavior on color {
+                                                ColorAnimation {
+                                                    duration: 200
+                                                }
+                                            }
+                                        }
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onEntered: schemeRow.hoveredIndex = sb.index
+                                            onExited: schemeRow.hoveredIndex = -1
+                                            onClicked: Theme.setSchemeType(sb.modelData)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
 
-                    ControlButton {
+                    Rectangle {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         width: 44
-                        iconText: root.isRefreshing ? "\uf110" : "\uf021"
-                        iconRotating: root.isRefreshing
+                        height: 44
+                        radius: refreshMouse.containsMouse ? 22 : 12
+                        color: refreshMouse.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
+                        border.width: 1
+                        border.color: Theme.outlineVariant
                         enabled: !root.isRefreshing
-                        onClicked: {
-                            root.isRefreshing = true;
-                            bamProcess.running = true;
+                        Behavior on radius {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+                        Text {
+                            anchors.centerIn: parent
+                            text: root.isRefreshing ? "\uf110" : "\uf021"
+                            font.pixelSize: 18
+                            font.family: "CaskaydiaCove NF"
+                            color: Theme.onSurface
+                            RotationAnimation on rotation {
+                                running: root.isRefreshing
+                                from: 0
+                                to: 360
+                                duration: 1000
+                                loops: Animation.Infinite
+                            }
+                        }
+                        MouseArea {
+                            id: refreshMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.isRefreshing = true;
+                                bamProcess.running = true;
+                            }
                         }
                     }
                 }
@@ -349,21 +438,12 @@ Item {
         }
     }
 
-    FolderListModel {
-        id: folderModel
-        folder: root.thumbsPath
-        nameFilters: ["*.jpg", "*.jpeg"]
-        showDirs: false
-    }
-
     function positionToCurrentWallpaper() {
         if (!WallpaperConfig.currentWallpaper)
             return;
-
-        const currentFilename = WallpaperConfig.currentWallpaper.split('/').pop();
-
+        const cur = WallpaperConfig.currentWallpaper.split('/').pop();
         for (let i = 0; i < folderModel.count; i++) {
-            if (folderModel.get(i, "fileName") === currentFilename) {
+            if (folderModel.get(i, "fileName") === cur) {
                 listView.currentIndex = i;
                 listView.positionViewAtIndex(i, ListView.Center);
                 break;
@@ -372,82 +452,13 @@ Item {
     }
 
     function applyWallpaper(index) {
-        const fileName = folderModel.get(index, "fileName");
-        const fullPath = root.picturesPath + fileName;
-        const thumbPath = root.thumbsPath + fileName;
-
-        Theme.thumbPath = thumbPath;
+        const fn = folderModel.get(index, "fileName");
+        const fp = root.picturesPath + fn;
+        Theme.thumbPath = root.thumbsPath + fn;
         Theme.saveTheme();
-
-        Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fullPath]);
-        Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fullPath}" /home/safal726/.cache/safalQuick/bg.jpg`]);
-
-        const wallpaperName = fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-        Quickshell.execDetached(["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", wallpaperName]);
-
-        root.wallpaperChanged(fullPath);
-    }
-
-    component ControlButton: Rectangle {
-        id: controlBtn
-        property alias text: buttonText.text
-        property alias iconText: buttonText.text
-        property bool isActive: false
-        property bool iconRotating: false
-
-        signal clicked
-
-        height: 44
-        width: controlBtn.text ? buttonText.implicitWidth + 20 : 44
-        radius: (controlBtn.isActive || mouseArea.containsMouse) ? height / 2 : 12
-        color: controlBtn.isActive ? Theme.primaryContainer : (mouseArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh)
-        border.width: 1
-        border.color: Theme.outlineVariant
-
-        Behavior on radius {
-            NumberAnimation {
-                duration: 250
-                easing.type: Easing.OutCubic
-            }
-        }
-
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
-                easing.type: Easing.OutCubic
-            }
-        }
-
-        Text {
-            id: buttonText
-            anchors.centerIn: parent
-            color: controlBtn.isActive ? Theme.onPrimaryContainer : Theme.onSurface
-            font.pixelSize: controlBtn.iconText ? 18 : 10
-            font.family: "CaskaydiaCove NF"
-            font.weight: controlBtn.isActive ? Font.DemiBold : Font.Normal
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: 200
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            RotationAnimation on rotation {
-                running: controlBtn.iconRotating
-                from: 0
-                to: 360
-                duration: 1000
-                loops: Animation.Infinite
-            }
-        }
-
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: controlBtn.clicked()
-        }
+        Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fp]);
+        Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fp}" /home/safal726/.cache/safalQuick/bg.jpg`]);
+        Quickshell.execDetached(["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", fn.replace(/\.[^/.]+$/, "").replace(/_/g, " ")]);
+        root.wallpaperChanged(fp);
     }
 }

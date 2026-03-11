@@ -1,10 +1,10 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt.labs.folderlistmodel
 import Quickshell.Io
 import qs.Services.Theme
-import qs.Components.Icon
 
 Item {
     id: root
@@ -32,7 +32,6 @@ Item {
         property bool done: false
         property string fileName: "name"
         path: folderListModel.status === FolderListModel.Ready ? `file:///sys/class/hwmon/hwmon${Math.min(hwmon.index, folderListModel.count - 1)}/${hwmon.fileName}` : ""
-
         onLoaded: {
             if (!root.componentActive)
                 return;
@@ -62,12 +61,12 @@ Item {
         onLoaded: {
             if (!root.componentActive)
                 return;
-            const cpuTimes = procStat.text().split(' ').slice(2, 9).map(Number);
-            const idle = cpuTimes[3] + cpuTimes[4];
-            const total = cpuTimes.reduce((acc, cur) => acc + cur, 0);
-            const idleDiff = idle - root.lastCpuIdle;
-            const totalDiff = total - root.lastCpuTotal;
-            root.cpuPerc = root.lastCpuTotal > 0 && totalDiff > 0 ? 1 - idleDiff / totalDiff : 0;
+            const t = procStat.text().split(' ').slice(2, 9).map(Number);
+            const idle = t[3] + t[4];
+            const total = t.reduce((a, c) => a + c, 0);
+            const di = idle - root.lastCpuIdle;
+            const dt = total - root.lastCpuTotal;
+            root.cpuPerc = root.lastCpuTotal > 0 && dt > 0 ? 1 - di / dt : 0;
             root.lastCpuIdle = idle;
             root.lastCpuTotal = total;
         }
@@ -79,8 +78,8 @@ Item {
         onLoaded: {
             if (!root.componentActive)
                 return;
-            const memNumbers = procMemInfo.text().split('\n').map(m => parseInt(m.split(':')[1]));
-            root.usedMemoryPerc = 1 - memNumbers[2] / memNumbers[0];
+            const n = procMemInfo.text().split('\n').map(m => parseInt(m.split(':')[1]));
+            root.usedMemoryPerc = 1 - n[2] / n[0];
         }
     }
 
@@ -90,212 +89,116 @@ Item {
         running: root.componentActive
         repeat: true
         onTriggered: {
-            if (root.componentActive) {
-                hwmon.reload();
-                procStat.reload();
-                procMemInfo.reload();
-            }
+            if (!root.componentActive)
+                return;
+            hwmon.reload();
+            procStat.reload();
+            procMemInfo.reload();
         }
     }
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.surfaceContainer
-        radius: 16
+        anchors.leftMargin: 16
+        anchors.rightMargin: 16
+        color: "transparent"
+        radius: 14
         border.width: 1
         border.color: Theme.outlineVariant
+        clip: true
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 15
+            anchors.margins: 10
+            spacing: 10
 
-            Item {
-                id: memoryItem
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            Repeater {
+                model: [
+                    {
+                        label: "RAM",
+                        icon: "\udb80\udf5b",
+                        idx: 0
+                    },
+                    {
+                        label: "CPU",
+                        icon: "\udb83\udee0",
+                        idx: 1
+                    },
+                    {
+                        label: "TEMP",
+                        icon: "\udb82\udd8c",
+                        idx: 2
+                    }
+                ]
 
-                property string itemType: "memory"
-                property string itemIcon: "memory"
-                property string itemLabel: "RAM"
-                property real itemValue: root.usedMemoryPerc
-
-                Rectangle {
-                    anchors.fill: parent
+                delegate: Rectangle {
+                    id: card
+                    required property var modelData
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    radius: 14
                     color: Theme.surfaceContainerLow
-                    radius: 12
                     border.width: 1
                     border.color: Theme.outlineVariant
-
-                    Item {
-                        id: ringContainer1
-                        anchors.centerIn: parent
-                        width: 120
-                        height: 120
-
-                        readonly property real gapAngle: 70
-                        readonly property real gapCenterAngle: 50
-
-                        Shape {
-                            id: shape1
-                            anchors.fill: parent
-
-                            layer.enabled: true
-                            layer.smooth: true
-                            layer.samples: 4
-                            antialiasing: true
-
-                            ShapePath {
-                                strokeWidth: 10
-                                strokeColor: Theme.surfaceContainerHighest
-                                fillColor: "transparent"
-                                capStyle: ShapePath.RoundCap
-
-                                PathAngleArc {
-                                    centerX: shape1.width / 2
-                                    centerY: shape1.height / 2
-                                    radiusX: (shape1.width - 10) / 2
-                                    radiusY: (shape1.height - 10) / 2
-                                    startAngle: ringContainer1.gapCenterAngle + ringContainer1.gapAngle / 2
-                                    sweepAngle: 360 - ringContainer1.gapAngle
-                                }
-                            }
-
-                            ShapePath {
-                                strokeWidth: 10
-                                strokeColor: Theme.secondaryColor
-                                fillColor: "transparent"
-                                capStyle: ShapePath.RoundCap
-
-                                PathAngleArc {
-                                    id: memoryArc
-                                    centerX: shape1.width / 2
-                                    centerY: shape1.height / 2
-                                    radiusX: (shape1.width - 10) / 2
-                                    radiusY: (shape1.height - 10) / 2
-                                    startAngle: ringContainer1.gapCenterAngle + ringContainer1.gapAngle / 2
-                                    sweepAngle: (360 - ringContainer1.gapAngle) * root.usedMemoryPerc
-
-                                    Behavior on sweepAngle {
-                                        NumberAnimation {
-                                            duration: 600
-                                            easing.type: Easing.OutCubic
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        Icon {
-                            id: memoryIcon
-                            name: "memory"
-                            size: 24
-                            color: Theme.secondaryColor
-
-                            property real radius: (ringContainer1.width - 10) / 2
-
-                            x: ringContainer1.width / 2 + memoryIcon.radius * Math.cos(ringContainer1.gapCenterAngle * Math.PI / 180) - memoryIcon.width / 2
-                            y: ringContainer1.height / 2 + memoryIcon.radius * Math.sin(ringContainer1.gapCenterAngle * Math.PI / 180) - memoryIcon.height / 2
-                        }
-
-                        Column {
-                            id: memoryColumn
-                            anchors.centerIn: parent
-                            spacing: 2
-
-                            Text {
-                                text: Math.round(root.usedMemoryPerc * 100) + "%"
-                                color: Theme.onSurface
-                                font.pixelSize: 20
-                                font.family: "CaskaydiaCove NF"
-                                font.bold: true
-                                anchors.horizontalCenter: memoryColumn.horizontalCenter
-                                renderType: Text.NativeRendering
-                            }
-
-                            Text {
-                                text: "RAM"
-                                color: Theme.onSurfaceVariant
-                                font.pixelSize: 12
-                                font.family: "CaskaydiaCove NF"
-                                opacity: 0.7
-                                anchors.horizontalCenter: memoryColumn.horizontalCenter
-                                renderType: Text.NativeRendering
-                            }
+                    clip: true
+                    Behavior on border.color {
+                        ColorAnimation {
+                            duration: 300
                         }
                     }
-                }
-            }
 
-            Item {
-                id: cpuItem
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                property string itemType: "cpu"
-                property string itemIcon: "cpu"
-                property string itemLabel: "CPU"
-                property real itemValue: root.cpuPerc
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: Theme.surfaceContainerLow
-                    radius: 12
-                    border.width: 1
-                    border.color: Theme.outlineVariant
+                    readonly property real val: card.modelData.idx === 0 ? root.usedMemoryPerc : card.modelData.idx === 1 ? root.cpuPerc : Math.min(root.cpuTemp / 100, 1.0)
+                    readonly property color accent: card.modelData.idx === 0 ? Theme.secondaryColor : card.modelData.idx === 1 ? Theme.primaryColor : Theme.tertiaryColor
+                    readonly property color accentContainer: card.modelData.idx === 0 ? Theme.secondaryContainer : card.modelData.idx === 1 ? Theme.primaryContainer : Theme.tertiaryContainer
+                    readonly property color onAccentContainer: card.modelData.idx === 0 ? Theme.onSecondaryContainer : card.modelData.idx === 1 ? Theme.onPrimaryContainer : Theme.onTertiaryContainer
+                    readonly property string valueText: card.modelData.idx === 2 ? Math.round(root.cpuTemp) + "°" : Math.round(card.val * 100) + "%"
 
                     Item {
-                        id: ringContainer2
+                        id: ring
                         anchors.centerIn: parent
-                        width: 140
-                        height: 140
+                        width: Math.min(parent.width, parent.height) * 0.8
+                        height: width
 
-                        readonly property real gapAngle: 70
-                        readonly property real gapCenterAngle: 50
+                        readonly property real gapAngle: 80
+                        readonly property real gapStart: 50
 
                         Shape {
-                            id: shape2
                             anchors.fill: parent
-
                             layer.enabled: true
                             layer.smooth: true
-                            layer.samples: 4
+                            layer.samples: 8
                             antialiasing: true
 
                             ShapePath {
-                                strokeWidth: 10
+                                strokeWidth: 8
                                 strokeColor: Theme.surfaceContainerHighest
                                 fillColor: "transparent"
                                 capStyle: ShapePath.RoundCap
-
                                 PathAngleArc {
-                                    centerX: shape2.width / 2
-                                    centerY: shape2.height / 2
-                                    radiusX: (shape2.width - 10) / 2
-                                    radiusY: (shape2.height - 10) / 2
-                                    startAngle: ringContainer2.gapCenterAngle + ringContainer2.gapAngle / 2
-                                    sweepAngle: 360 - ringContainer2.gapAngle
+                                    centerX: ring.width / 2
+                                    centerY: ring.height / 2
+                                    radiusX: (ring.width - 8) / 2
+                                    radiusY: (ring.height - 8) / 2
+                                    startAngle: ring.gapStart + ring.gapAngle / 2
+                                    sweepAngle: 360 - ring.gapAngle
                                 }
                             }
 
                             ShapePath {
-                                strokeWidth: 10
-                                strokeColor: Theme.primaryColor
+                                strokeWidth: 8
+                                strokeColor: card.accent
                                 fillColor: "transparent"
                                 capStyle: ShapePath.RoundCap
-
                                 PathAngleArc {
-                                    id: cpuArc
-                                    centerX: shape2.width / 2
-                                    centerY: shape2.height / 2
-                                    radiusX: (shape2.width - 10) / 2
-                                    radiusY: (shape2.height - 10) / 2
-                                    startAngle: ringContainer2.gapCenterAngle + ringContainer2.gapAngle / 2
-                                    sweepAngle: (360 - ringContainer2.gapAngle) * root.cpuPerc
-
+                                    centerX: ring.width / 2
+                                    centerY: ring.height / 2
+                                    radiusX: (ring.width - 8) / 2
+                                    radiusY: (ring.height - 8) / 2
+                                    startAngle: ring.gapStart + ring.gapAngle / 2
+                                    sweepAngle: (360 - ring.gapAngle) * card.val
                                     Behavior on sweepAngle {
                                         NumberAnimation {
-                                            duration: 600
+                                            duration: 700
                                             easing.type: Easing.OutCubic
                                         }
                                     }
@@ -303,157 +206,42 @@ Item {
                             }
                         }
 
-                        Icon {
-                            id: cpuIcon
-                            name: "cpu"
-                            size: 28
-                            color: Theme.primaryColor
-
-                            property real radius: (ringContainer2.width - 10) / 2
-
-                            x: ringContainer2.width / 2 + cpuIcon.radius * Math.cos(ringContainer2.gapCenterAngle * Math.PI / 180) - cpuIcon.width / 2
-                            y: ringContainer2.height / 2 + cpuIcon.radius * Math.sin(ringContainer2.gapCenterAngle * Math.PI / 180) - cpuIcon.height / 2
-                        }
-
-                        Column {
-                            id: cpuColumn
-                            anchors.centerIn: parent
-                            spacing: 2
-
-                            Text {
-                                text: Math.round(root.cpuPerc * 100) + "%"
-                                color: Theme.onSurface
-                                font.pixelSize: 24
-                                font.family: "CaskaydiaCove NF"
-                                font.bold: true
-                                anchors.horizontalCenter: cpuColumn.horizontalCenter
-                                renderType: Text.NativeRendering
-                            }
-
-                            Text {
-                                text: "CPU"
-                                color: Theme.onSurfaceVariant
-                                font.pixelSize: 13
-                                font.family: "CaskaydiaCove NF"
-                                opacity: 0.7
-                                anchors.horizontalCenter: cpuColumn.horizontalCenter
-                                renderType: Text.NativeRendering
-                            }
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: tempItem
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                property string itemType: "temp"
-                property string itemIcon: "popcorn"
-                property string itemLabel: "TEMP"
-                property real itemValue: Math.min(root.cpuTemp / 100, 1.0)
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: Theme.surfaceContainerLow
-                    radius: 12
-                    border.width: 1
-                    border.color: Theme.outlineVariant
-
-                    Item {
-                        id: ringContainer3
-                        anchors.centerIn: parent
-                        width: 120
-                        height: 120
-
-                        readonly property real gapAngle: 70
-                        readonly property real gapCenterAngle: 50
-
-                        Shape {
-                            id: shape3
-                            anchors.fill: parent
-
-                            layer.enabled: true
-                            layer.smooth: true
-                            layer.samples: 4
-                            antialiasing: true
-
-                            ShapePath {
-                                strokeWidth: 10
-                                strokeColor: Theme.surfaceContainerHighest
-                                fillColor: "transparent"
-                                capStyle: ShapePath.RoundCap
-
-                                PathAngleArc {
-                                    centerX: shape3.width / 2
-                                    centerY: shape3.height / 2
-                                    radiusX: (shape3.width - 10) / 2
-                                    radiusY: (shape3.height - 10) / 2
-                                    startAngle: ringContainer3.gapCenterAngle + ringContainer3.gapAngle / 2
-                                    sweepAngle: 360 - ringContainer3.gapAngle
-                                }
-                            }
-
-                            ShapePath {
-                                strokeWidth: 10
-                                strokeColor: Theme.tertiaryColor
-                                fillColor: "transparent"
-                                capStyle: ShapePath.RoundCap
-
-                                PathAngleArc {
-                                    id: tempArc
-                                    centerX: shape3.width / 2
-                                    centerY: shape3.height / 2
-                                    radiusX: (shape3.width - 10) / 2
-                                    radiusY: (shape3.height - 10) / 2
-                                    startAngle: ringContainer3.gapCenterAngle + ringContainer3.gapAngle / 2
-                                    sweepAngle: (360 - ringContainer3.gapAngle) * Math.min(root.cpuTemp / 100, 1.0)
-
-                                    Behavior on sweepAngle {
-                                        NumberAnimation {
-                                            duration: 600
-                                            easing.type: Easing.OutCubic
-                                        }
-                                    }
+                        Text {
+                            text: card.modelData.icon
+                            font.family: "CaskaydiaCove NF"
+                            font.pixelSize: Math.max(16, ring.width * 0.26)
+                            color: card.accent
+                            readonly property real r: (ring.width - 8) / 2
+                            x: ring.width / 2 + r * Math.cos(ring.gapStart * Math.PI / 180) - width / 2
+                            y: ring.height / 2 + r * Math.sin(ring.gapStart * Math.PI / 180) - height / 2
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 300
                                 }
                             }
                         }
 
-                        Icon {
-                            id: tempIcon
-                            name: "popcorn"
-                            size: 24
-                            color: Theme.tertiaryColor
-
-                            property real radius: (ringContainer3.width - 10) / 2
-
-                            x: ringContainer3.width / 2 + tempIcon.radius * Math.cos(ringContainer3.gapCenterAngle * Math.PI / 180) - tempIcon.width / 2
-                            y: ringContainer3.height / 2 + tempIcon.radius * Math.sin(ringContainer3.gapCenterAngle * Math.PI / 180) - tempIcon.height / 2
-                        }
-
                         Column {
-                            id: tempColumn
                             anchors.centerIn: parent
-                            spacing: 2
+                            spacing: 1
 
                             Text {
-                                text: Math.round(root.cpuTemp) + "°C"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: card.valueText
                                 color: Theme.onSurface
-                                font.pixelSize: 20
+                                font.pixelSize: Math.max(12, ring.width * 0.17)
                                 font.family: "CaskaydiaCove NF"
                                 font.bold: true
-                                anchors.horizontalCenter: tempColumn.horizontalCenter
                                 renderType: Text.NativeRendering
                             }
 
                             Text {
-                                text: "TEMP"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: card.modelData.label
                                 color: Theme.onSurfaceVariant
-                                font.pixelSize: 12
+                                font.pixelSize: Math.max(9, ring.width * 0.10)
                                 font.family: "CaskaydiaCove NF"
-                                opacity: 0.7
-                                anchors.horizontalCenter: tempColumn.horizontalCenter
+                                opacity: 0.65
                                 renderType: Text.NativeRendering
                             }
                         }

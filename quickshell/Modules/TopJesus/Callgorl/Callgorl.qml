@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.Services.Theme
@@ -12,26 +13,60 @@ Item {
 
     Rectangle {
         anchors.centerIn: parent
-        width: 250
-        height: 200
-        color: Theme.surfaceContainer
+        width: grid.width + 24
+        height: grid.height + 24
+        color: "transparent"
         radius: 16
         border.width: 1
         border.color: Theme.outlineVariant
+    }
 
-        GridLayout {
-            anchors.centerIn: parent
-            columns: 2
-            rowSpacing: 12
-            columnSpacing: 12
+    GridLayout {
+        id: grid
+        anchors.centerIn: parent
+        columns: 2
+        rowSpacing: 12
+        columnSpacing: 12
 
-            Rectangle {
+        Repeater {
+            model: [
+                {
+                    icon: "󱗎",
+                    active: DancerConfig.isActive,
+                    activeColor: Theme.primaryContainer,
+                    activeBorder: Theme.primaryColor,
+                    activeText: Theme.onPrimaryContainer,
+                    service: "dancer"
+                },
+                {
+                    icon: "󰚱",
+                    active: OmnitrixConfig.isActive,
+                    activeColor: Theme.secondaryContainer,
+                    activeBorder: Theme.secondaryColor,
+                    activeText: Theme.onSecondaryContainer,
+                    service: "omnitrix"
+                },
+                {
+                    icon: "✎",
+                    active: ArtiqaConfig.isActive,
+                    activeColor: Theme.tertiaryContainer,
+                    activeBorder: Theme.tertiaryColor,
+                    activeText: Theme.onTertiaryContainer,
+                    service: "artiqa"
+                },
+            ]
+
+            delegate: Rectangle {
+                id: btn
+                required property var modelData
+                required property int index
+
                 Layout.preferredWidth: 80
                 Layout.preferredHeight: 80
-                radius: dancerMouse.containsMouse ? 40 : 12
-                color: DancerConfig.isActive ? Theme.primaryContainer : (dancerMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                border.width: DancerConfig.isActive ? 2 : 1
-                border.color: DancerConfig.isActive ? Theme.primaryColor : Theme.outlineVariant
+                radius: btnMouse.containsMouse ? 40 : 12
+                color: btn.modelData.active ? btn.modelData.activeColor : (btnMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
+                border.width: btn.modelData.active ? 2 : 1
+                border.color: btn.modelData.active ? btn.modelData.activeBorder : Theme.outlineVariant
 
                 Behavior on radius {
                     NumberAnimation {
@@ -39,20 +74,17 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 Behavior on color {
                     ColorAnimation {
                         duration: 200
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 Behavior on border.width {
                     NumberAnimation {
                         duration: 200
                     }
                 }
-
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 200
@@ -60,12 +92,11 @@ Item {
                 }
 
                 Text {
-                    text: "󱗎"
+                    text: btn.modelData.icon
                     font.family: "CaskaydiaCove NF"
                     font.pixelSize: 32
                     anchors.centerIn: parent
-                    color: DancerConfig.isActive ? Theme.onPrimaryContainer : Theme.onSurface
-
+                    color: btn.modelData.active ? btn.modelData.activeText : Theme.onSurface
                     Behavior on color {
                         ColorAnimation {
                             duration: 200
@@ -74,131 +105,11 @@ Item {
                 }
 
                 MouseArea {
-                    id: dancerMouse
+                    id: btnMouse
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        pimp.call("dancer", DancerConfig.isActive ? "deactivate" : "activate");
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 80
-                Layout.preferredHeight: 80
-                radius: omnitrixMouse.containsMouse ? 40 : 12
-                color: OmnitrixConfig.isActive ? Theme.secondaryContainer : (omnitrixMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                border.width: OmnitrixConfig.isActive ? 2 : 1
-                border.color: OmnitrixConfig.isActive ? Theme.secondaryColor : Theme.outlineVariant
-
-                Behavior on radius {
-                    NumberAnimation {
-                        duration: 250
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on border.width {
-                    NumberAnimation {
-                        duration: 200
-                    }
-                }
-
-                Behavior on border.color {
-                    ColorAnimation {
-                        duration: 200
-                    }
-                }
-
-                Text {
-                    text: "󰚱"
-                    font.family: "CaskaydiaCove NF"
-                    font.pixelSize: 32
-                    anchors.centerIn: parent
-                    color: OmnitrixConfig.isActive ? Theme.onSecondaryContainer : Theme.onSurface
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: omnitrixMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        pimp.call("omnitrix", OmnitrixConfig.isActive ? "deactivate" : "activate");
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 80
-                Layout.preferredHeight: 80
-                radius: artiqaMouse.containsMouse ? 40 : 12
-                color: ArtiqaConfig.isActive ? Theme.tertiaryContainer : (artiqaMouse.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                border.width: ArtiqaConfig.isActive ? 2 : 1
-                border.color: ArtiqaConfig.isActive ? Theme.tertiaryColor : Theme.outlineVariant
-
-                Behavior on radius {
-                    NumberAnimation {
-                        duration: 250
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on border.width {
-                    NumberAnimation {
-                        duration: 200
-                    }
-                }
-
-                Behavior on border.color {
-                    ColorAnimation {
-                        duration: 200
-                    }
-                }
-
-                Text {
-                    text: "✎"  // or use "" if you have a nerd font icon
-                    font.family: "CaskaydiaCove NF"
-                    font.pixelSize: 32
-                    anchors.centerIn: parent
-                    color: ArtiqaConfig.isActive ? Theme.onTertiaryContainer : Theme.onSurface
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: artiqaMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        pimp.call("artiqa", ArtiqaConfig.isActive ? "deactivate" : "activate");
-                    }
+                    onClicked: pimp.call(btn.modelData.service, btn.modelData.active ? "deactivate" : "activate")
                 }
             }
         }
