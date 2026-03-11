@@ -6,6 +6,7 @@ import QtQuick
 import Quickshell.Wayland
 import qs.Components.Dancer
 import qs.Components.Omnitrix
+import qs.Components.Poketwo
 // import qs.Modules.Ash
 import qs.Components.Artiqa
 import qs.Components.Wow
@@ -178,6 +179,25 @@ Scope {
                         anchors.centerIn: parent
                         active: WowConfig.isActive
                         sourceComponent: Wow {}
+                    }
+
+                    //poketwo -game
+                    // poketwo overlay
+                    Loader {
+                        id: poketwoRef
+                        anchors.fill: parent
+                        active: PoketwoConfig.isActive
+                        sourceComponent: Poketwo {}
+
+                        Connections {
+                            target: PoketwoConfig
+                            function onShowPoketwo() {
+                                poketwoRef.active = true;
+                            }
+                            function onHidePoketwo() {
+                                poketwoRef.active = false;
+                            }
+                        }
                     }
                     //hut
                     Hut {

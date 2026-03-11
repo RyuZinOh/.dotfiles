@@ -54,6 +54,14 @@ Item {
                     activeText: Theme.onTertiaryContainer,
                     service: "artiqa"
                 },
+                {
+                    icon: "󰄛",
+                    active: PoketwoConfig.isActive,
+                    activeColor: Theme.primaryContainer,
+                    activeBorder: Theme.primaryColor,
+                    activeText: Theme.onPrimaryContainer,
+                    service: "poketwo"
+                },
             ]
 
             delegate: Rectangle {

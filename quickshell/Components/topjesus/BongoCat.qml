@@ -4,8 +4,8 @@ import Quickshell.Io
 Item {
     id: root
 
-    property int size: 40
-    property string assetPath: "../bongo/"
+    property int size: 64
+    property url assetPath: Qt.resolvedUrl("../../Assets/bongo/")
 
     width: size
     height: size
