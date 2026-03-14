@@ -137,14 +137,16 @@ Singleton {
 
         onDataLoaded: {
             if (themeKraken.loaded && themeKraken.isObject) {
-                if (themeKraken.has("isDarkMode")) {
-                    root.isDarkMode = themeKraken.get("isDarkMode", true);
-                }
+                const wasDark = root.isDarkMode;
+
                 if (themeKraken.has("schemeType")) {
                     root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
                 }
                 if (themeKraken.has("thumbPath")) {
                     root.thumbPath = themeKraken.get("thumbPath", "");
+                }
+                if (themeKraken.has("isDarkMode")) {
+                    root.isDarkMode = themeKraken.get("isDarkMode", true);
                 }
                 // generate colors on load if thumbPath exists
                 if (root.thumbPath) {
@@ -191,11 +193,6 @@ Singleton {
         root.generateColors();
     }
 
-    Process {
-        id: matugenProcess
-        onExited: reloadTimer.restart() //dogass
-    }
-
     function generateColors() {
         if (!root.thumbPath) {
             return;
@@ -205,14 +202,15 @@ Singleton {
         const mode = root.isDarkMode ? "dark" : "light";
         const scheme = root.currentSchemeType;
 
-        matugenProcess.command = ["/bin/sh", "-c", `matugen image "${cleanPath}" -m "${mode}" -t "${scheme}"`];
-        matugenProcess.running = true;
+        Quickshell.execDetached(["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${scheme}" image "${cleanPath}"`]);
     }
 
     function saveTheme() {
         themeKraken.set("isDarkMode", root.isDarkMode);
         themeKraken.set("schemeType", root.currentSchemeType);
-        themeKraken.set("thumbPath", root.thumbPath);
+        if (root.thumbPath) {
+            themeKraken.set("thumbPath", root.thumbPath);
+        }
         themeKraken.save();
     }
 

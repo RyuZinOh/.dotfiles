@@ -149,10 +149,10 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
-                BongoCat {
-                    size: 64
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                // BongoCat {
+                // size: 64
+                // anchors.verticalCenter: parent.verticalCenter
+                // }
                 Rectangle {
                     width: 28
                     height: 28

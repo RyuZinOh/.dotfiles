@@ -13,3 +13,8 @@ output_path = "~/.cache/safalQuick/colors.json"
 input_path = "~/.config/matugen/templates/kitty.conf"
 output_path = "~/.cache/safalQuick/kitty.conf"
 post_hook = 'pkill -SIGUSR1 kitty'
+
+[templates.monkeytype]
+input_path  = "~/.config/matugen/templates/monkeytype.json"
+output_path = "~/.cache/safalQuick/monkeytype.json"
+# post_hook = "~/.config/quickshell/Scripts/monkeymode.py"

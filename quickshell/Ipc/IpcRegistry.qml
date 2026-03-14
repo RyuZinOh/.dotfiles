@@ -5,9 +5,9 @@ Item {
     LockIpc {
         id: lockIpc
     }
-    PoketwoIpc {
-        id: poketwoIpc
-    }
+    // PoketwoIpc {
+    //     id: poketwoIpc
+    // }
     WowIpc {
         id: wowIpc
     }

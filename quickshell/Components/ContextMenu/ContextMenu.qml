@@ -17,10 +17,15 @@ Item {
         }
     }
 
+    Process {
+        id: monkeyProcess
+        command: ["python3", Qt.resolvedUrl("../../Scripts/monkeymode.py").toString().replace("file://", "")]
+    }
+
     Rectangle {
         id: contextMenu
         width: 140
-        height: 110
+        height: 162
         color: Theme.surfaceContainer
         radius: 8
         visible: false
@@ -45,7 +50,7 @@ Item {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "󰑐"
+                        text: ""
                         color: Theme.primaryColor
                         font.pixelSize: 18
                         font.family: "CaskaydiaCove NF"
@@ -115,6 +120,45 @@ Item {
                     onClicked: {
                         contextMenu.visible = false;
                         Theme.toggleMode();
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 44
+                color: monkeyMouse.containsMouse ? Theme.surfaceBright : "transparent"
+                radius: 6
+
+                Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    spacing: 12
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: ""
+                        font.pixelSize: 16
+                        color: Theme.primaryColor
+                    }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Monkey"
+                        color: Theme.onSurface
+                        font.pixelSize: 13
+                        font.family: "CaskaydiaCove NF"
+                    }
+                }
+
+                MouseArea {
+                    id: monkeyMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        contextMenu.visible = false;
+                        monkeyProcess.running = true;
                     }
                 }
             }
