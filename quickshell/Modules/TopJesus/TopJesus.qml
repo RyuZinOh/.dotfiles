@@ -4,6 +4,7 @@ import QtQuick
 import qs.Services.Shapes
 import qs.Services.Theme
 import qs.Components.topjesus
+import Quickshell.Wayland
 /*I dont want to use qs for importing in modules for some weird reasons, well*/
 import "./Callgorl/"
 import "./MAL/"
@@ -22,6 +23,8 @@ Item {
     property bool isHovered: false
     property bool isPinned: false
     property int activePopout: 0
+    property var hoveredWayland: null
+    property real previewX: 0
 
     onActivePopoutChanged: {
         if (root.activePopout > 0) {
@@ -106,6 +109,7 @@ Item {
     //     radius: 24
     //     transparentBorder: true
     // }
+
     PopoutShape {
         id: popout
         anchors.top: parent.top
@@ -197,6 +201,16 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
+                TaskBar {
+                    id: taskBar
+                    anchors.verticalCenter: parent.verticalCenter
+                    barOpen: popout.height >= 40
+                    onWindowHovered: function (wayland, xPos) {
+                        root.hoveredWayland = wayland;
+                        root.previewX = taskBar.mapToItem(root, xPos, 0).x;
+                    }
+                    onWindowUnhovered: root.hoveredWayland = null
+                }
                 Item {
                     height: 28
                     width: iconRow.width
@@ -322,6 +336,49 @@ Item {
     }
 
     PopoutShape {
+        id: previewPopout
+        anchors.top: popout.bottom
+
+        property bool isAnimating: previewWidthAnim.running || previewHeightAnim.running
+
+        width: 280
+        height: root.hoveredWayland !== null && popout.height >= 40 ? 158 : 0
+        x: Math.min(Math.max(root.previewX - 140, 0), parent.width - 280)
+        alignment: 0
+        radius: 12
+        color: Theme.surfaceContainer
+        visible: height > 1 || isAnimating
+
+        Behavior on width {
+            NumberAnimation {
+                id: previewWidthAnim
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        Behavior on height {
+            NumberAnimation {
+                id: previewHeightAnim
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+        }
+        Behavior on x {
+            enabled: previewPopout.height > 0
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        ScreencopyView {
+            anchors.fill: parent
+            anchors.margins: 4
+            captureSource: root.hoveredWayland ?? null
+            live: true
+        }
+    }
+
+    PopoutShape {
         id: nestedPopout
         anchors.top: popout.bottom
 
@@ -392,12 +449,13 @@ Item {
             }
         }
     }
-
     HoverHandler {
         onHoveredChanged: {
             root.isHovered = hovered;
-            if (!hovered)
+            if (!hovered) {
                 root.activePopout = 0;
+                root.hoveredWayland = null;
+            }
         }
     }
 }
