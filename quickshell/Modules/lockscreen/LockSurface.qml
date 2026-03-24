@@ -92,38 +92,50 @@ Rectangle {
                 Repeater {
                     model: passwordBox.text.length
 
-                    delegate: Text {
-                        id: kanjiText
+                    delegate: Item {
+                        id: kanjiChar
                         required property int index
 
-                        property real angle: (index * 360 / Math.max(passwordBox.text.length, 1))
-                        property real distance: 120 + (index % 2) * 20
-                        property var kanjis: ['雷', '龍', '火', '水', '風', '月', '星', '夢', '侍', '魂', '剣', '神', '虎', '鳳', '雲', '霊']
+                        readonly property real orbitRadius: 118 + (kanjiChar.index % 2) * 12
+                        readonly property real baseAngle: kanjiChar.index * 360 / Math.max(passwordBox.text.length, 1)
+                        readonly property real fontSize: kanjiChar.index % 2 === 0 ? 18 : 16
 
-                        visible: true
+                        property real rotationOffset: 0
 
-                        x: 100 + Math.cos(angle * Math.PI / 180) * distance - width / 2
-                        y: 100 + Math.sin(angle * Math.PI / 180) * distance - height / 2
+                        x: 100 + Math.cos((baseAngle + rotationOffset) * Math.PI / 180) * orbitRadius - 12
+                        y: 100 + Math.sin((baseAngle + rotationOffset) * Math.PI / 180) * orbitRadius - 12
+                        width: 24
+                        height: 24
+                        opacity: 0
 
-                        text: kanjis[index % kanjis.length]
+                        Text {
+                            anchors.centerIn: parent
+                            text: {
+                                const kanjis = ['雷', '龍', '火', '水', '風', '月', '星', '夢', '侍', '魂', '剣', '神', '虎', '鳳', '雲', '霊'];
+                                return kanjis[kanjiChar.index % kanjis.length];
+                            }
+                            font.pointSize: kanjiChar.fontSize
+                            color: Theme.primaryFixedDim
+                            style: Text.Outline
+                            styleColor: Theme.backgroundColor
+                            opacity: kanjiChar.index % 2 === 0 ? 0.75 : 0.45
+                        }
 
-                        font.pointSize: 18 + (index % 2) * 4
-                        color: Theme.primaryFixedDim
-                        opacity: 0.35 - (index % 2) * 0.08
-                        style: Text.Outline
-                        styleColor: Theme.backgroundColor
+                        Component.onCompleted: opacity = 1
 
-                        transform: Rotation {
-                            origin.x: 0
-                            origin.y: 0
-                            angle: kanjiText.index * 20
+                        NumberAnimation on rotationOffset {
+                            from: 0
+                            to: kanjiChar.index % 2 === 0 ? 360 : -360
+                            duration: 18000 + kanjiChar.index * 500
+                            loops: Animation.Infinite
+                            running: true
+                            easing.type: Easing.Linear
+                        }
 
-                            RotationAnimation on angle {
-                                running: true
-                                loops: Animation.Infinite
-                                from: kanjiText.index * 20
-                                to: kanjiText.index * 20 + 360
-                                duration: 12000 + (kanjiText.index * 300)
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 400
+                                easing.type: Easing.OutCubic
                             }
                         }
                     }

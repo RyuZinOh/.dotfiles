@@ -1,10 +1,10 @@
+pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Controls
 
 Item {
     id: quotes
 
-    property string quote: "once you start to rice, u never go back"
+    property string quote: "Everything is physics, When you don't know magick...."
     property color textColor: "white"
     property int fontSize: 16
 
@@ -14,9 +14,9 @@ Item {
         id: quoteText
         anchors.centerIn: parent
         width: parent.width
-        text: quote
-        color: textColor
-        font.pixelSize: fontSize
+        text: quotes.quote
+        color: quotes.textColor
+        font.pixelSize: quotes.fontSize
         font.italic: true
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter

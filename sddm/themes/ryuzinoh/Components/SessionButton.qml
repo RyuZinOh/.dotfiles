@@ -1,140 +1,191 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
-import SddmComponents 2.0 as SDDM
 
 Item {
     id: sessionButton
 
-    height: root.font.pointSize * 2
-    width: implicitWidth
-    
-    property alias implicitWidth: selectSession.implicitWidth
-    property alias currentIndex: selectSession.currentIndex
+    required property var model
+    required property int currentIndex
+    required property font parentFont
+
     property alias currentText: selectSession.currentText
-    property alias model: selectSession.model
     property alias hovered: selectSession.hovered
     property alias pressed: selectSession.down
-    property ComboBox exposeSession: selectSession
+
+    height: sessionButton.parentFont.pointSize * 2.5
+    width: pill.implicitWidth + 32
+
+    Rectangle {
+        id: pill
+        anchors.fill: parent
+        radius: height / 2
+        color: "transparent"
+        border.color: "#ffffff"
+        border.width: 1
+        implicitWidth: pillRow.implicitWidth + 32
+
+        Row {
+            id: pillRow
+            anchors.centerIn: parent
+            spacing: 8
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: selectSession.currentText !== "" ? selectSession.currentText : "Session"
+                color: "#ffffff"
+                font.pointSize: sessionButton.parentFont.pointSize * 0.8
+                font.family: sessionButton.parentFont.family
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: popupHandler.visible ? "▴" : "▾"
+                color: "#888888"
+                font.pointSize: sessionButton.parentFont.pointSize * 0.6
+            }
+        }
+
+        MouseArea {
+            id: pillMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: popupHandler.visible ? popupHandler.close() : popupHandler.open()
+        }
+    }
 
     ComboBox {
         id: selectSession
-
-        anchors.fill: parent
-        implicitWidth: displayedItem.implicitWidth + 20
-        implicitHeight: root.font.pointSize * 2
-
-        hoverEnabled: true
-        model: sessionModel
-        currentIndex: model.lastIndex
+        visible: false
+        model: sessionButton.model
+        currentIndex: sessionButton.currentIndex
         textRole: "name"
-        
-        Keys.onPressed: function(event) {
-            if ((event.key == Qt.Key_Left || event.key == Qt.Key_Right) && !popup.opened) {
-                popup.open();
-            }
-        }
+    }
 
-        delegate: ItemDelegate {
-            width: popupHandler.width - 20
-            anchors.horizontalCenter: popupHandler.horizontalCenter
-            
-            contentItem: Text {
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                text: model.name
-                font.pointSize: root.font.pointSize * 0.8
-                font.family: root.font.family
-                color: "#000000"
-            }
-            
-            background: Rectangle {
-                color: selectSession.highlightedIndex === index ? "#e0e0e0" : "transparent"
-            }
-        }
+    Popup {
+        id: popupHandler
 
-        indicator: Item {
-            visible: false
-        }
-
-        contentItem: Text {
-            id: displayedItem
-
-            verticalAlignment: Text.AlignVCenter
-            text: "Session (" + selectSession.currentText + ")"
-            color: "#ffffff"
-            font.pointSize: root.font.pointSize * 0.8
-            font.family: root.font.family
-
-            Keys.onReleased: parent.popup.open()
-        }
+        parent: sessionButton
+        width: Math.max(sessionButton.width, 180)
+        x: (sessionButton.width - popupHandler.width) / 2
+        y: -popupHandler.height - 8
+        padding: 8
 
         background: Rectangle {
-            height: parent.visualFocus ? 2 : 0
-            width: displayedItem.implicitWidth
+            radius: 12
             color: "transparent"
+            border.color: "#ffffff"
+            border.width: 1
         }
 
-        popup: Popup {
-            id: popupHandler
+        contentItem: Column {
+            spacing: 2
+            clip: true
 
-            implicitHeight: contentItem.implicitHeight
-            width: sessionButton.width
-            y: parent.height - 1
-            x: -popupHandler.width/2 + displayedItem.width/2
-            padding: 10
-
-            contentItem: ListView {
-                implicitHeight: contentHeight + 20
-                clip: true
-                model: selectSession.popup.visible ? selectSession.delegateModel : null
-                currentIndex: selectSession.highlightedIndex
-                ScrollIndicator.vertical: ScrollIndicator { }
-            }
-
-            background: Rectangle {
-                radius: 8
+            Text {
+                text: "SESSION"
                 color: "#ffffff"
-                layer.enabled: true
+                font.pointSize: sessionButton.parentFont.pointSize * 0.6
+                font.family: sessionButton.parentFont.family
+                font.letterSpacing: 2
+                leftPadding: 8
+                topPadding: 4
+                bottomPadding: 4
             }
 
-            enter: Transition {
-                NumberAnimation { property: "opacity"; from: 0; to: 1 }
+            Repeater {
+                model: selectSession.model
+                delegate: Rectangle {
+                    id: sessionItem
+                    required property string name
+                    required property int index
+
+                    width: popupHandler.width - 16
+                    height: sessionButton.parentFont.pointSize * 2.8
+                    radius: 8
+                    clip: true
+                    color: itemMouse.containsMouse ? "#33ffffff" : selectSession.currentIndex === sessionItem.index ? "#1affffff" : "transparent"
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        text: sessionItem.name
+                        color: selectSession.currentIndex === sessionItem.index ? "#ffffff" : "#aaaaaa"
+                        font.pointSize: sessionButton.parentFont.pointSize * 0.85
+                        font.family: sessionButton.parentFont.family
+                        elide: Text.ElideRight
+                        maximumLineCount: 1
+                        clip: true
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 120
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: itemMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            selectSession.currentIndex = sessionItem.index;
+                            popupHandler.close();
+                        }
+                    }
+                }
             }
         }
 
-        states: [
-            State {
-                name: "pressed"
-                when: selectSession.down
-                PropertyChanges {
-                    target: displayedItem
-                    color: "#cccccc"
+        enter: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 200
+                    easing.type: Easing.OutCubic
                 }
-            },
-            State {
-                name: "hovered"
-                when: selectSession.hovered
-                PropertyChanges {
-                    target: displayedItem
-                    color: "#ffffff"
-                }
-            },
-            State {
-                name: "focused"
-                when: selectSession.visualFocus
-                PropertyChanges {
-                    target: displayedItem
-                    color: "#ffffff"
+                NumberAnimation {
+                    property: "y"
+                    from: -popupHandler.height + 10
+                    to: -popupHandler.height - 8
+                    duration: 200
+                    easing.type: Easing.OutCubic
                 }
             }
-        ]
-        transitions: [
-            Transition {
-                PropertyAnimation {
-                    properties: "color"
+        }
+
+        exit: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 1
+                    to: 0
                     duration: 150
+                    easing.type: Easing.InCubic
+                }
+                NumberAnimation {
+                    property: "y"
+                    from: -popupHandler.height - 8
+                    to: -popupHandler.height + 6
+                    duration: 150
+                    easing.type: Easing.InCubic
                 }
             }
-        ]
+        }
     }
 }

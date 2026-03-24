@@ -38,10 +38,10 @@ Item {
             if (!hwmon.done) {
                 if (hwmon.text().includes("coretemp")) {
                     Qt.callLater(() => {
-                        if (root.componentActive) {
-                            hwmon.done = true;
-                            hwmon.fileName = "temp1_input";
-                        }
+                        if (!root.componentActive)
+                            return;
+                        hwmon.done = true;
+                        hwmon.fileName = "temp1_input";
                     });
                 } else if (hwmon.index < folderListModel.count - 1) {
                     Qt.callLater(() => {
@@ -147,11 +147,9 @@ Item {
                         }
                     }
 
-                    readonly property real val: card.modelData.idx === 0 ? root.usedMemoryPerc : card.modelData.idx === 1 ? root.cpuPerc : Math.min(root.cpuTemp / 100, 1.0)
-                    readonly property color accent: card.modelData.idx === 0 ? Theme.secondaryColor : card.modelData.idx === 1 ? Theme.primaryColor : Theme.tertiaryColor
-                    readonly property color accentContainer: card.modelData.idx === 0 ? Theme.secondaryContainer : card.modelData.idx === 1 ? Theme.primaryContainer : Theme.tertiaryContainer
-                    readonly property color onAccentContainer: card.modelData.idx === 0 ? Theme.onSecondaryContainer : card.modelData.idx === 1 ? Theme.onPrimaryContainer : Theme.onTertiaryContainer
-                    readonly property string valueText: card.modelData.idx === 2 ? Math.round(root.cpuTemp) + "°" : Math.round(card.val * 100) + "%"
+                    readonly property real val: modelData.idx === 0 ? root.usedMemoryPerc : modelData.idx === 1 ? root.cpuPerc : Math.min(root.cpuTemp / 100, 1.0)
+                    readonly property color accent: modelData.idx === 0 ? Theme.secondaryColor : modelData.idx === 1 ? Theme.primaryColor : Theme.tertiaryColor
+                    readonly property string valueText: modelData.idx === 2 ? Math.round(root.cpuTemp) + "°" : Math.round(val * 100) + "%"
 
                     Item {
                         id: ring
@@ -161,6 +159,10 @@ Item {
 
                         readonly property real gapAngle: 80
                         readonly property real gapStart: 50
+                        readonly property real arcR: (width - 8) / 2
+                        readonly property real fullSweep: 360 - gapAngle
+                        readonly property real arcStartDeg: gapStart + gapAngle / 2
+                        readonly property real iconRad: gapStart * Math.PI / 180
 
                         Shape {
                             anchors.fill: parent
@@ -177,10 +179,10 @@ Item {
                                 PathAngleArc {
                                     centerX: ring.width / 2
                                     centerY: ring.height / 2
-                                    radiusX: (ring.width - 8) / 2
-                                    radiusY: (ring.height - 8) / 2
-                                    startAngle: ring.gapStart + ring.gapAngle / 2
-                                    sweepAngle: 360 - ring.gapAngle
+                                    radiusX: ring.arcR
+                                    radiusY: ring.arcR
+                                    startAngle: ring.arcStartDeg
+                                    sweepAngle: ring.fullSweep
                                 }
                             }
 
@@ -192,10 +194,10 @@ Item {
                                 PathAngleArc {
                                     centerX: ring.width / 2
                                     centerY: ring.height / 2
-                                    radiusX: (ring.width - 8) / 2
-                                    radiusY: (ring.height - 8) / 2
-                                    startAngle: ring.gapStart + ring.gapAngle / 2
-                                    sweepAngle: (360 - ring.gapAngle) * card.val
+                                    radiusX: ring.arcR
+                                    radiusY: ring.arcR
+                                    startAngle: ring.arcStartDeg
+                                    sweepAngle: ring.fullSweep * card.val
                                     Behavior on sweepAngle {
                                         NumberAnimation {
                                             duration: 700
@@ -211,9 +213,8 @@ Item {
                             font.family: "CaskaydiaCove NF"
                             font.pixelSize: Math.max(16, ring.width * 0.26)
                             color: card.accent
-                            readonly property real r: (ring.width - 8) / 2
-                            x: ring.width / 2 + r * Math.cos(ring.gapStart * Math.PI / 180) - width / 2
-                            y: ring.height / 2 + r * Math.sin(ring.gapStart * Math.PI / 180) - height / 2
+                            x: ring.width / 2 + ring.arcR * Math.cos(ring.iconRad) - width / 2
+                            y: ring.height / 2 + ring.arcR * Math.sin(ring.iconRad) - height / 2
                             Behavior on color {
                                 ColorAnimation {
                                     duration: 300

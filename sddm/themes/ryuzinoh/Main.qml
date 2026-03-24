@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
@@ -5,45 +6,32 @@ import "Components"
 
 Pane {
     id: root
-    height: config.ScreenHeight || Screen.height
-    width: config.ScreenWidth || Screen.width
+    height: Screen.height
+    width: Screen.width
     padding: 0
     LayoutMirroring.enabled: false
     LayoutMirroring.childrenInherit: true
     palette.window: "#000000"
     palette.highlight: "#ffffff"
+    clip: true
     palette.highlightedText: "#000000"
     palette.buttonText: "#ffffff"
-    font.family: config.Font || "Sans Serif"
-    font.pointSize: config.FontSize !== "" ? config.FontSize : parseInt(height / 80) || 13
+    font.family: "CaskaydiaCove NF"
+    font.pointSize: 12
     focus: true
 
-    Image {
-        id: backgroundImage
-        anchors.fill: parent
-        horizontalAlignment: Image.AlignHCenter
-        verticalAlignment: Image.AlignVCenter
-        fillMode: Image.PreserveAspectCrop
-        source: config.Background || config.background
-        asynchronous: true
-        cache: true
-        mipmap: true
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            autoPaddingEnabled: true
-        }
-    }
+    readonly property string cfgBackground: Qt.resolvedUrl("Shiboing/tsubasa_maxxed.jpeg")
+    readonly property string cfgUserProfilePicture: Qt.resolvedUrl("Shiboing/tsugaru.jpg")
+    readonly property string cfgQuote: "Everything is Physics, When you don't know Magick..."
+    readonly property int cfgQuoteFontSize: 25
 
-    Rectangle {
-        id: tintLayer
-        anchors.fill: parent
+    Wallpaper {
+        source: root.cfgBackground
+        pan: true
         z: 1
-        color: "#000000"
-        opacity: 0.7
     }
 
     Quotes {
-        id: quotesComponent
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
@@ -51,34 +39,21 @@ Pane {
         }
         width: parent.width * 0.5
         z: 4
-        quote: form.passwordLength > 0 ? "fuck yea!!" : config.Quote
+        quote: form.passwordLength > 0 ? "real shi..." : root.cfgQuote
         textColor: "#ffffff"
-        fontSize: config.QuoteFontSize || 18
-    }
-
-    DateTime {
-        id: dateTimeComponent
-        anchors {
-            left: parent.left
-            bottom: parent.bottom
-            leftMargin: 40
-            bottomMargin: 40
-        }
-        z: 4
-        textColor: "#ffffff"
-        dateFontSize: config.DateFontSize || 24
-        timeFontSize: config.TimeFontSize || 48
+        fontSize: root.cfgQuoteFontSize
     }
 
     SessionButton {
         id: sessionSelect
-        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.margins: 40
-        anchors.topMargin: 60
+        anchors.bottomMargin: 60
         z: 4
         model: sessionModel
-        currentIndex: model.lastIndex
+        currentIndex: sessionModel.lastIndex
+        parentFont: root.font
     }
 
     Item {
@@ -90,70 +65,72 @@ Pane {
 
         Rectangle {
             anchors.centerIn: parent
-            width: pfpContainer.width + 20
-            height: pfpContainer.height + 20
+            width: pfpContainer.width + 24
+            height: pfpContainer.height + 24
             radius: width / 2
             color: "transparent"
-            border.color: form.failed ? "#ff0000" : "white"
+            border.color: form.failed ? "#ff0000" : "#ffffff"
             border.width: 1
-            opacity: 0.2
+            opacity: 0.15
+
+            Behavior on border.color {
+                ColorAnimation {
+                    duration: 300
+                }
+            }
         }
 
         Repeater {
             model: form.passwordLength
 
-            Text {
+            Item {
                 id: kanjiChar
-                property real baseAngle: (index * 360 / Math.max(form.passwordLength, 1))
+
+                required property int index
+
+                readonly property real orbitRadius: 118 + (kanjiChar.index % 2) * 12
+                readonly property real baseAngle: kanjiChar.index * 360 / Math.max(form.passwordLength, 1)
+                readonly property real fontSize: kanjiChar.index % 2 === 0 ? 18 : 16
+
                 property real rotationOffset: 0
-                property real currentDistance: 0
-                property real targetDistance: 140 + (index % 2) * 20
 
-                visible: true
+                x: 200 + Math.cos((baseAngle + rotationOffset) * Math.PI / 180) * orbitRadius - 12
+                y: 200 + Math.sin((baseAngle + rotationOffset) * Math.PI / 180) * orbitRadius - 12
+                width: 24
+                height: 24
+                opacity: 0
 
-                x: 200 + Math.cos((baseAngle + rotationOffset) * Math.PI / 180) * currentDistance - width / 2
-                y: 200 + Math.sin((baseAngle + rotationOffset) * Math.PI / 180) * currentDistance - height / 2
-
-                text: {               
-                const kanjis = ['雷' //kaminari => thundah
-                                , '龍' //ryu => doragaon
-                                , '火' //ka => fire
-                                , '水' //mizu => watah
-                                , '風' //kaze => wind
-                                , '月' //tsuki => moon
-                                , '星' //hosshi => star
-                                , '夢' //yume => dream
-                                , '侍' //samurai
-                                , '魂' //tamashi => soul
-                                , '剣' //tsurugi => sword
-                                , '神' //kami => god
-                                , '虎' //tora => tiger
-                                , '鳳' //ho => phoenix [ho-oh pokemon like]
-                                , '雲' //kumo => cloud
-                                , '霊' //rei => ghost
-                            ];
-
-                    return kanjis[index % kanjis.length];
+                Text {
+                    anchors.centerIn: parent
+                    text: {
+                        const kanjis = ['雷', '龍', '火', '水', '風', '月', '星', '夢', '侍', '魂', '剣', '神', '虎', '鳳', '雲', '霊'];
+                        return kanjis[kanjiChar.index % kanjis.length];
+                    }
+                    font.pointSize: kanjiChar.fontSize
+                    color: "#ffffff"
+                    style: Text.Outline
+                    styleColor: "#000000"
+                    opacity: kanjiChar.index % 2 === 0 ? 0.75 : 0.45
                 }
 
-                font.pointSize: 24 + (index % 2) * 6
-                color: "white"
-                opacity: 0
-                style: Text.Outline
-                styleColor: "black"
-
                 Component.onCompleted: {
-                    currentDistance = targetDistance;
-                    opacity = 0.4 - (index % 2) * 0.1;
-                    rotationAnim.start();
+                    opacity = 1;
                 }
 
                 NumberAnimation on rotationOffset {
-                    id: rotationAnim
                     from: 0
-                    to: 360
-                    duration: 12000 + (index * 300)
+                    to: kanjiChar.index % 2 === 0 ? 360 : -360
+                    duration: 18000 + kanjiChar.index * 500
                     loops: Animation.Infinite
+                    running: true
+                    easing.type: Easing.Linear
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
                 }
             }
         }
@@ -167,12 +144,18 @@ Pane {
             color: form.failed ? "#ff0000" : "white"
             antialiasing: true
 
+            Behavior on color {
+                ColorAnimation {
+                    duration: 300
+                }
+            }
+
             Image {
                 id: userPfp
                 width: parent.width - 8
                 height: parent.height - 8
                 anchors.centerIn: parent
-                source: config.UserProfilePicture
+                source: root.cfgUserProfilePicture
                 fillMode: Image.PreserveAspectCrop
                 smooth: true
                 mipmap: true
@@ -188,7 +171,6 @@ Pane {
                     height: userPfp.height
                     layer.enabled: true
                     visible: false
-
                     Rectangle {
                         anchors.fill: parent
                         radius: width / 2
@@ -197,7 +179,6 @@ Pane {
                 }
             }
 
-            //fallback text
             Text {
                 anchors.centerIn: parent
                 text: "?"
@@ -214,17 +195,22 @@ Pane {
             }
         }
 
-        //main ring
         Rectangle {
             anchors.fill: pfpContainer
             radius: width / 2
             color: "transparent"
             border.color: form.failed ? "#ff0000" : "white"
-            border.width: 3
+            border.width: 2
+            antialiasing: true
+
+            Behavior on border.color {
+                ColorAnimation {
+                    duration: 300
+                }
+            }
         }
     }
 
-    //hidden login form
     LoginForm {
         id: form
         anchors.centerIn: parent
@@ -232,7 +218,6 @@ Pane {
         sessionIndex: sessionSelect.currentIndex
     }
 
-    //subtle hint at bottom
     Text {
         anchors {
             horizontalCenter: parent.horizontalCenter
@@ -245,7 +230,6 @@ Pane {
         color: "white"
         opacity: form.passwordLength > 0 ? 0.6 : 0
         z: 4
-
         Behavior on opacity {
             NumberAnimation {
                 duration: 200
@@ -256,7 +240,7 @@ Pane {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            parent.forceActiveFocus();
+            root.forceActiveFocus();
             form.focusPassword();
         }
     }

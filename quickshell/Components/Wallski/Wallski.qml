@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Qt.labs.folderlistmodel
-import Qt5Compat.GraphicalEffects
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Io
 import qs.Services.Theme
 import qs.Services.Shapes
@@ -29,7 +29,7 @@ Item {
             if (hovered) {
                 unloadTimer.stop();
                 contentWrapper.visible = true;
-            } else{
+            } else {
                 unloadTimer.restart();
             }
         }
@@ -47,7 +47,6 @@ Item {
 
     Process {
         id: bamProcess
-        // Quickshell linter issue, not a code problem for the linter warning ahhh
         command: ["/bin/bash", "/home/safal726/.dotfiles/quickshell/Scripts/bam.sh"]
         running: false
         onExited: {
@@ -85,8 +84,8 @@ Item {
             anchors.fill: parent
             anchors.margins: 12
             visible: false
-            onVisibleChanged: if (visible){
-                Qt.callLater(root.positionToCurrentWallpaper)                
+            onVisibleChanged: if (visible) {
+                Qt.callLater(root.positionToCurrentWallpaper);
             }
 
             Column {
@@ -132,16 +131,9 @@ Item {
 
                             readonly property bool isCurrent: index === ListView.view.currentIndex
 
-                            Item {
+                            ClippingRectangle {
                                 anchors.fill: parent
-                                layer.enabled: true
-                                layer.effect: OpacityMask {
-                                    maskSource: Rectangle {
-                                        width: 320
-                                        height: 260
-                                        radius: 14
-                                    }
-                                }
+                                radius: 14
 
                                 Rectangle {
                                     anchors.fill: parent
@@ -192,10 +184,8 @@ Item {
                         acceptedButtons: Qt.NoButton
                         property real acc: 0
                         onWheel: wheel => {
-                            if (wheel.pixelDelta.x === 0){
+                            if (wheel.pixelDelta.x === 0)
                                 return;
-
-                            }
                             acc -= wheel.pixelDelta.x;
                             if (Math.abs(acc) >= 50) {
                                 acc > 0 ? listView.incrementCurrentIndex() : listView.decrementCurrentIndex();
@@ -218,7 +208,7 @@ Item {
                             font.family: "CaskaydiaCove NF"
                             font.weight: Font.Medium
                         }
-                        
+
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: searchInput.text ? "Try a different search term" : "Add images to ~/Pictures/"

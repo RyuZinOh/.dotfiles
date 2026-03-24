@@ -1,13 +1,7 @@
 import QtQuick
-import QtQuick.Layouts
-import SddmComponents 2.0 as SDDM
 
 Item {
     id: formContainer
-
-    SDDM.TextConstants {
-        id: textConstants
-    }
 
     property int passwordLength: passwordInput.text.length
     property bool failed: false
@@ -27,15 +21,8 @@ Item {
         enabled: true
         focus: true
         echoMode: TextInput.Password
-
-        Component.onCompleted: {
-            forceActiveFocus();
-        }
-
-        onAccepted: {
-            sddm.login(userModel.lastUser, text, sessionIndex);
-        }
-
+        Component.onCompleted: forceActiveFocus()
+        onAccepted: sddm.login(userModel.lastUser, text, formContainer.sessionIndex)
         Keys.onPressed: function (event) {
             if (event.key === Qt.Key_Escape) {
                 text = "";
@@ -46,13 +33,13 @@ Item {
     Timer {
         id: resetError
         interval: 2000
-        onTriggered: failed = false
+        onTriggered: formContainer.failed = false
     }
 
     Connections {
         target: sddm
         function onLoginFailed() {
-            failed = true;
+            formContainer.failed = true;
             passwordInput.text = "";
             resetError.running ? resetError.restart() : resetError.start();
         }
