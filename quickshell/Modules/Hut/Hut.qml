@@ -3,8 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
 import qs.Services.Shapes
-import "./Profile/"
-// import "./Evernight/"
 import "./Warsa/"
 import "./Areuok/"
 
@@ -46,8 +44,9 @@ Item {
         width: 400
         // container aint loaded so liner warning exists...
         height: {
-            if (!root.isHovered)
+            if (!root.isHovered) {
                 return 0.1;
+            }
             if (contentLoader.status === Loader.Ready) {
                 let loadedItem = contentLoader.item as Item;
                 if (loadedItem) {
@@ -72,9 +71,9 @@ Item {
         Loader {
             id: contentLoader
             anchors.fill: parent
-            anchors{
-              leftMargin: 20
-              rightMargin: 5
+            anchors {
+                leftMargin: 20
+                rightMargin: 5
             }
             active: false
             asynchronous: true
@@ -84,23 +83,12 @@ Item {
                 Item {
                     id: contentItem
                     visible: root.isHovered
-                    implicitWidth: {
-                        let maxWidth = profileComponent.implicitWidth;
-                        let areuokItem = areuokLoader.item as Item;
-                        let warsaItem = warsaLoader.item as Item;
-                        // let evernightItem = evernightLoader.item as Item;
-
-                        if (areuokItem) {
-                            maxWidth = Math.max(maxWidth, areuokItem.implicitWidth);
-                        }
-                        // if (evernightItem) {
-                        //     maxWidth = Math.max(maxWidth, evernightItem.implicitWidth);
-                        // }
-                        if (warsaItem) {
-                            maxWidth = Math.max(maxWidth, warsaItem.implicitWidth);
-                        }
-                        return maxWidth;
+                    readonly property real maxWidth: {
+                        let a = (areuokLoader.item as Item)?.implicitWidth ?? 0;
+                        let w = (warsaLoader.item as Item)?.implicitWidth ?? 0;
+                        return Math.max(a, w);
                     }
+                    implicitWidth: contentItem.maxWidth
                     implicitHeight: mainContent.implicitHeight + 20
 
                     property real contentOpacity: root.isHovered ? 1 : 0
@@ -129,9 +117,6 @@ Item {
                         id: mainContent
                         spacing: 16
 
-                        Profile {
-                            id: profileComponent
-                        }
                         Loader {
                             id: areuokLoader
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -141,16 +126,6 @@ Item {
                                 Areuok {}
                             }
                         }
-                        // [I currently don't need this...]
-                        // Loader {
-                        //     id: evernightLoader
-                        //     anchors.horizontalCenter: parent.horizontalCenter
-                        //     active: root.isHovered
-                        //     asynchronous: true
-                        //     sourceComponent: Component {
-                        //         Evernight {}
-                        //     }
-                        // }
                         Loader {
                             id: warsaLoader
                             anchors.horizontalCenter: parent.horizontalCenter

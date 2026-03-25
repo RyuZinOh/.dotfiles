@@ -1,26 +1,10 @@
 import QtQuick
-import Quickshell.Io
 import qs.Services.Theme
+import Quickshell
 
 Item {
     id: root
     anchors.fill: parent
-
-    Process {
-        id: cleanupProcess
-        command: ["bash", Qt.resolvedUrl("../../Scripts/refresh.sh").toString().replace("file://", "")]
-        onExited: (code, status) => {
-            if (code === 0) {
-                // trigger theme regeneration after cleanup
-                Theme.generateColors();
-            }
-        }
-    }
-
-    Process {
-        id: monkeyProcess
-        command: ["python3", Qt.resolvedUrl("../../Scripts/monkeymode.py").toString().replace("file://", "")]
-    }
 
     Rectangle {
         id: contextMenu
@@ -77,7 +61,8 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         contextMenu.visible = false;
-                        cleanupProcess.running = true;
+                        Quickshell.execDetached(["bash", Qt.resolvedUrl("../../Scripts/refresh.sh").toString().replace("file://", "")]);
+                        Theme.generateColors();
                     }
                 }
             }
@@ -120,6 +105,7 @@ Item {
                     onClicked: {
                         contextMenu.visible = false;
                         Theme.toggleMode();
+                        Quickshell.execDetached(["python3", Qt.resolvedUrl("../../Scripts/obsidianAppearance.py").toString().replace("file://", ""), Theme.isDarkMode ? "dark" : "light"]);
                     }
                 }
             }
@@ -158,7 +144,7 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         contextMenu.visible = false;
-                        monkeyProcess.running = true;
+                        Quickshell.execDetached(["python3", Qt.resolvedUrl("../../Scripts/monkeymode.py").toString().replace("file://", "")]);
                     }
                 }
             }

@@ -53,7 +53,7 @@ Item {
                     activeBorder: Theme.tertiaryColor,
                     activeText: Theme.onTertiaryContainer,
                     service: "artiqa"
-                }
+                },
                 // {
                 //     icon: "󰄛",
                 //     active: PoketwoConfig.isActive,
@@ -62,7 +62,14 @@ Item {
                 //     activeText: Theme.onPrimaryContainer,
                 //     service: "poketwo"
                 // },
-                ,
+                {
+                    icon: "\uf001",
+                    active: EvernightConfig.isActive,
+                    activeColor: Theme.primaryContainer,
+                    activeBorder: Theme.primaryColor,
+                    activeText: Theme.onPrimaryContainer,
+                    service: "evernight"
+                },
             ]
 
             delegate: Rectangle {

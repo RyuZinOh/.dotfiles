@@ -400,8 +400,8 @@ Item {
                         }
                         Text {
                             anchors.centerIn: parent
-                            text: root.isRefreshing ? "\uf110" : "\uf021"
-                            font.pixelSize: 18
+                            text: root.isRefreshing ? "\udb84\udf7f" : "\udb84\udf7f"
+                            font.pixelSize: 24
                             font.family: "CaskaydiaCove NF"
                             color: Theme.onSurface
                             RotationAnimation on rotation {

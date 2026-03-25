@@ -7,8 +7,8 @@ read-> https://safallama.com.np/posts/quests/
  */
 Item {
     id: root
-    width: 400
-    height: 500
+    width: 360
+    implicitHeight: mainCol.implicitHeight
 
     property string warFile: "/home/safal726/.cache/safalQuick/todaywarpick.json"
     property var war: ({})
@@ -25,163 +25,160 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "transparent"
-
-        Column {
-            anchors {
-                fill: parent
-                topMargin: 32
-                leftMargin: 20
-                rightMargin: 20
-                bottomMargin: 20
-            }
-            spacing: 24
+    Column {
+        id: mainCol
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            margins: 24
+            topMargin: 24
+        }
+        spacing: 0
+        Row {
+            width: parent.width
+            spacing: 8
 
             Column {
-                width: parent.width
-                spacing: 8
+                spacing: 4
+                width: parent.width - dateChip.width - 8
 
                 Text {
                     text: "Daily Coding War"
-                    color: Theme.primaryColor
-                    font.pixelSize: 28
-                    font.weight: Font.Bold
-                    layer.enabled: true
-                    layer.smooth: true
+                    font.pixelSize: 11
+                    font.weight: Font.Medium
+                    font.letterSpacing: 1.1
+                    color: Theme.onSurfaceVariant
                 }
 
                 Text {
-                    text: root.war.date || new Date().toLocaleDateString()
-                    color: Theme.onSurfaceVariant
-                    font.pixelSize: 13
-                    opacity: 0.65
+                    text: "Today's challenge"
+                    font.pixelSize: 20
                     font.weight: Font.Medium
+                    color: Theme.onSurface
                 }
             }
 
             Rectangle {
-                width: parent.width
-                height: 2
-                radius: 1
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop {
-                        position: 0.0
-                        color: "transparent"
-                    }
-                    GradientStop {
-                        position: 0.5
-                        color: Theme.outlineVariant
-                    }
-                    GradientStop {
-                        position: 1.0
-                        color: "transparent"
-                    }
+                id: dateChip
+                height: 26
+                width: dateText.width + 20
+                radius: 8
+                color: Theme.surfaceContainer
+                border.width: 0.5
+                border.color: Theme.outlineVariant
+                anchors.verticalCenter: parent.verticalCenter
+
+                Text {
+                    id: dateText
+                    anchors.centerIn: parent
+                    text: root.war.date || Qt.formatDate(new Date(), "MMM d, yyyy")
+                    font.pixelSize: 11
+                    color: Theme.onSurfaceVariant
                 }
             }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 0.5
+            color: Theme.outlineVariant
+            opacity: 0.5
+            anchors.topMargin: 16
+            anchors.bottomMargin: 16
+            Rectangle {
+                width: 1
+                height: 16
+                color: "transparent"
+            }
+        }
+
+        Item {
+            width: 1
+            height: 16
+        }
+
+        Rectangle {
+            id: challengeCard
+            width: parent.width
+            height: cardContent.implicitHeight + 36
+            radius: 14
+            color: Theme.surfaceContainer
+            border.width: 0.5
+            border.color: Theme.outlineVariant
 
             Column {
-                width: parent.width
-                spacing: 16
-                visible: root.active
-                opacity: root.active ? 1 : 0
+                id: cardContent
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                    margins: 18
+                }
+                spacing: 10
 
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 350
-                        easing.type: Easing.OutCubic
-                    }
+                Text {
+                    text: root.war.challenge?.title || "Loading..."
+                    font.pixelSize: 16
+                    font.weight: Font.Medium
+                    color: Theme.onSurface
+                    width: parent.width
+                    wrapMode: Text.Wrap
+                    lineHeight: 1.35
                 }
 
                 Text {
-                    text: "Today's Challenge"
-                    color: Theme.primaryColor
-                    font.pixelSize: 15
-                    font.weight: Font.DemiBold
-                    opacity: 0.95
+                    text: root.war.challenge?.description || ""
+                    font.pixelSize: 13
+                    color: Theme.onSurfaceVariant
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    lineHeight: 1.55
+                    visible: text.length > 0
                 }
 
-                Rectangle {
-                    width: parent.width
-                    height: challengeContent.height + 36
-                    radius: 14
-                    color: Theme.surfaceContainer
-                    border.color: Theme.primaryColor
-                    border.width: 2
+                Row {
+                    spacing: 8
+                    topPadding: 4
 
-                    layer.enabled: true
-                    layer.smooth: true
-
-                    Column {
-                        id: challengeContent
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                            top: parent.top
-                            margins: 22
-                        }
-                        spacing: 14
+                    Rectangle {
+                        height: 24
+                        width: diffLabel.width + 16
+                        radius: 6
+                        color: Theme.tertiaryContainer
 
                         Text {
-                            text: root.war.challenge?.title || "Loading..."
-                            color: Theme.onSurface
-                            font.pixelSize: 19
-                            font.weight: Font.Bold
-                            width: parent.width
-                            wrapMode: Text.Wrap
-                            lineHeight: 1.3
+                            id: diffLabel
+                            anchors.centerIn: parent
+                            text: root.war.challenge?.difficulty || "N/A"
+                            font.pixelSize: 11
+                            font.weight: Font.Medium
+                            color: Theme.onTertiaryContainer
                         }
+                    }
+
+                    Rectangle {
+                        height: 24
+                        width: langLabel.width + 16
+                        radius: 6
+                        color: Theme.secondaryContainer
 
                         Text {
-                            text: root.war.challenge?.description || ""
-                            color: Theme.onSurfaceVariant
-                            font.pixelSize: 14
-                            opacity: 0.87
-                            wrapMode: Text.WordWrap
-                            width: parent.width
-                            lineHeight: 1.5
-                        }
-
-                        Row {
-                            spacing: 12
-
-                            Rectangle {
-                                height: 26
-                                width: diffText.width + 18
-                                radius: 7
-                                color: Theme.tertiaryContainer
-
-                                Text {
-                                    id: diffText
-                                    anchors.centerIn: parent
-                                    text: root.war.challenge?.difficulty || "N/A"
-                                    color: Theme.onTertiaryContainer
-                                    font.pixelSize: 12
-                                    font.weight: Font.Bold
-                                }
-                            }
-
-                            Rectangle {
-                                height: 26
-                                width: langText.width + 18
-                                radius: 7
-                                color: Theme.secondaryContainer
-
-                                Text {
-                                    id: langText
-                                    anchors.centerIn: parent
-                                    text: root.war.language || "N/A"
-                                    color: Theme.onSecondaryContainer
-                                    font.pixelSize: 12
-                                    font.weight: Font.Bold
-                                }
-                            }
+                            id: langLabel
+                            anchors.centerIn: parent
+                            text: root.war.language || "N/A"
+                            font.pixelSize: 11
+                            font.weight: Font.Medium
+                            color: Theme.onSecondaryContainer
                         }
                     }
                 }
             }
+        }
+
+        Item {
+            width: 1
+            height: 4
         }
     }
 }

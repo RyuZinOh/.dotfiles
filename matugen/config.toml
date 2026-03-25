@@ -23,3 +23,7 @@ output_path = "~/.cache/safalQuick/monkeytype.json"
 input_path  = "~/.config/matugen/templates/general.conf"
 output_path = "~/.config/hypr/conf.d/general.conf"
 post_hook = "hyprctl reload"
+
+[templates.obsidian]
+input_path  = "~/.config/matugen/templates/obsidian.css"
+output_path ="~/toughNot/notes/.obsidian/snippets/style.css"

@@ -7,13 +7,13 @@ import qs.Services.Theme
 Item {
     id: root
     implicitWidth: serviceRow.width
-    implicitHeight: 50
+    implicitHeight: 64
 
     property var services: ({})
     property var activeProcesses: ({})
     property bool componentActive: true
 
-    Component.onCompleted: root.checkAllServices()
+    Component.onCompleted: startupDelay.start()
 
     Component.onDestruction: {
         root.componentActive = false;
@@ -35,7 +35,12 @@ Item {
             }
         }
     }
-
+    Timer {
+        id: startupDelay
+        interval: 400
+        repeat: false
+        onTriggered: root.checkAllServices()
+    }
     Component {
         id: processComponent
         Process {}
@@ -44,18 +49,16 @@ Item {
     function checkAllServices() {
         if (!root.componentActive)
             return;
-        ["docker", "mariadb", "nginx", "httpd"].forEach(service => {
-            root.checkService(service);
-        });
+        ["docker", "mariadb", "nginx", "httpd"].forEach(s => root.checkService(s));
     }
 
     function checkService(name) {
-        if (!root.componentActive)
+        if (!root.componentActive) {
             return;
-
-        if (root.activeProcesses[name])
+        }
+        if (root.activeProcesses[name]) {
             root.activeProcesses[name].destroy();
-
+        }
         var proc = processComponent.createObject(root, {
             command: ["systemctl", "is-active", name],
             running: true
@@ -66,9 +69,9 @@ Item {
                 proc.destroy();
                 return;
             }
-            var newServices = Object.assign({}, root.services);
-            newServices[name] = (code === 0);
-            root.services = newServices;
+            var s = Object.assign({}, root.services);
+            s[name] = (code === 0);
+            root.services = s;
             proc.destroy();
             delete root.activeProcesses[name];
         });
@@ -78,7 +81,7 @@ Item {
 
     Row {
         id: serviceRow
-        spacing: 12
+        spacing: 16
         anchors.centerIn: parent
 
         Repeater {
@@ -105,83 +108,116 @@ Item {
                 }
             ]
 
-            delegate: Rectangle {
-                id: serviceRect
+            delegate: Item {
+                id: chip
                 required property var modelData
                 required property int index
 
-                width: 70
-                height: 40
-                radius: mouseArea.containsMouse ? 20 : 10
+                width: 64
+                height: 64
 
-                color: {
-                    var running = root.services[serviceRect.modelData.name] === true;
-                    if (mouseArea.containsMouse)
-                        return running ? Theme.primaryContainer : Theme.errorContainer;
-                    return running ? Theme.surfaceContainerHigh : Theme.surfaceContainerHighest;
-                }
+                readonly property bool running: root.services[chip.modelData.name] === true
+                readonly property bool hovered: hoverArea.containsMouse
 
-                border.width: 1
-                border.color: {
-                    var running = root.services[serviceRect.modelData.name] === true;
-                    return running ? Theme.primaryColor : Theme.errorColor;
-                }
-
-                Behavior on radius {
-                    NumberAnimation {
-                        duration: 250
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on border.color {
-                    ColorAnimation {
-                        duration: 200
-                    }
-                }
-
-                Text {
+                Rectangle {
+                    id: orbitRing
                     anchors.centerIn: parent
-                    text: serviceRect.modelData.icon || ""
-                    font.pixelSize: 20
-                    font.family: "0xProto Nerd Font"
+                    width: 62
+                    height: 62
+                    radius: 31
+                    color: "transparent"
+                    border.width: 1.5
+                    border.color: chip.running ? Theme.primaryColor : Theme.errorColor
+                    opacity: chip.running ? 1.0 : 0.3
+
+                    Behavior on border.color {
+                        ColorAnimation {
+                            duration: 400
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 400
+                        }
+                    }
+
+                    Rectangle {
+                        width: 6
+                        height: 6
+                        radius: 3
+                        color: Theme.primaryColor
+                        visible: chip.running
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        y: -3
+                    }
+
+                    RotationAnimator {
+                        target: orbitRing
+                        from: 0
+                        to: 360
+                        duration: 3500
+                        loops: Animation.Infinite
+                        running: chip.running && !chip.hovered
+                        easing.type: Easing.Linear
+                    }
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 50
+                    height: 50
+                    radius: 25
                     color: {
-                        var running = root.services[serviceRect.modelData.name] === true;
-                        if (mouseArea.containsMouse)
-                            return running ? Theme.onPrimaryContainer : Theme.onErrorContainer;
-                        return Theme.onSurface;
+                        if (chip.hovered) {
+                            return chip.running ? Theme.primaryContainer : Theme.errorContainer;
+                        }
+                        return Theme.surfaceContainerHigh;
                     }
 
                     Behavior on color {
                         ColorAnimation {
-                            duration: 200
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    scale: chip.hovered ? 1.1 : 1.0
+                    Behavior on scale {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutBack
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: chip.modelData.icon || ""
+                        font.pixelSize: 22
+                        font.family: "0xProto Nerd Font"
+                        color: {
+                            if (chip.hovered)
+                                return chip.running ? Theme.onPrimaryContainer : Theme.onErrorContainer;
+                            return chip.running ? Theme.primaryColor : Theme.onSurfaceVariant;
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
                         }
                     }
                 }
 
                 ToolTip {
                     id: tooltip
-                    visible: mouseArea.containsMouse
-                    delay: 150
-                    text: {
-                        var running = root.services[serviceRect.modelData.name] === true;
-                        return (serviceRect.modelData.display || "") + (running ? " is running" : " is not running");
-                    }
-
+                    visible: chip.hovered
+                    delay: 300
+                    text: (chip.modelData.display || "") + (chip.running ? " running" : " stopped")
                     background: Rectangle {
                         color: Theme.surfaceContainer
                         radius: 8
                         border.width: 1
                         border.color: Theme.outlineVariant
                     }
-
                     contentItem: Text {
                         text: tooltip.text
                         color: Theme.onSurface
@@ -193,7 +229,7 @@ Item {
                 }
 
                 MouseArea {
-                    id: mouseArea
+                    id: hoverArea
                     anchors.fill: parent
                     hoverEnabled: true
                 }

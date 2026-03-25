@@ -3,8 +3,9 @@ import QtQuick
 import Quickshell.Wayland
 import qs.Services
 import qs.Components.ContextMenu
-// import qs.Components.paimonclock
+import qs.Components.Evernight
 import qs.Components.Wallski
+import qs.utils
 
 Scope {
     // background layer [wallpaper]
@@ -54,12 +55,19 @@ Scope {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            // PaimonClock {
-            //     anchors.top: parent.top
-            //     anchors.left: parent.left
-            //     offsetX: -400
-            //     offsetY: -160
-            // }
+            Loader {
+                id: evernightLoader
+                active: EvernightConfig.isActive
+                asynchronous: true
+                sourceComponent: Evernight {
+                    id: evernightWidget
+                    x: 40
+                    y: 40
+                    DragHandler {
+                        target: evernightWidget
+                    }
+                }
+            }
         }
     }
 }
