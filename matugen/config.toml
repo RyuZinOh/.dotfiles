@@ -19,10 +19,10 @@ input_path  = "~/.config/matugen/templates/monkeytype.json"
 output_path = "~/.cache/safalQuick/monkeytype.json"
 # post_hook = "~/.config/quickshell/Scripts/monkeymode.py"
 
-[templates.hyprland]
-input_path  = "~/.config/matugen/templates/general.conf"
-output_path = "~/.config/hypr/conf.d/general.conf"
-post_hook = "hyprctl reload"
+# [templates.hyprland]
+# input_path  = "~/.config/matugen/templates/general.conf"
+# output_path = "~/.config/hypr/conf.d/general.conf"
+# post_hook = "hyprctl reload"
 
 [templates.obsidian]
 input_path  = "~/.config/matugen/templates/obsidian.css"

@@ -41,6 +41,7 @@ Item {
         onTriggered: {
             contentWrapper.visible = false;
             searchInput.text = "";
+            searchInput.focus = false;
             folderModel.nameFilters = ["*.jpg", "*.jpeg"];
         }
     }
@@ -84,9 +85,7 @@ Item {
             anchors.fill: parent
             anchors.margins: 12
             visible: false
-            onVisibleChanged: if (visible) {
-                Qt.callLater(root.positionToCurrentWallpaper);
-            }
+            onVisibleChanged: visible ? Qt.callLater(root.positionToCurrentWallpaper) : (searchInput.focus = false)
 
             Column {
                 anchors.fill: parent
@@ -125,10 +124,8 @@ Item {
                             id: del
                             required property string fileName
                             required property int index
-
                             width: 320
                             height: 260
-
                             readonly property bool isCurrent: index === ListView.view.currentIndex
 
                             ClippingRectangle {
@@ -150,18 +147,24 @@ Item {
                                 }
 
                                 Rectangle {
-                                    visible: del.isCurrent
                                     anchors.fill: parent
                                     color: "black"
-                                    opacity: 0.7
+                                    opacity: del.isCurrent ? 0.7 : 0
+                                    Behavior on opacity {
+                                        NumberAnimation {
+                                            duration: 200
+                                        }
+                                    }
 
                                     Text {
                                         anchors.centerIn: parent
                                         text: del.fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ")
                                         color: "white"
-                                        font.pixelSize: 13
-                                        font.family: "CaskaydiaCove NF"
-                                        font.weight: Font.Medium
+                                        font {
+                                            pixelSize: 13
+                                            family: "CaskaydiaCove NF"
+                                            weight: Font.Medium
+                                        }
                                         elide: Text.ElideMiddle
                                         width: parent.width - 48
                                         horizontalAlignment: Text.AlignHCenter
@@ -204,17 +207,21 @@ Item {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: searchInput.text ? `No results for "${searchInput.text}"` : "No wallpapers found"
                             color: Theme.onSurface
-                            font.pixelSize: 15
-                            font.family: "CaskaydiaCove NF"
-                            font.weight: Font.Medium
+                            font {
+                                pixelSize: 15
+                                family: "CaskaydiaCove NF"
+                                weight: Font.Medium
+                            }
                         }
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: searchInput.text ? "Try a different search term" : "Add images to ~/Pictures/"
                             color: Theme.onSurfaceVariant
-                            font.pixelSize: 13
-                            font.family: "CaskaydiaCove NF"
+                            font {
+                                pixelSize: 13
+                                family: "CaskaydiaCove NF"
+                            }
                         }
                     }
                 }
@@ -229,38 +236,85 @@ Item {
                         spacing: 10
 
                         Rectangle {
-                            width: 320
+                            id: searchBox
                             height: 44
                             radius: 12
                             color: Theme.surfaceContainerHigh
                             border.width: 1
                             border.color: searchInput.activeFocus ? Theme.primaryColor : Theme.outlineVariant
+                            clip: true
+                            property bool expanded: searchHover.containsMouse || searchInput.activeFocus || searchInput.text !== ""
+
+                            states: State {
+                                when: searchBox.expanded
+                                PropertyChanges {
+                                    target: searchBox
+                                    width: 320
+                                }
+                            }
+                            width: 44
+                            Behavior on width {
+                                SpringAnimation {
+                                    spring: 4.5
+                                    damping: 0.6
+                                    epsilon: 0.5
+                                }
+                            }
+                            Behavior on border.color {
+                                ColorAnimation {
+                                    duration: 200
+                                }
+                            }
+
+                            MouseArea {
+                                id: searchHover
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                acceptedButtons: Qt.NoButton
+                                z: -1
+                            }
 
                             Row {
                                 anchors.fill: parent
-                                anchors.leftMargin: 18
-                                anchors.rightMargin: 18
-                                spacing: 14
+                                anchors.leftMargin: 13
+                                anchors.rightMargin: 13
+                                spacing: 10
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: "\uedfb"
-                                    font.pixelSize: 18
-                                    font.family: "CaskaydiaCove NF"
+                                    font {
+                                        pixelSize: 18
+                                        family: "CaskaydiaCove NF"
+                                    }
                                     color: searchInput.activeFocus ? Theme.primaryColor : Theme.onSurfaceVariant
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
                                 }
 
                                 TextInput {
                                     id: searchInput
                                     anchors.verticalCenter: parent.verticalCenter
-                                    width: parent.width - 60
+                                    width: searchBox.expanded ? (searchBox.width - 60 - (text !== "" ? 32 : 0)) : 0
                                     verticalAlignment: TextInput.AlignVCenter
                                     color: Theme.onSurface
-                                    font.pixelSize: 14
-                                    font.family: "CaskaydiaCove NF"
+                                    font {
+                                        pixelSize: 14
+                                        family: "CaskaydiaCove NF"
+                                    }
                                     clip: true
                                     selectByMouse: true
                                     selectionColor: Theme.primaryContainer
+                                    opacity: searchBox.expanded ? 1 : 0
+                                    Behavior on opacity {
+                                        NumberAnimation {
+                                            duration: 180
+                                            easing.type: Easing.OutCubic
+                                        }
+                                    }
 
                                     onTextChanged: {
                                         const q = text.toLowerCase().trim();
@@ -277,8 +331,10 @@ Item {
                                         text: `Search among ${folderModel.count} wallpapers`
                                         color: Theme.onSurfaceVariant
                                         visible: !searchInput.text && !searchInput.activeFocus
-                                        font.pixelSize: 13
-                                        font.family: "CaskaydiaCove NF"
+                                        font {
+                                            pixelSize: 13
+                                            family: "CaskaydiaCove NF"
+                                        }
                                     }
                                 }
 
@@ -287,14 +343,16 @@ Item {
                                     width: 22
                                     height: 22
                                     color: "transparent"
-                                    visible: searchInput.text !== ""
+                                    visible: searchInput.text !== "" && searchBox.expanded
 
                                     Text {
                                         anchors.centerIn: parent
                                         text: "×"
                                         color: Theme.primaryColor
-                                        font.pixelSize: 16
-                                        font.family: "CaskaydiaCove NF"
+                                        font {
+                                            pixelSize: 16
+                                            family: "CaskaydiaCove NF"
+                                        }
                                     }
 
                                     MouseArea {
@@ -354,9 +412,11 @@ Item {
                                             anchors.centerIn: parent
                                             text: Theme.getSchemeDisplayName(sb.modelData)
                                             color: sb.active ? Theme.onPrimaryContainer : Theme.onSurface
-                                            font.pixelSize: 12
-                                            font.family: "CaskaydiaCove NF"
-                                            font.weight: sb.active ? Font.Medium : Font.Normal
+                                            font {
+                                                pixelSize: 12
+                                                family: "CaskaydiaCove NF"
+                                                weight: sb.active ? Font.Medium : Font.Normal
+                                            }
                                             Behavior on color {
                                                 ColorAnimation {
                                                     duration: 200
@@ -378,6 +438,7 @@ Item {
                     }
 
                     Rectangle {
+                        id: refreshBtn
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         width: 44
@@ -400,11 +461,13 @@ Item {
                         }
                         Text {
                             anchors.centerIn: parent
-                            text: root.isRefreshing ? "\udb84\udf7f" : "\udb84\udf7f"
-                            font.pixelSize: 24
-                            font.family: "CaskaydiaCove NF"
+                            text: "\udb84\udf7f"
+                            font {
+                                pixelSize: 24
+                                family: "CaskaydiaCove NF"
+                            }
                             color: Theme.onSurface
-                            RotationAnimation on rotation {
+                            NumberAnimation on rotation {
                                 running: root.isRefreshing
                                 from: 0
                                 to: 360

@@ -12,7 +12,10 @@ Singleton {
     property var iconOverrides: ({
             "org.godotengine.ProjectManager": "godot",
             "codium": "vscodium",
-            "Postman": "postman"
+            "Postman": "postman",
+            "org.qt-project.qtcreator": "QtProject-qtcreator",
+            "org.kde.krita": "krita",
+            "com.pokemmo.PokeMMO": "pokemmo-launcher"
         })
 
     readonly property var model: ToplevelManager.toplevels

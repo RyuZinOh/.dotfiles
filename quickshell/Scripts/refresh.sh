@@ -2,6 +2,7 @@
 
 # cleansing the caches with refresh trigger
 CACHE_DIR="$HOME/.cache"
+HOME_DIR="$HOME"
 
 static_dirs=(
   "glycin"
@@ -25,3 +26,7 @@ done
 
 find "$CACHE_DIR" -maxdepth 1 -type f -name "event-*" -delete
 find "$CACHE_DIR" -maxdepth 1 -type d -name "qtshadercache*" -exec rm -rf {} +
+rm -f "$HOME_DIR/.zcompdump-archlinux-5.9"
+rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.zwc"
+rm -rf "$HOME_DIR/.pki"
+rm -f "$HOME_DIR/.zsh_history"
