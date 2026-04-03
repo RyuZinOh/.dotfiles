@@ -20,7 +20,7 @@ Item {
     }
     Kraken {
         id: eventsAdapter
-        filePath: "/home/safal726/.cache/safalQuick/warsa.json"
+        filePath: "/home/safalski/.cache/safalQuick/warsa.json"
     }
     function getEventForDate(month, day) {
         var key = month + "-" + day;

@@ -8,7 +8,7 @@ Item {
 
     property real normalizedValue: 0
 
-    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Chasca/"
+    property string spriteCache: "/home/safalski/.cache/safalQuick/nightsoul/Chasca/"
 
     Component.onCompleted: {
         // console.log("Chasca variant created");

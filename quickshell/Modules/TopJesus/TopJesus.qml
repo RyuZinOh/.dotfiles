@@ -304,7 +304,7 @@ Item {
                 }
 
                 DayWidget {
-                    font.family: "0xProto Nerd Font"
+                    font.family: "CaskaydiaCove NF"
                     font.pixelSize: 16
                     font.bold: true
                     color: Theme.onSurface

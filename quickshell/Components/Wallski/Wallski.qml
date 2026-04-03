@@ -18,8 +18,8 @@ Item {
     property bool isHovered: false
     property bool isRefreshing: false
 
-    readonly property string thumbsPath: "file:///home/safal726/thumbs/"
-    readonly property string picturesPath: "/home/safal726/Pictures/"
+    readonly property string thumbsPath: "file:///home/safalski/thumbs/"
+    readonly property string picturesPath: "/home/safalski/Pictures/"
 
     signal wallpaperChanged(string path)
 
@@ -48,7 +48,7 @@ Item {
 
     Process {
         id: bamProcess
-        command: ["/bin/bash", "/home/safal726/.dotfiles/quickshell/Scripts/bam.sh"]
+        command: ["/bin/bash", "/home/safalski/.dotfiles/quickshell/Scripts/bam.sh"]
         running: false
         onExited: {
             root.isRefreshing = false;
@@ -67,7 +67,7 @@ Item {
     PopoutShape {
         id: content
         width: 1600
-        height: root.isHovered ? 364 : 0.1
+        height: root.isHovered ? 364: 0.1
         alignment: 4
         radius: 20
         color: Theme.surfaceContainerLow
@@ -83,17 +83,22 @@ Item {
         Item {
             id: contentWrapper
             anchors.fill: parent
-            anchors.margins: 12
+            anchors.topMargin: 8
+            anchors.bottomMargin: 10
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
             visible: false
             onVisibleChanged: visible ? Qt.callLater(root.positionToCurrentWallpaper) : (searchInput.focus = false)
 
             Column {
                 anchors.fill: parent
-                spacing: 16
+                spacing: 10
 
-                Item {
+                ClippingRectangle {
                     width: parent.width
                     height: 260
+                    radius: 14
+                    color: Theme.surfaceContainerLow
 
                     ListView {
                         id: listView
@@ -151,9 +156,7 @@ Item {
                                     color: "black"
                                     opacity: del.isCurrent ? 0.7 : 0
                                     Behavior on opacity {
-                                        NumberAnimation {
-                                            duration: 200
-                                        }
+                                        NumberAnimation { duration: 200 }
                                     }
 
                                     Text {
@@ -187,8 +190,7 @@ Item {
                         acceptedButtons: Qt.NoButton
                         property real acc: 0
                         onWheel: wheel => {
-                            if (wheel.pixelDelta.x === 0)
-                                return;
+                            if (wheel.pixelDelta.x === 0) return;
                             acc -= wheel.pixelDelta.x;
                             if (Math.abs(acc) >= 50) {
                                 acc > 0 ? listView.incrementCurrentIndex() : listView.decrementCurrentIndex();
@@ -247,23 +249,14 @@ Item {
 
                             states: State {
                                 when: searchBox.expanded
-                                PropertyChanges {
-                                    target: searchBox
-                                    width: 320
-                                }
+                                PropertyChanges { target: searchBox; width: 320 }
                             }
                             width: 44
                             Behavior on width {
-                                SpringAnimation {
-                                    spring: 4.5
-                                    damping: 0.6
-                                    epsilon: 0.5
-                                }
+                                SpringAnimation { spring: 4.5; damping: 0.6; epsilon: 0.5 }
                             }
                             Behavior on border.color {
-                                ColorAnimation {
-                                    duration: 200
-                                }
+                                ColorAnimation { duration: 200 }
                             }
 
                             MouseArea {
@@ -283,16 +276,9 @@ Item {
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: "\uedfb"
-                                    font {
-                                        pixelSize: 18
-                                        family: "CaskaydiaCove NF"
-                                    }
+                                    font { pixelSize: 18; family: "CaskaydiaCove NF" }
                                     color: searchInput.activeFocus ? Theme.primaryColor : Theme.onSurfaceVariant
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
+                                    Behavior on color { ColorAnimation { duration: 200 } }
                                 }
 
                                 TextInput {
@@ -301,19 +287,13 @@ Item {
                                     width: searchBox.expanded ? (searchBox.width - 60 - (text !== "" ? 32 : 0)) : 0
                                     verticalAlignment: TextInput.AlignVCenter
                                     color: Theme.onSurface
-                                    font {
-                                        pixelSize: 14
-                                        family: "CaskaydiaCove NF"
-                                    }
+                                    font { pixelSize: 14; family: "CaskaydiaCove NF" }
                                     clip: true
                                     selectByMouse: true
                                     selectionColor: Theme.primaryContainer
                                     opacity: searchBox.expanded ? 1 : 0
                                     Behavior on opacity {
-                                        NumberAnimation {
-                                            duration: 180
-                                            easing.type: Easing.OutCubic
-                                        }
+                                        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
                                     }
 
                                     onTextChanged: {
@@ -331,10 +311,7 @@ Item {
                                         text: `Search among ${folderModel.count} wallpapers`
                                         color: Theme.onSurfaceVariant
                                         visible: !searchInput.text && !searchInput.activeFocus
-                                        font {
-                                            pixelSize: 13
-                                            family: "CaskaydiaCove NF"
-                                        }
+                                        font { pixelSize: 13; family: "CaskaydiaCove NF" }
                                     }
                                 }
 
@@ -349,10 +326,7 @@ Item {
                                         anchors.centerIn: parent
                                         text: "×"
                                         color: Theme.primaryColor
-                                        font {
-                                            pixelSize: 16
-                                            family: "CaskaydiaCove NF"
-                                        }
+                                        font { pixelSize: 16; family: "CaskaydiaCove NF" }
                                     }
 
                                     MouseArea {
@@ -385,10 +359,7 @@ Item {
                                         height: 44
                                         width: isHov ? bw + 14 : isNeighbor ? bw - 7 : bw
                                         Behavior on width {
-                                            NumberAnimation {
-                                                duration: 220
-                                                easing.type: Easing.OutCubic
-                                            }
+                                            NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
                                         }
                                         topLeftRadius: index === 0 ? 22 : 6
                                         bottomLeftRadius: index === 0 ? 22 : 6
@@ -397,16 +368,8 @@ Item {
                                         color: active ? Theme.primaryContainer : isHov ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
                                         border.width: 1
                                         border.color: active ? Theme.primaryColor : Theme.outlineVariant
-                                        Behavior on color {
-                                            ColorAnimation {
-                                                duration: 200
-                                            }
-                                        }
-                                        Behavior on border.color {
-                                            ColorAnimation {
-                                                duration: 200
-                                            }
-                                        }
+                                        Behavior on color { ColorAnimation { duration: 200 } }
+                                        Behavior on border.color { ColorAnimation { duration: 200 } }
                                         Text {
                                             id: sbTxt
                                             anchors.centerIn: parent
@@ -417,11 +380,7 @@ Item {
                                                 family: "CaskaydiaCove NF"
                                                 weight: sb.active ? Font.Medium : Font.Normal
                                             }
-                                            Behavior on color {
-                                                ColorAnimation {
-                                                    duration: 200
-                                                }
-                                            }
+                                            Behavior on color { ColorAnimation { duration: 200 } }
                                         }
                                         MouseArea {
                                             anchors.fill: parent
@@ -448,29 +407,16 @@ Item {
                         border.width: 1
                         border.color: Theme.outlineVariant
                         enabled: !root.isRefreshing
-                        Behavior on radius {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
+                        Behavior on radius { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                        Behavior on color { ColorAnimation { duration: 200 } }
                         Text {
                             anchors.centerIn: parent
                             text: "\udb84\udf7f"
-                            font {
-                                pixelSize: 24
-                                family: "CaskaydiaCove NF"
-                            }
+                            font { pixelSize: 24; family: "CaskaydiaCove NF" }
                             color: Theme.onSurface
                             NumberAnimation on rotation {
                                 running: root.isRefreshing
-                                from: 0
-                                to: 360
+                                from: 0; to: 360
                                 duration: 1000
                                 loops: Animation.Infinite
                             }
@@ -492,8 +438,7 @@ Item {
     }
 
     function positionToCurrentWallpaper() {
-        if (!WallpaperConfig.currentWallpaper)
-            return;
+        if (!WallpaperConfig.currentWallpaper) return;
         const cur = WallpaperConfig.currentWallpaper.split('/').pop();
         for (let i = 0; i < folderModel.count; i++) {
             if (folderModel.get(i, "fileName") === cur) {
@@ -510,7 +455,7 @@ Item {
         Theme.thumbPath = root.thumbsPath + fn;
         Theme.saveTheme();
         Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fp]);
-        Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p /home/safal726/.cache/safalQuick/ && cp "${fp}" /home/safal726/.cache/safalQuick/bg.jpg`]);
+        Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p /home/safalski/.cache/safalQuick/ && cp "${fp}" /home/safalski/.cache/safalQuick/bg.jpg`]);
         Quickshell.execDetached(["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", fn.replace(/\.[^/.]+$/, "").replace(/_/g, " ")]);
         root.wallpaperChanged(fp);
     }

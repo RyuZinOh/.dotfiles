@@ -8,7 +8,7 @@ Item {
     y: -120
 
     property real normalizedValue: 0
-    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Skirk"
+    property string spriteCache: "/home/safalski/.cache/safalQuick/nightsoul/Skirk"
 
     readonly property int zBarBg: 1
     readonly property int zBarFillOutline: 2

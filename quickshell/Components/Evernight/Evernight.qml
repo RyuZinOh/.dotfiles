@@ -13,7 +13,7 @@ Item {
     property MprisPlayer player: null
     property bool componentActive: true
 
-    readonly property string spritePath: "/home/safal726/.cache/safalQuick/music/"
+    readonly property string spritePath: "/home/safalski/.cache/safalQuick/music/"
     readonly property string jhonnyDir: spritePath + "jhonny/"
     readonly property string murasakiDir: spritePath + "murasaki/"
     readonly property string devilDir: spritePath + "devil/"

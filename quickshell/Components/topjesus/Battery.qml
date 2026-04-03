@@ -38,7 +38,7 @@ Row {
                     return Theme.onSurface;
                 }
 
-                property string displayText: isCharging ? "󱐋" : `${percentInt}%`
+                property string displayText: isCharging ? "󱐋" : `${percentInt}`
             }
 
             Item {
@@ -93,7 +93,7 @@ Row {
                     Text {
                         anchors.centerIn: parent
                         text: batteryData.displayText
-                        font.family: "0xProto Nerd Font"
+                        font.family: "CaskaydiaCove NF"
                         font.pixelSize: batteryData.isCharging ? 14 : 9
                         font.bold: true
                         color: batteryData.percentage > 0.5 ? Theme.backgroundColor : batteryData.accentColor

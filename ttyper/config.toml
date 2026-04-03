@@ -1,5 +1,5 @@
 # the language used when one is not manually specified
-default_language = "english-pirate"
+default_language = "english1000"
 
 [theme]
 # default style (this includes empty cells)

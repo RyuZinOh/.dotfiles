@@ -7,7 +7,7 @@ Item {
     height: 300
 
     property real normalizedValue: 0
-    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/Ororon"
+    property string spriteCache: "/home/safalski/.cache/safalQuick/nightsoul/Ororon"
     Component.onCompleted: {
         console.log("Ororon variant created");
     }

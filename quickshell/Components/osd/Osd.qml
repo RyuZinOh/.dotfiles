@@ -11,7 +11,7 @@ Item {
     height: 600
     visible: OsdConfig.isVisible
 
-    property string spriteCache: "/home/safal726/.cache/safalQuick/nightsoul/" + OsdConfig.currentCharacterName
+    property string spriteCache: "/home/safalski/.cache/safalQuick/nightsoul/" + OsdConfig.currentCharacterName
     readonly property int segmentCount: 15
     property real normalizedValue: 0
     readonly property int filledSegments: Math.floor(normalizedValue * segmentCount)

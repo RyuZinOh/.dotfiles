@@ -193,7 +193,7 @@ Item {
                         anchors.centerIn: parent
                         text: chip.modelData.icon || ""
                         font.pixelSize: 22
-                        font.family: "0xProto Nerd Font"
+                        font.family: "CaskaydiaCove NF"
                         color: {
                             if (chip.hovered)
                                 return chip.running ? Theme.onPrimaryContainer : Theme.onErrorContainer;

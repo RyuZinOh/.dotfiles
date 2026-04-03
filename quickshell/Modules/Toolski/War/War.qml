@@ -10,7 +10,7 @@ Item {
     width: 360
     implicitHeight: mainCol.implicitHeight
 
-    property string warFile: "/home/safal726/.cache/safalQuick/todaywarpick.json"
+    property string warFile: "/home/safalski/.cache/safalQuick/todaywarpick.json"
     property var war: ({})
     property bool active: false
     signal warLoaded
