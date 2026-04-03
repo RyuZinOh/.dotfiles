@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SOURCE_DIR="/home/safal726/Pictures"
-THUMBS_DIR="/home/safal726/thumbs"
+SOURCE_DIR="/home/safalski/Pictures"
+THUMBS_DIR="/home/safalski/thumbs"
 THUMB_SIZE="320x260"
 
 # Colors
