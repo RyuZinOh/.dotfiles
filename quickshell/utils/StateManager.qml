@@ -10,83 +10,86 @@ Singleton {
     readonly property string statePath: Quickshell.env("HOME") + "/.cache/safalQuick/ipcstate.json"
     property var states: ({})
     property bool loaded: false
-    Component.onCompleted: {
-        loadStates();
-    }
+
+    Component.onCompleted: loadStates()
+
     function get(key, defaultValue) {
         return loaded ? (states[key] !== undefined ? states[key] : defaultValue) : defaultValue;
     }
+
     function set(key, value) {
         states[key] = value;
         statesChanged();
         saveStates();
     }
+
     function loadStates() {
-        const proc = loadProcess.createObject(root);
-        proc.start();
+        loadProcess.createObject(root, { running: true });
     }
 
     property Component loadProcess: Component {
         Process {
-            command: ["cat", root.statePath]
-            running: false
+            id: loadProc
+
             property string output: ""
+            property var stateRoot: root
+
+            command: ["cat", stateRoot.statePath]
+            running: false
 
             stdout: SplitParser {
-                onRead: data => output += data
+                onRead: data => loadProc.output += data
             }
 
-            onExited: (code, status) => {
-                if (code === 0) {
-                    const trimmed = output.trim();
+            onRunningChanged: {
+                if (!running) {
+                    const trimmed = loadProc.output.trim();
                     if (trimmed) {
                         try {
-                            root.states = JSON.parse(trimmed);
+                            stateRoot.states = JSON.parse(trimmed);
                         } catch (e) {
                             console.warn("Failed to parse state JSON:", e);
-                            root.states = {};
+                            stateRoot.states = {};
                         }
                     }
+                    stateRoot.loaded = true;
+                    stateRoot.statesChanged();
+                    loadProc.destroy();
                 }
-                root.loaded = true;
-                root.statesChanged();
-                destroy();
-            }
-
-            function start() {
-                running = true;
             }
         }
     }
+
     function saveStates() {
         const jsonStr = JSON.stringify(states, null, 2);
         const escapedJson = jsonStr.replace(/'/g, "'\\''");
-
-        const proc = saveProcess.createObject(root, {
-            jsonContent: escapedJson
+        saveProcess.createObject(root, {
+            jsonContent: escapedJson,
+            running: true
         });
-        proc.start();
     }
 
     property Component saveProcess: Component {
         Process {
+            id: saveProc
+
             property string jsonContent: ""
-            command: ["bash", "-c", `mkdir -p "$(dirname '${root.statePath}')" && echo '${jsonContent}' > '${root.statePath}'`]
+            property var stateRoot: root
+
+            command: ["bash", "-c", `mkdir -p "$(dirname '${stateRoot.statePath}')" && echo '${jsonContent}' > '${stateRoot.statePath}'`]
             running: false
 
             stderr: SplitParser {
                 onRead: data => {
-                    if (data.trim()) {
+                    if (data.trim())
                         console.warn("StateManager save error:", data);
-                    }
                 }
             }
 
-            onExited: (code, status) => {
-                destroy();
-            }
-            function start() {
-                running = true;
+            onRunningChanged: {
+              if (!running){
+                    saveProc.destroy();
+              }
             }
         }
     }

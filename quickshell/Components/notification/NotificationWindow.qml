@@ -127,10 +127,8 @@ Item {
                 visible: tile.isTop
                 clip: true
 
-                property real targetWidth: 0
-                Binding on targetWidth {
-                    value: squiggleTrack.width * tile.progress
-                }
+                property real targetWidth: squiggleTrack.width * tile.progress
+
                 Behavior on targetWidth {
                     NumberAnimation {
                         duration: NotificationConfig.progressInterval
@@ -288,7 +286,14 @@ Item {
                 exiting = true;
         }
 
-        onIsTopChanged: isTop ? (progress = 0, autoClose.restart()) : autoClose.stop()
+        onIsTopChanged: {
+            if (isTop) {
+                tile.progress = 0;
+                autoClose.restart();
+            } else {
+                autoClose.stop();
+            }
+        }
 
         Timer {
             id: readyTimer

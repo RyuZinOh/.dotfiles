@@ -28,9 +28,9 @@ Scope {
                 id: hyperixonLayer
 
                 /*jan 1-2026 => at the new year I noticed a shit*/
-                Component.onCompleted: {
-                    console.log("ExclusionMode.Ignore value:", ExclusionMode.Ignore);
-                }
+                // Component.onCompleted: {
+                    // console.log("ExclusionMode.Ignore value:", ExclusionMode.Ignore);
+                // }
                 screen: screenScope.modelData
                 layer: WlrLayer.Top // ok Overlay wasnt the deal breaker here, I was thinking ass.
                 keyboardFocus: WlrKeyboardFocus.OnDemand

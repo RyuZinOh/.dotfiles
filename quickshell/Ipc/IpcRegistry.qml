@@ -1,26 +1,45 @@
 import QtQuick
 
 Item {
+    // Component.onCompleted: {
+    //     console.log("IPC Registry initialized");
+    // }
+    //     id: poketwoIpc
+    // }
+
     id: root
+
     LockIpc {
         id: lockIpc
     }
+
     EvernightIpc {
         id: evernightIpc
     }
+
+    OmnitrixIpc {
+        id: omnitrixIpc
+    }
+
+    ArtiqaIpc {
+        id: artiqaIpc
+    }
     // PoketwoIpc {
-    //     id: poketwoIpc
-    // }
+
+    DancerIpc {
+        id: dancerIpc
+    }
+
     WowIpc {
         id: wowIpc
     }
+
     WallpaperIpc {
         id: wallpaperIpc
     }
+
     OsdIpc {
         id: osdIpc
     }
-    Component.onCompleted: {
-        console.log("IPC Registry initialized");
-    }
+
 }

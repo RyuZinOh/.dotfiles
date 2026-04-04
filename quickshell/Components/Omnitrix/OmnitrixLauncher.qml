@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Qt.labs.folderlistmodel
 import Qt5Compat.GraphicalEffects
 import QtMultimedia
@@ -39,7 +40,7 @@ Item {
             FolderListModel {
                 id: pfpModel
 
-                folder: root.pfpsPath
+                folder: root.pfpsPath          // 1
                 nameFilters: ["*.jpg", "*.jpeg", "*.png"]
                 showDirs: false
             }
@@ -163,6 +164,8 @@ Item {
                         model: 4
 
                         delegate: Item {
+                            required property int index
+
                             x: omnitrix.width / 2 + Math.cos((index * 90 - 90) * Math.PI / 180) * 230 - 30
                             y: omnitrix.height / 2 + Math.sin((index * 90 - 90) * Math.PI / 180) * 230 - 12.5
                             width: 60
@@ -171,17 +174,17 @@ Item {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: root.outerRingSlotBg
+                                color: root.outerRingSlotBg          // 2
                                 radius: 5
                                 antialiasing: true
 
                                 border {
-                                    color: root.outerRingSlotBorder
+                                    color: root.outerRingSlotBorder  // 3
                                     width: 2
                                 }
 
                                 Rectangle {
-                                    color: root.outerRingSlotFill
+                                    color: root.outerRingSlotFill    // 4
                                     radius: 3
                                     antialiasing: true
 
@@ -253,10 +256,10 @@ Item {
                 WatchRing {
                     implicitWidth: 430
                     implicitHeight: 430
-                    color: root.watchBodyOuter
+                    color: root.watchBodyOuter          // 5
 
                     border {
-                        color: root.watchBodyOuterBorder
+                        color: root.watchBodyOuterBorder // 6
                         width: 1
                     }
 
@@ -265,10 +268,10 @@ Item {
                 WatchRing {
                     implicitWidth: 420
                     implicitHeight: 420
-                    color: root.watchBodyMiddle
+                    color: root.watchBodyMiddle          // 7
 
                     border {
-                        color: root.watchBodyMiddleBorder
+                        color: root.watchBodyMiddleBorder // 8
                         width: 1
                     }
 
@@ -277,10 +280,10 @@ Item {
                 WatchRing {
                     implicitWidth: 400
                     implicitHeight: 400
-                    color: root.watchBodyInner
+                    color: root.watchBodyInner          // 9
 
                     border {
-                        color: root.watchBodyInnerBorder
+                        color: root.watchBodyInnerBorder // 10
                         width: 1
                     }
 
@@ -345,12 +348,16 @@ Item {
                                     }]
 
                                     Shape {
+                                        id: hourglassShape
+
+                                        required property var modelData
+
                                         anchors.fill: parent
                                         antialiasing: true
                                         smooth: true
                                         transform: [
                                             Translate {
-                                                x: modelData.tx * omnitrix.morphProgress * hourglassContainer.width / 2
+                                                x: hourglassShape.modelData.tx * omnitrix.morphProgress * hourglassContainer.width / 2
                                             },
                                             Scale {
                                                 origin.x: hourglassContainer.width / 2
@@ -363,8 +370,8 @@ Item {
                                         ShapePath {
                                             fillColor: root.hourglassTriangle
                                             strokeColor: "transparent"
-                                            startX: modelData.sx * hourglassContainer.width
-                                            startY: modelData.sy * hourglassContainer.height
+                                            startX: hourglassShape.modelData.sx * hourglassContainer.width
+                                            startY: hourglassShape.modelData.sy * hourglassContainer.height
 
                                             PathLine {
                                                 x: hourglassContainer.width / 2
@@ -372,13 +379,13 @@ Item {
                                             }
 
                                             PathLine {
-                                                x: modelData.ex * hourglassContainer.width
-                                                y: modelData.ey * hourglassContainer.height
+                                                x: hourglassShape.modelData.ex * hourglassContainer.width
+                                                y: hourglassShape.modelData.ey * hourglassContainer.height
                                             }
 
                                             PathLine {
-                                                x: modelData.sx * hourglassContainer.width
-                                                y: modelData.sy * hourglassContainer.height
+                                                x: hourglassShape.modelData.sx * hourglassContainer.width
+                                                y: hourglassShape.modelData.sy * hourglassContainer.height
                                             }
 
                                         }
@@ -492,5 +499,4 @@ Item {
         }
 
     }
-
 }

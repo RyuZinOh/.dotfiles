@@ -99,7 +99,7 @@ vim.lsp.config("pyright", {
 
 -- qml [for quickshelling]
 vim.lsp.config("qmlls", {
-  cmd = { "qmlls", "-E" },
+  cmd = { "qmlls6", "" },
   filetypes = { "qml", "qmljs", "qtquick" }, --activate on this
   root_dir = vim.fs.root(0, { "*.qmlproject", ".git", "qmldir" }),
 })
