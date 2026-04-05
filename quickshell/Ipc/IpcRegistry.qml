@@ -13,6 +13,10 @@ Item {
         id: lockIpc
     }
 
+    ClipsyIpc {
+        id: clipsyIpc
+    }
+
     EvernightIpc {
         id: evernightIpc
     }

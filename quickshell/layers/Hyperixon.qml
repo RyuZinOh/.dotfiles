@@ -11,6 +11,7 @@ import qs.Components.Omnitrix
 import qs.Components.Artiqa
 import qs.Components.Wow
 import qs.Modules.Hut
+import qs.Components.Clipsy
 import qs.Modules.Toolski
 import qs.Modules.TopJesus
 import qs.Modules.TopJesus.Callgorl
@@ -134,6 +135,14 @@ Scope {
                         y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
                         width: WowConfig.isActive ? wowRef.width : 1
                         height: WowConfig.isActive ? wowRef.height : 1
+                      }
+
+                    /*Clipsy*/
+                    Region {
+                        x: (hyperixonLayer.width  / 2) - 250
+                        y: (hyperixonLayer.height / 2) - 250
+                        width:  ClipsyConfig.isActive ? 500 : 1
+                        height: ClipsyConfig.isActive ? 500 : 1
                     }
                 }
 
@@ -156,7 +165,22 @@ Scope {
                         anchors.top: parent.top
                         parentScreen: hyperixonLayer.screen
                     }
+                    //clipsy clipboard
+                    //
+Loader {
+    id: clipsyLoader
+    anchors.fill: parent
+    active: false
+    sourceComponent: Clipsy {}
 
+    Connections {
+        target: ClipsyConfig
+        function onShowClipsy() { clipsyLoader.active = true; }
+        function onHideClipsy() { clipsyLoader.active=false }
+    }
+}
+
+  
                     //notification [Also we can implement our own layershell overlay for this one but nah...]
                     NotificationWindow {
                         id: notifWindow

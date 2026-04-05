@@ -30,3 +30,4 @@ rm -f "$HOME_DIR/.zcompdump-archlinux-5.9"
 rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.zwc"
 rm -rf "$HOME_DIR/.pki"
 rm -f "$HOME_DIR/.zsh_history"
+find /tmp -mindepth 1 -user "$USER" -exec rm -rf {} + 2>/dev/null
