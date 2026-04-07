@@ -94,7 +94,7 @@ Row {
                         anchors.centerIn: parent
                         text: batteryData.displayText
                         font.family: "CaskaydiaCove NF"
-                        font.pixelSize: batteryData.isCharging ? 14 : 9
+                        font.pixelSize: batteryData.isCharging ? 16 : 12
                         font.bold: true
                         color: batteryData.percentage > 0.5 ? Theme.backgroundColor : batteryData.accentColor
 

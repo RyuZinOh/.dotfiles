@@ -187,8 +187,10 @@ Loader {
                         anchors {
                             right: parent.right
                             top: parent.top
+                            rightMargin: 4
+                            topMargin: 4
                         }
-                    }
+                   }
                     //toolski
                     Toolski {
                         id: toolskiRef

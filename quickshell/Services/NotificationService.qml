@@ -1,46 +1,36 @@
 pragma ComponentBehavior: Bound
-pragma Singleton
 import QtQuick
 import Quickshell.Services.Notifications
+pragma Singleton
 
 QtObject {
     id: root
 
+    property var queue: []
+    property bool processing: false
+    property NotificationServer server
+
     signal notificationReady(var n)
     signal dismissNotification(int id)
 
-    property var queue: []
-    property bool processing: false
-
-    property NotificationServer server: NotificationServer {
-        actionIconsSupported: true
-        actionsSupported: true
-        bodyHyperlinksSupported: true
-        bodyImagesSupported: true
-        bodyMarkupSupported: true
-        bodySupported: true
-        imageSupported: true
-        keepOnReload: false
-        persistenceSupported: true
-        onNotification: n => root.enqueue(n)
-    }
-
     function enqueue(n) {
         queue.push({
-            id: n.id,
-            summary: n.summary || "Notification",
-            body: n.body || "",
-            appName: n.appName || ""
+            "id": n.id,
+            "summary": n.summary || "Notification",
+            "body": n.body || "",
+            "appName": n.appName || "",
+            "image": (typeof n.image === "string" && n.image !== "") ? n.image : ((typeof n.appIcon === "string") ? n.appIcon : ""),
+            "appIcon": ""
         });
-        if (!processing) {
+        if (!processing)
             processNext();
-        }
+
     }
 
     function processNext() {
         if (queue.length === 0) {
             processing = false;
-            return;
+            return ;
         }
         processing = true;
         root.notificationReady(queue.shift());
@@ -53,4 +43,20 @@ QtObject {
     function dismiss(id) {
         root.dismissNotification(id);
     }
+
+    server: NotificationServer {
+        actionIconsSupported: true
+        actionsSupported: true
+        bodyHyperlinksSupported: true
+        bodyImagesSupported: true
+        bodyMarkupSupported: true
+        bodySupported: true
+        imageSupported: true
+        keepOnReload: false
+        persistenceSupported: true
+        onNotification: (n) => {
+            return root.enqueue(n);
+        }
+    }
+
 }

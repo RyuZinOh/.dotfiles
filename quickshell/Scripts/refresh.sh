@@ -16,6 +16,7 @@ static_dirs=(
   "mesa_shader_cache"
   "QtProject"
   "quickshell"
+  "paru"
 )
 
 for dir in "${static_dirs[@]}"; do
@@ -30,4 +31,7 @@ rm -f "$HOME_DIR/.zcompdump-archlinux-5.9"
 rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.zwc"
 rm -rf "$HOME_DIR/.pki"
 rm -f "$HOME_DIR/.zsh_history"
+rm -f "$HOME_DIR/.bash_history"
+rm -f "$HOME_DIR/.mariadb_history"
+rm -f "$HOME_DIR/.wget-hsts"
 find /tmp -mindepth 1 -user "$USER" -exec rm -rf {} + 2>/dev/null

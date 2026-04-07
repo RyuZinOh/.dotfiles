@@ -95,7 +95,7 @@ Item {
                 function copyToCache() {
                     copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${currentFilePath().replace("file://", "")}" "/home/safalski/.cache/safalQuick/pfp.jpeg"`];
                     copyPfpProcess.running = true;
-                    notifyProcess.command = ["notify-send", "-a", "Azmuth", "-i", "/home/safalski/pfps/azmuth.svg", "Lockscreen Applied", currentFileName()];
+                    notifyProcess.command = ["notify-send", "-a", "Azmuth", "-i", "/home/safalski/pfps/commander/OfficialAzmuth.png", "Lockscreen Applied", currentFileName()];
                     notifyProcess.running = true;
                 }
 
