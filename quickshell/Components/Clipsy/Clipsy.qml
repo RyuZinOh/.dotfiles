@@ -9,6 +9,7 @@ import qs.utils
 Item {
     id: root
 
+    readonly property real currentPanelHeight: panel.height
     readonly property int panelSize: 500
     readonly property int panelMinHeight: 120
     readonly property int itemH: 53
@@ -65,18 +66,14 @@ Item {
         onWiped: ClipsyConfig.dismiss()
     }
 
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.ArrowCursor
-        onClicked: ClipsyConfig.dismiss()
-    }
-
     ClippingRectangle {
         id: panel
 
         property real scaleY: 1
 
-        anchors.centerIn: parent
+        anchors.centerIn: parent 
+        onHeightChanged: ClipsyConfig.panelHeight = height 
+        Component.onCompleted: ClipsyConfig.panelHeight = root.contentHeight()
         width: root.panelSize
         height: root.contentHeight()
         radius: root.radius
