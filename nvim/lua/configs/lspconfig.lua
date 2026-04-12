@@ -36,50 +36,50 @@ vim.lsp.config("clangd", {
 })
 
 -- ##java configuration
-vim.lsp.config("jdtls", {
-  cmd = {
-    "jdtls",
-    "--jvm-arg=-javaagent:" .. vim.fn.expand "~/.local/share/lombok.jar", --  also fix lsp warnings for lomboks usage
-  },
-  filetypes = { "java" },
-  root_dir = vim.fs.root(0, { "pom.xml", "build.gradle", "mvnw", ".git" }),
-  settings = {
-    java = {
-      eclipse = {
-        downloadSources = true,
-      },
-      maven = {
-        downloadSources = true,
-      },
-      implementationCodeLens = {
-        enabled = true,
-      },
-      referenceCodeLens = {
-        enabled = true,
-      },
-      format = {
-        enabled = true,
-      },
-    },
-  },
-})
+-- vim.lsp.config("jdtls", {
+--   cmd = {
+--     "jdtls",
+--     "--jvm-arg=-javaagent:" .. vim.fn.expand "~/.local/share/lombok.jar", --  also fix lsp warnings for lomboks usage
+--   },
+--   filetypes = { "java" },
+--   root_dir = vim.fs.root(0, { "pom.xml", "build.gradle", "mvnw", ".git" }),
+--   settings = {
+--     java = {
+--       eclipse = {
+--         downloadSources = true,
+--       },
+--       maven = {
+--         downloadSources = true,
+--       },
+--       implementationCodeLens = {
+--         enabled = true,
+--       },
+--       referenceCodeLens = {
+--         enabled = true,
+--       },
+--       format = {
+--         enabled = true,
+--       },
+--     },
+--   },
+-- })
 
 -- Lombok hot auto reload problem fix- Recompiling
-vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = "*.java",
-  callback = function()
-    vim.notify("Recompiling...", vim.log.levels.INFO)
-    vim.fn.jobstart("./mvnw compile", {
-      on_exit = function(_, code)
-        if code == 0 then
-          vim.notify("Compilation successful!", vim.log.levels.INFO)
-        else
-          vim.notify("Compilation failed!", vim.log.levels.ERROR)
-        end
-      end,
-    })
-  end,
-})
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--   pattern = "*.java",
+--   callback = function()
+--     vim.notify("Recompiling...", vim.log.levels.INFO)
+--     vim.fn.jobstart("./mvnw compile", {
+--       on_exit = function(_, code)
+--         if code == 0 then
+--           vim.notify("Compilation successful!", vim.log.levels.INFO)
+--         else
+--           vim.notify("Compilation failed!", vim.log.levels.ERROR)
+--         end
+--       end,
+--     })
+--   end,
+-- })
 
 -- ##python
 vim.lsp.config("pyright", {
@@ -134,7 +134,7 @@ vim.lsp.config("bashls", {
 
 vim.lsp.enable "rust_analyzer"
 vim.lsp.enable "clangd"
-vim.lsp.enable "jdtls"
+-- vim.lsp.enable "jdtls"
 vim.lsp.enable "pyright"
 vim.lsp.enable "qmlls"
 vim.lsp.enable "yamlls"

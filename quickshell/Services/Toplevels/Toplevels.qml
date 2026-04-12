@@ -15,7 +15,8 @@ Singleton {
         "Postman": "postman",
         "org.qt-project.qtcreator": "QtProject-qtcreator",
         "org.kde.krita": "krita",
-        "com.pokemmo.PokeMMO": "pokemmo-launcher"
+        "com.pokemmo.PokeMMO": "pokemmo-launcher",
+        "Waydroid": "waydroid"
     })
     readonly property var model: ToplevelManager.toplevels
     readonly property var enriched: {

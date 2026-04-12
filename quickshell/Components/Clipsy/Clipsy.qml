@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 import Clipsh
 import QtQuick
 import QtQuick.Controls
-import Quickshell.Widgets
 import qs.Services.Theme
 import qs.utils
 
@@ -27,6 +26,7 @@ Item {
     readonly property color wipeIcon: Theme.onSurfaceVariant
     readonly property color wipeIconHover: Theme.onErrorContainer
     readonly property color emptyText: Theme.onSurfaceVariant
+    readonly property string font: "CaskaydiaCove NF"
 
     function contentHeight() {
         const cnt = clipsh.history.filter((e) => {
@@ -66,18 +66,19 @@ Item {
         onWiped: ClipsyConfig.dismiss()
     }
 
-    ClippingRectangle {
+    Rectangle {
         id: panel
 
         property real scaleY: 1
 
-        anchors.centerIn: parent 
-        onHeightChanged: ClipsyConfig.panelHeight = height 
+        anchors.centerIn: parent
+        onHeightChanged: ClipsyConfig.panelHeight = height
         Component.onCompleted: ClipsyConfig.panelHeight = root.contentHeight()
         width: root.panelSize
         height: root.contentHeight()
         radius: root.radius
         color: root.panelBg
+        clip: true
 
         SequentialAnimation {
             id: openAnim
@@ -111,7 +112,7 @@ Item {
             anchors.rightMargin: 12
             spacing: 8
 
-            ClippingRectangle {
+            Rectangle {
                 id: searchBox
 
                 width: 0
@@ -120,6 +121,7 @@ Item {
                 color: root.inputBg
                 border.color: searchInput.activeFocus ? root.inputBorder : "transparent"
                 border.width: 1
+                clip: true
 
                 Text {
                     id: searchIcon
@@ -128,6 +130,7 @@ Item {
                     anchors.left: parent.left
                     anchors.leftMargin: 10
                     text: "\uedfb"
+                    font.family: root.font
                     font.pixelSize: 15
                     color: root.iconColor
                 }
@@ -144,6 +147,7 @@ Item {
                     placeholderText: "Search…"
                     placeholderTextColor: root.iconColor
                     color: root.itemText
+                    font.family: root.font
                     font.pixelSize: 13
                     focus: true
                     onTextChanged: listView.forceLayout()
@@ -161,15 +165,17 @@ Item {
 
             }
 
-            ClippingRectangle {
+            Rectangle {
                 width: 38
                 height: 38
                 radius: root.radius
                 color: wipeMouse.containsMouse ? root.wipeBgHover : root.wipeBg
+                clip: true
 
                 Text {
                     anchors.centerIn: parent
                     text: "\udb80\uddb4"
+                    font.family: root.font
                     font.pixelSize: 16
                     color: wipeMouse.containsMouse ? root.wipeIconHover : root.wipeIcon
                 }
@@ -195,7 +201,7 @@ Item {
 
         }
 
-        ClippingRectangle {
+        Item {
             id: listContainer
 
             anchors.top: topRow.bottom
@@ -204,8 +210,6 @@ Item {
             anchors.bottom: parent.bottom
             anchors.margins: 10
             anchors.topMargin: 8
-            radius: root.radius
-            color: "transparent"
 
             ListView {
                 id: listView
@@ -244,7 +248,7 @@ Item {
 
                 }
 
-                delegate: ClippingRectangle {
+                delegate: Rectangle {
                     id: delegateRoot
 
                     required property var modelData
@@ -253,6 +257,7 @@ Item {
                     height: clipsh.isImage(modelData) ? 110 : 48
                     radius: root.radius
                     color: itemMouse.containsMouse ? root.itemHoverBg : root.itemBg
+                    clip: true
 
                     Image {
                         visible: clipsh.isImage(delegateRoot.modelData)
@@ -269,6 +274,7 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.leftMargin: 14
+                        font.family: root.font
                         anchors.rightMargin: 14
                         text: clipsh.previewText(delegateRoot.modelData)
                         color: itemMouse.containsMouse ? root.itemHoverText : root.itemText

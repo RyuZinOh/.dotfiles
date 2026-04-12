@@ -17,6 +17,8 @@ static_dirs=(
   "QtProject"
   "quickshell"
   "paru"
+  "pip"
+  "pipx"
 )
 
 for dir in "${static_dirs[@]}"; do
