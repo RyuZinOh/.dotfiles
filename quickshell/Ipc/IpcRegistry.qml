@@ -17,10 +17,6 @@ Item {
         id: clipsyIpc
     }
 
-    EvernightIpc {
-        id: evernightIpc
-    }
-
     OmnitrixIpc {
         id: omnitrixIpc
     }

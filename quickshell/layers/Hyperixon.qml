@@ -155,8 +155,12 @@ Scope {
                     Hut {
                         id: hutRef
 
-                        anchors.top: parent.top
-                        anchors.right: parent.right
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                            right: parent.right
+                        }
+
                     }
 
                     //omnitrix launcher
@@ -207,9 +211,6 @@ Scope {
 
                         property var pimp
 
-                        pimp: Pimp {
-                        }
-
                         anchors.fill: parent
                         active: false
                         focus: active
@@ -224,6 +225,7 @@ Scope {
                                 pimp.call("artiqa", "deactivate");
 
                         }
+
                         Connections {
                             function onShowArtiqa() {
                                 artiqaRef.active = true;
@@ -234,6 +236,9 @@ Scope {
                             }
 
                             target: ArtiqaConfig
+                        }
+
+                        pimp: Pimp {
                         }
 
                     }
@@ -253,22 +258,43 @@ Scope {
 
                 }
 
+                //enable this for extra pin stuff [very interesthing]
+                WlrLayershell {
+                    id: pinLayer
+
+                    screen: screenScope.modelData
+                    layer: WlrLayer.Top
+                    namespace: "quickshell-hyperixon-pin"
+                    visible: topJesusRef.isPinned
+                    anchors.top: true
+                    implicitWidth: 0
+                    implicitHeight: 0
+                    exclusiveZone: 40
+                }
+
                 /* Dynamic mask that changes based on hover state
                  when not hovered: tiny strip at top, when hovered: full panel height
                 */
                 mask: Region {
-                    Region {
+                    // Region {
+                    //     x: (hyperixonLayer.width / 2) - 720
+                    //     y: 0
+                    //     width: 1440
+                    //     height: topJesusRef.maskHeight
+                    // }
+                    //
+                     Region {
                         x: (hyperixonLayer.width / 2) - (topJesusRef.width / 2) //now supporting width cause component lke wow has width factor so..
                         y: 0
                         width: topJesusRef.width
                         height: (topJesusRef.isHovered || topJesusRef.isPinned) ? topJesusRef.height : 1
                     }
-
                     /*
                     notification area -> dynamically
                     sized based on actual content height
                     grows as more cards are added
                     */
+
                     Region {
                         x: hyperixonLayer.width - 440
                         y: 0
@@ -318,53 +344,39 @@ Scope {
                     //Hut
 
                     Region {
-                        x: hyperixonLayer.width - hutRef.width
+                        x: hyperixonLayer.width - hutRef.maskWidth
                         y: 0
-                        width: hutRef.isHovered ? hutRef.width : 1
-                        height: hutRef.isHovered ? hutRef.height : 1
-                    }
-                    //Project Ash
+                        width: hutRef.maskWidth
+                        height: hyperixonLayer.height
 
-                    //Artiqa
-                    Region {
-                        x: 0
-                        y: 0
-                        width: artiqaRef.active ? hyperixonLayer.width : 1
-                        height: artiqaRef.active ? hyperixonLayer.height : 1
-                    }
+                        //Artiqa
+                        Region {
+                            x: 0
+                            y: 0
+                            width: artiqaRef.active ? hyperixonLayer.width : 1
+                            height: artiqaRef.active ? hyperixonLayer.height : 1
+                        }
 
-                    //wow
-                    Region {
-                        x: (hyperixonLayer.width / 2) - (wowRef.width / 2)
-                        y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
-                        width: WowConfig.isActive ? wowRef.width : 1
-                        height: WowConfig.isActive ? wowRef.height : 1
-                    }
+                        //wow
+                        Region {
+                            x: (hyperixonLayer.width / 2) - (wowRef.width / 2)
+                            y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
+                            width: WowConfig.isActive ? wowRef.width : 1
+                            height: WowConfig.isActive ? wowRef.height : 1
+                        }
 
-                    //Clipsy
-                    Region {
-                        x: (hyperixonLayer.width / 2) - 250
-                        y: (hyperixonLayer.height / 2) - (ClipsyConfig.panelHeight / 2)
-                        width: ClipsyConfig.isActive ? 500 : 1
-                        height: ClipsyConfig.isActive ? ClipsyConfig.panelHeight : 1
+                        //Clipsy
+                        Region {
+                            x: (hyperixonLayer.width / 2) - 250
+                            y: (hyperixonLayer.height / 2) - (ClipsyConfig.panelHeight / 2)
+                            width: ClipsyConfig.isActive ? 500 : 1
+                            height: ClipsyConfig.isActive ? ClipsyConfig.panelHeight : 1
+                        }
+
                     }
 
                 }
 
-            }
-
-            //enable this for extra pin stuff [very interesthing]
-            WlrLayershell {
-                id: pinLayer
-
-                screen: screenScope.modelData
-                layer: WlrLayer.Top
-                namespace: "quickshell-hyperixon-pin"
-                visible: topJesusRef.isPinned
-                anchors.top: true
-                implicitWidth: 0
-                implicitHeight: 0
-                exclusiveZone: 40
             }
 
         }

@@ -96,9 +96,9 @@ Item {
         id: content
 
         width: 1600
-        height: root.isHovered ? 364 : 0.1
-        alignment: 4
-        radius: 20
+        height: root.isHovered ? 330 : 0.1
+        alignment: 1
+        radius: 15
         color: Theme.surfaceContainerLow
         clip: true
 
@@ -106,10 +106,13 @@ Item {
             id: contentWrapper
 
             anchors.fill: parent
-            anchors.topMargin: 8
-            anchors.bottomMargin: 10
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
+            
+            anchors{ 
+              topMargin:8 
+              bottomMargin: 8 
+              leftMargin: 8 
+              rightMargin: 8
+            }
             visible: false
             onVisibleChanged: visible ? Qt.callLater(root.positionToCurrentWallpaper) : (searchInput.focus = false)
 

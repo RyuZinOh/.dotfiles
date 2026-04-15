@@ -16,7 +16,8 @@ Singleton {
         "org.qt-project.qtcreator": "QtProject-qtcreator",
         "org.kde.krita": "krita",
         "com.pokemmo.PokeMMO": "pokemmo-launcher",
-        "Waydroid": "waydroid"
+        "Waydroid": "waydroid",
+        "code": "visual-studio-code"
     })
     readonly property var model: ToplevelManager.toplevels
     readonly property var enriched: {

@@ -59,8 +59,12 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        anchors.leftMargin: 24
-        anchors.rightMargin: 24
+        anchors{
+          leftMargin: 8 
+          rightMargin: 8 
+          topMargin: 8 
+          bottomMargin: 8
+        }
         color: "transparent"
         radius: 16
         border.width: 1

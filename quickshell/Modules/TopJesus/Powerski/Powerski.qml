@@ -5,16 +5,6 @@ import qs.Services.Theme
 Item {
     id: root
 
-    Rectangle {
-        anchors.centerIn: parent
-        width: row.width + 48
-        height: row.height + 32
-        color: "transparent"
-        border.width: 1
-        border.color: Theme.outlineVariant
-        radius: 12
-    }
-
     Row {
         id: row
         anchors.centerIn: parent

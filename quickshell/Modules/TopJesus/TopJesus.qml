@@ -1,96 +1,142 @@
 pragma ComponentBehavior: Bound
-import QtQuick
-// import Qt5Compat.GraphicalEffects
-import qs.Services.Shapes
-import qs.Services.Theme
-import qs.Components.topjesus
-import Quickshell.Wayland
 /*I dont want to use qs for importing in modules for some weird reasons, well*/
 import "./Callgorl/"
+import "./ControlRoom/"
 import "./MAL/"
 import "./Powerski/"
-import "./ControlRoom/"
 import "./Wset/"
+import QtQuick
+import qs.Components.topjesus
+import qs.Services.Shapes
+import qs.Services.Theme
 
 Item {
     id: root
-    required property var parentScreen
-    implicitWidth: 1440
-    implicitHeight: popout.height + nestedPopout.height
-    width: implicitWidth
-    height: implicitHeight
 
+    required property var parentScreen
     property bool isHovered: false
     property bool isPinned: false
     property int activePopout: 0
     property var hoveredWayland: null
     property real previewX: 0
+    property bool iconRowHovered: false
+    property bool bridgeHovered: false
+    property bool nestedHovered: false
+    readonly property var popoutIcons: [{
+        "id": 1,
+        "icon": "\udb81\udfea",
+        "xOff": 75,
+        "w": 580,
+        "h": 180
+    }, {
+        "id": 2,
+        "icon": "\uefa7",
+        "xOff": 200,
+        "w": 320,
+        "h": 200
+    }, {
+        "id": 3,
+        "icon": "\uee34",
+        "xOff": 200,
+        "w": 450,
+        "h": 400
+    }, {
+        "id": 4,
+        "icon": "\uee82",
+        "xOff": 225,
+        "w": 320,
+        "h": 110
+    }, {
+        "id": 5,
+        "icon": "\udb81\udce0",
+        "xOff": 200,
+        "w": 320,
+        "h": 110
+    }]
+    readonly property var popoutComponents: [null, controlRoomComp, wsetComp, anilistComp, powerskiComp, callgorlComp]
 
+    function checkClose() {
+        closeTimer.restart();
+    }
+
+    implicitWidth: 1440
+    implicitHeight: popout.height + nestedPopout.height
+    width: implicitWidth
+    height: implicitHeight
     onActivePopoutChanged: {
         if (root.activePopout > 0) {
             nestedPopout.lastActive = root.activePopout;
+            const c = root.popoutIcons.find((p) => {
+                return p.id === root.activePopout;
+            });
+            const tx = root.width - c.w - c.xOff;
+            if (!nestedPopout.hasOpenedOnce) {
+                xBehavior.enabled = false;
+                widthBehavior.enabled = false;
+                nestedPopout.x = tx;
+                nestedPopout.width = c.w;
+                xBehavior.enabled = true;
+                widthBehavior.enabled = true;
+                nestedPopout.hasOpenedOnce = true;
+            }
+            nestedPopout.x = tx;
+            nestedPopout.width = c.w;
+            nestedPopout.height = c.h;
+        } else {
+            nestedPopout.height = 0;
         }
     }
 
-    readonly property var popoutIcons: [
-        {
-            id: 1,
-            icon: "\udb81\udfea",
-            xOff: 75,
-            w: 580,
-            h: 180
-        },
-        {
-            id: 2,
-            icon: "\uefa7",
-            xOff: 200,
-            w: 380,
-            h: 250
-        },
-        {
-            id: 3,
-            icon: "\uee34",
-            xOff: 200,
-            w: 420,
-            h: 280
-        },
-        {
-            id: 4,
-            icon: "\uee82",
-            xOff: 225,
-            w: 350,
-            h: 140
-        },
-        {
-            id: 5,
-            icon: "\udb81\udce0",
-            xOff: 200,
-            w: 260,
-            h: 230
-        },
-    ]
+    Timer {
+        id: closeTimer
 
-    readonly property var popoutComponents: [null, controlRoomComp, wsetComp, anilistComp, powerskiComp, callgorlComp]
+        interval: 250
+        repeat: false
+        onTriggered: {
+            if (!root.iconRowHovered && !root.bridgeHovered && !root.nestedHovered)
+                root.activePopout = 0;
+
+        }
+    }
 
     Component {
         id: controlRoomComp
-        ControlRoom {}
+
+        ControlRoom {
+        }
+
     }
+
     Component {
         id: wsetComp
-        Wset {}
+
+        Wset {
+        }
+
     }
+
     Component {
         id: anilistComp
-        Anilist {}
+
+        Anilist {
+        }
+
     }
+
     Component {
         id: powerskiComp
-        Powerski {}
+
+        Powerski {
+        }
+
     }
+
     Component {
         id: callgorlComp
-        Callgorl {}
+
+        Callgorl {
+        }
+
     }
 
     MouseArea {
@@ -102,43 +148,22 @@ Item {
         onEntered: root.isHovered = true
     }
 
-    // was testing but creates a good background dropshadow somehow lol
-    // FastBlur {
-    //     anchors.fill: popout
-    //     source: popout
-    //     radius: 24
-    //     transparentBorder: true
-    // }
-
     PopoutShape {
         id: popout
+
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-
         width: 1440
         height: (root.isHovered || root.isPinned) ? 40 : 0
-
         alignment: 0
+        clip: true
         radius: 20
         color: Theme.surfaceContainer
-
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
 
         Item {
             anchors.fill: parent
             anchors.margins: 10
             opacity: (root.isHovered || root.isPinned) ? 1 : 0
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutQuad
-                }
-            }
 
             Workspace {
                 anchors.left: parent.left
@@ -163,11 +188,6 @@ Item {
                     radius: 6
                     color: pinArea.containsMouse ? Theme.surfaceBright : "transparent"
                     anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 150
-                        }
-                    }
 
                     Text {
                         anchors.centerIn: parent
@@ -176,25 +196,40 @@ Item {
                         font.pixelSize: 16
                         color: root.isPinned ? Theme.primaryColor : Theme.onSurfaceVariant
                         rotation: root.isPinned ? 0 : 45
+
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
+
                         }
+
                         Behavior on rotation {
                             NumberAnimation {
                                 duration: 200
                                 easing.type: Easing.OutCubic
                             }
+
                         }
+
                     }
+
                     MouseArea {
                         id: pinArea
+
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.isPinned = !root.isPinned
                     }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+
+                    }
+
                 }
 
                 Battery {
@@ -203,14 +238,10 @@ Item {
 
                 TaskBar {
                     id: taskBar
+
                     anchors.verticalCenter: parent.verticalCenter
-                    barOpen: popout.height >= 40
-                    onWindowHovered: function (wayland, xPos) {
-                        root.hoveredWayland = wayland;
-                        root.previewX = taskBar.mapToItem(root, xPos, 0).x;
-                    }
-                    onWindowUnhovered: root.hoveredWayland = null
                 }
+
                 Item {
                     height: 28
                     width: iconRow.width
@@ -218,6 +249,7 @@ Item {
 
                     Rectangle {
                         id: iconRow
+
                         height: 32
                         radius: 8
                         width: iconRowContent.width + 20
@@ -225,36 +257,25 @@ Item {
                         color: root.activePopout > 0 ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
                         border.color: root.activePopout > 0 ? Theme.primaryColor : Theme.outlineVariant
                         border.width: root.activePopout > 0 ? 1 : 0.5
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-                        Behavior on border.color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-                        Behavior on border.width {
-                            NumberAnimation {
-                                duration: 200
-                            }
-                        }
 
                         Row {
                             id: iconRowContent
+
                             anchors.centerIn: parent
 
                             Repeater {
                                 model: root.popoutIcons
+
                                 Rectangle {
                                     id: iconRect
+
                                     required property var modelData
+                                    readonly property bool isGear: iconRect.modelData.id === 2
+
                                     width: 36
                                     height: 28
                                     radius: 6
                                     color: "transparent"
-                                    readonly property bool isGear: iconRect.modelData.id === 2
 
                                     Text {
                                         anchors.centerIn: parent
@@ -263,44 +284,110 @@ Item {
                                         font.pixelSize: 20
                                         color: root.activePopout === iconRect.modelData.id ? Theme.primaryColor : iMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
                                         rotation: iconRect.isGear && iMouse.containsMouse ? 90 : 0
+
                                         Behavior on color {
                                             ColorAnimation {
                                                 duration: 200
                                             }
+
                                         }
+
                                         Behavior on rotation {
                                             NumberAnimation {
                                                 duration: 500
                                                 easing.type: Easing.OutCubic
                                             }
+
                                         }
+
                                     }
+
                                     MouseArea {
                                         id: iMouse
+
                                         anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onEntered: root.activePopout = iconRect.modelData.id
+                                        hoverEnabled: root.isPinned
+                                        enabled: root.isPinned
+                                        cursorShape: root.isPinned ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                        onEntered: {
+                                            root.activePopout = iconRect.modelData.id;
+                                        }
                                     }
+
+                                    Behavior on width {
+                                        NumberAnimation {
+                                            duration: 300
+                                            easing.type: Easing.OutCubic
+                                        }
+
+                                    }
+
                                 }
+
                             }
+
                         }
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+
+                        }
+
+                        Behavior on border.color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+
+                        }
+
+                        Behavior on border.width {
+                            NumberAnimation {
+                                duration: 200
+                            }
+
+                        }
+
                     }
 
                     Rectangle {
                         anchors.top: iconRow.bottom
                         anchors.horizontalCenter: iconRow.horizontalCenter
                         width: iconRow.width
-                        height: 10
+                        height: 20
                         color: "transparent"
-                        visible: root.activePopout > 0
+
                         HoverHandler {
-                            onHoveredChanged: hovered ? hoverTimer.stop() : hoverTimer.restart()
+                            enabled: root.isPinned
+                            onHoveredChanged: {
+                                root.bridgeHovered = hovered;
+                                if (!hovered)
+                                    root.checkClose();
+
+                            }
+                        }
+
+                    }
+
+                    HoverHandler {
+                        enabled: root.isPinned
+                        onHoveredChanged: {
+                            root.iconRowHovered = hovered;
+                            if (!hovered)
+                                root.checkClose();
+
                         }
                     }
-                    HoverHandler {
-                        onHoveredChanged: hovered ? hoverTimer.stop() : hoverTimer.restart()
-                    }
+
                 }
 
                 DayWidget {
@@ -314,148 +401,164 @@ Item {
                 Column {
                     spacing: 2
                     anchors.verticalCenter: parent.verticalCenter
+
                     ClockWidget {
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 14
                         color: Theme.onSurface
                     }
+
                     DateWidget {
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: 14
                         color: Theme.onSurface
                     }
+
                 }
+
             }
-        }
-    }
 
-    Timer {
-        id: hoverTimer
-        interval: 150
-        onTriggered: root.activePopout = 0
-    }
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutQuad
+                }
 
-    PopoutShape {
-        id: previewPopout
-        anchors.top: popout.bottom
-
-        property bool isAnimating: previewWidthAnim.running || previewHeightAnim.running
-
-        width: 280
-        height: root.hoveredWayland !== null && popout.height >= 40 ? 158 : 0
-        x: Math.min(Math.max(root.previewX - 140, 0), parent.width - 280)
-        alignment: 0
-        radius: 12
-        color: Theme.surfaceContainer
-        visible: height > 1 || isAnimating
-
-        Behavior on width {
-            NumberAnimation {
-                id: previewWidthAnim
-                duration: 200
-                easing.type: Easing.InOutQuad
             }
+
         }
+
         Behavior on height {
             NumberAnimation {
-                id: previewHeightAnim
-                duration: 300
-                easing.type: Easing.InOutQuad
-            }
-        }
-        Behavior on x {
-            enabled: previewPopout.height > 0
-            NumberAnimation {
                 duration: 200
-                easing.type: Easing.InOutQuad
+                easing.type: Easing.OutQuad
             }
+
         }
-        ScreencopyView {
-            anchors.fill: parent
-            anchors.margins: 4
-            captureSource: root.hoveredWayland ?? null
-            live: true
-        }
+
     }
 
     PopoutShape {
         id: nestedPopout
-        anchors.top: popout.bottom
 
         property int lastActive: 1
-        property bool isAnimating: widthAnim.running || heightAnim.running
+        property bool isOpen: false
+        property real targetW: 580
+        property real targetH: 0
+        property real targetX: 0
+        property bool hasOpenedOnce: false
+        property bool isAnimating: heightAnim.running || widthAnim.running || xAnim.running
 
-        // resolved cfg from predefined dims in popoutIcons
-        readonly property var cfg: root.popoutIcons.find(p => p.id === (root.activePopout > 0 ? root.activePopout : lastActive)) ?? root.popoutIcons[0]
-
-        width: cfg.w
-        height: root.activePopout > 0 ? cfg.h : 0
-        x: parent.width - cfg.w - cfg.xOff
+        clip: true
+        anchors.top: popout.bottom
+        width: targetW
+        height: targetH
+        x: targetX
         alignment: 0
-        radius: 20
+        radius: 15
         color: Theme.surfaceContainer
         visible: height > 1 || isAnimating
+        onHeightChanged: {
+            if (height > 0 && !isOpen && !heightAnim.running) {
+                isOpen = true;
+                hasOpenedOnce = true;
+            }
+            if (height === 0 && isOpen)
+                isOpen = false;
 
-        Behavior on width {
-            enabled: root.activePopout > 0
-            NumberAnimation {
-                id: widthAnim
-                duration: 300
-                easing.type: Easing.InOutQuad
-            }
-        }
-        Behavior on height {
-            NumberAnimation {
-                id: heightAnim
-                duration: 300
-                easing.type: Easing.InOutQuad
-            }
-        }
-        Behavior on x {
-            enabled: root.activePopout > 0
-            NumberAnimation {
-                duration: 300
-                easing.type: Easing.InOutQuad
-            }
         }
 
         HoverHandler {
-            onHoveredChanged: hovered ? hoverTimer.stop() : hoverTimer.restart()
+            onHoveredChanged: {
+                root.nestedHovered = hovered;
+                if (!hovered)
+                    root.checkClose();
+
+            }
         }
 
         Item {
             anchors.fill: parent
+
             Repeater {
                 model: root.popoutIcons
+
                 Loader {
                     id: popoutLoader
+
                     required property var modelData
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    active: popoutLoader.modelData.id === 3 ? true : root.activePopout === popoutLoader.modelData.id
-                    asynchronous: popoutLoader.modelData.id !== 3
+                    readonly property bool isAnilist: popoutLoader.modelData.id === 3
+
+                    anchors.fill: parent
+                    active: root.isPinned && (isAnilist ? true : root.activePopout === popoutLoader.modelData.id)
+                    asynchronous: !isAnilist
                     opacity: root.activePopout === popoutLoader.modelData.id ? 1 : 0
                     visible: opacity > 0
                     sourceComponent: root.popoutComponents[popoutLoader.modelData.id]
+
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 200
+                            duration: 150
                             easing.type: Easing.InOutQuad
                         }
+
                     }
+
+                }
+
+            }
+
+        }
+
+        Behavior on width {
+            id: widthBehavior
+
+            NumberAnimation {
+                id: widthAnim
+
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+
+        }
+
+        Behavior on height {
+            NumberAnimation {
+                id: heightAnim
+
+                duration: 300
+                easing.type: Easing.InOutQuad
+                onFinished: {
+                    if (nestedPopout.height > 0)
+                        nestedPopout.isOpen = true;
+                    else
+                        nestedPopout.isOpen = false;
                 }
             }
+
         }
+
+        Behavior on x {
+            id: xBehavior
+
+            NumberAnimation {
+                id: xAnim
+
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+
+        }
+
     }
+
     HoverHandler {
         onHoveredChanged: {
             root.isHovered = hovered;
-            if (!hovered) {
-                root.activePopout = 0;
+            if (!hovered)
                 root.hoveredWayland = null;
-            }
+
         }
     }
+
 }

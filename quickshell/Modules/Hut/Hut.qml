@@ -1,150 +1,157 @@
-/*This one is like a control center something for wifi and stuff management*/
+/* This one is like a control center something for wifi and stuff management */
 pragma ComponentBehavior: Bound
 import QtQuick
+import QtQuick.Shapes
+import Quickshell.Widgets
 import qs.Services.Theme
-import qs.Services.Shapes
 import "./Warsa/"
 import "./Areuok/"
 
 Item {
     id: root
-    anchors.top: parent.top
-    anchors.right: parent.right
-
-    width: content.width
-    height: content.height
-
     property bool isHovered: false
+    property color barColor: Theme.surfaceContainerLow
+    
+    property real collapsedWidth: 0.1
+    property real expandedWidth: 380
 
-    onIsHoveredChanged: {
-        if (!root.isHovered) {
-            unloadTimer.start();
-        } else {
-            unloadTimer.stop();
-            if (!contentLoader.active) {
-                contentLoader.active = true;
-            }
+    property real currentBarWidth: isHovered ? expandedWidth : collapsedWidth
+    
+    property real maskWidth: isHovered ? expandedWidth : 10
+
+    Behavior on currentBarWidth {
+        NumberAnimation { 
+            duration: 350; 
+            easing.type: Easing.OutCubic 
         }
     }
+
+    width: currentBarWidth
+    height: parent?.height ?? 0
+    anchors.right: parent.right
 
     Timer {
         id: unloadTimer
-        interval: 500
-        onTriggered: {
-            if (!root.isHovered) {
-                contentLoader.active = false;
+        interval: 700
+        onTriggered: if (!root.isHovered) contentLoader.active = false
+    }
+
+    onIsHoveredChanged: {
+        if (isHovered) {
+            unloadTimer.stop()
+            contentLoader.active = true
+        } else {
+            unloadTimer.start()
+        }
+    }
+
+    component Corner: WrapperItem {
+        id: cornerRoot
+        property int corner
+        property real radius: 20
+        property color color
+
+        implicitWidth: radius
+        implicitHeight: radius
+
+        Component.onCompleted: {
+            switch (corner) {
+                case 1:
+                    anchors.top = parent.top
+                    anchors.right = parent.left
+                    rotation = 90
+                    break
+                case 2:
+                    anchors.bottom = parent.bottom
+                    anchors.right = parent.left
+                    rotation = 180
+                    break
+            }
+        }
+
+        Shape {
+            preferredRendererType: Shape.CurveRenderer
+            ShapePath {
+                strokeWidth: 0
+                fillColor: cornerRoot.color
+                startX: cornerRoot.radius
+                PathArc {
+                    relativeX: -cornerRoot.radius
+                    relativeY: cornerRoot.radius
+                    radiusX: cornerRoot.radius
+                    radiusY: radiusX
+                    direction: PathArc.Counterclockwise
+                }
+                PathLine { relativeX: 0; relativeY: -cornerRoot.radius }
+                PathLine { relativeX: cornerRoot.radius; relativeY: 0 }
             }
         }
     }
 
-    PopoutShape {
-        id: content
-        anchors.right: parent.right
-        anchors.top: parent.top
-        width: 400
-        // container aint loaded so liner warning exists...
-        height: {
-            if (!root.isHovered) {
-                return 0.1;
-            }
-            if (contentLoader.status === Loader.Ready) {
-                let loadedItem = contentLoader.item as Item;
-                if (loadedItem) {
-                    return loadedItem.implicitHeight + 48;
-                }
-            }
-            return 140;
-        }
-        visible: content.height > 1
-        alignment: 1
-        radius: 20
-        color: Theme.surfaceContainerLow
-        clip: true
+    Rectangle {
+        id: bar
+        anchors.fill: parent
+        color: root.barColor
+        
+        clip: root.currentBarWidth < 5
 
-        Behavior on height {
-            NumberAnimation {
-                duration: 350
-                easing.type: Easing.OutCubic
-            }
+        Corner {
+            corner: 1
+            color: root.barColor
+        }
+
+        Corner {
+            corner: 2
+            color: root.barColor
         }
 
         Loader {
             id: contentLoader
             anchors.fill: parent
-            anchors {
-                leftMargin: 20
-                rightMargin: 5
-            }
+           
             active: false
             asynchronous: true
             clip: true
 
+            property real contentOpacity: root.isHovered ? 1 : 0
+            property real contentTranslateX: root.isHovered ? 0 : 30
+            
+            Behavior on contentOpacity {
+                NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
+            }
+            Behavior on contentTranslateX {
+                NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
+            }
+
             sourceComponent: Component {
                 Item {
-                    id: contentItem
-                    visible: root.isHovered
-                    readonly property real maxWidth: {
-                        let a = (areuokLoader.item as Item)?.implicitWidth ?? 0;
-                        let w = (warsaLoader.item as Item)?.implicitWidth ?? 0;
-                        return Math.max(a, w);
-                    }
-                    implicitWidth: contentItem.maxWidth
-                    implicitHeight: mainContent.implicitHeight + 20
-
-                    property real contentOpacity: root.isHovered ? 1 : 0
-                    property real contentTranslateY: root.isHovered ? 0 : -20
-
-                    Behavior on contentOpacity {
-                        NumberAnimation {
-                            duration: 350
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-
-                    Behavior on contentTranslateY {
-                        NumberAnimation {
-                            duration: 350
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-
-                    opacity: contentItem.contentOpacity
-                    transform: Translate {
-                        y: contentItem.contentTranslateY
-                    }
+                    opacity: contentLoader.contentOpacity
+                    transform: Translate { x: contentLoader.contentTranslateX }
 
                     Column {
-                        id: mainContent
                         spacing: 16
+                        anchors.horizontalCenter: parent.horizontalCenter
 
                         Loader {
-                            id: areuokLoader
                             anchors.horizontalCenter: parent.horizontalCenter
                             active: root.isHovered
                             asynchronous: true
-                            sourceComponent: Component {
-                                Areuok {}
-                            }
+                            sourceComponent: Component { Areuok {} }
                         }
                         Loader {
-                            id: warsaLoader
                             anchors.horizontalCenter: parent.horizontalCenter
                             active: root.isHovered
                             asynchronous: true
-                            sourceComponent: Component {
-                                Warsa {}
-                            }
+                            sourceComponent: Component { Warsa {} }
                         }
                     }
                 }
             }
         }
-    }
 
-    HoverHandler {
-        id: hoverHandler
-        onHoveredChanged: {
-            root.isHovered = hoverHandler.hovered;
+        HoverHandler {
+            id: hand
+            onHoveredChanged: root.isHovered = hovered
         }
     }
 }
