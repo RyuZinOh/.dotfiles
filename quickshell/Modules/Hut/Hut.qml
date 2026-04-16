@@ -17,7 +17,7 @@ Item {
 
     property real currentBarWidth: isHovered ? expandedWidth : collapsedWidth
     
-    property real maskWidth: isHovered ? expandedWidth : 10
+    property real maskWidth: isHovered ? expandedWidth : 1
 
     Behavior on currentBarWidth {
         NumberAnimation { 

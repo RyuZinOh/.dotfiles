@@ -1,3 +1,4 @@
+import Kraken
 /*
  https://git.safallama.com.np/ashborn/warsa [check here for the Warsa Module]
  https://git.safallama.com.np/ashborn/kraken [check here for the Kraken Module]
@@ -5,29 +6,39 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Warsa
-import Kraken
 import qs.Services.Theme
 
 Item {
     id: root
-    implicitWidth: calendarCard.width
-    implicitHeight: calendarCard.height
-    Warsa {
-        id: calendar
-        Component.onCompleted: {
-            calendar.setToday();
-        }
-    }
-    Kraken {
-        id: eventsAdapter
-        filePath: "/home/safalski/.cache/safalQuick/warsa.json"
-    }
+
     function getEventForDate(month, day) {
         var key = month + "-" + day;
         return eventsAdapter.get(key, null);
     }
+
+    implicitWidth: calendarCard.width
+    implicitHeight: calendarCard.height
+
+    Warsa {
+        id: calendar
+
+        Component.onCompleted: {
+            calendar.setToday();
+        }
+    }
+
+    Kraken {
+        id: eventsAdapter
+
+        filePath: "/home/safalski/.cache/safalQuick/warsa.json"
+    }
+
     Rectangle {
         id: eventPopup
+
+        property string title: ""
+        property string description: ""
+
         visible: false
         width: 220
         height: popupText.height + 16
@@ -36,10 +47,10 @@ Item {
         border.width: 0
         z: 1000
         opacity: 0
-        property string title: ""
-        property string description: ""
+
         Text {
             id: popupText
+
             anchors.centerIn: parent
             width: 200
             textFormat: Text.StyledText
@@ -50,28 +61,37 @@ Item {
             color: Theme.onSurface
             wrapMode: Text.WordWrap
         }
+
         Behavior on opacity {
             NumberAnimation {
                 duration: 150
                 easing.type: Easing.OutCubic
             }
+
         }
+
     }
+
     Rectangle {
         id: calendarCard
+
         width: calendarContent.width + 32
         height: calendarContent.height + 32
         radius: 28
         color: Theme.surfaceContainer
         border.width: 1
         border.color: Theme.outlineVariant
+
         Column {
             id: calendarContent
+
             anchors.centerIn: parent
             spacing: 16
+
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 16
+
                 Rectangle {
                     width: 40
                     height: 40
@@ -79,12 +99,7 @@ Item {
                     color: prevMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
-                    }
+
                     Text {
                         anchors.centerIn: parent
                         text: "<"
@@ -92,14 +107,19 @@ Item {
                         font.family: "CaskaydiaCove NF"
                         font.weight: Font.Light
                         color: prevMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
+
                         }
+
                     }
+
                     MouseArea {
                         id: prevMouse
+
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
@@ -107,7 +127,17 @@ Item {
                             calendar.previousMonth();
                         }
                     }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+
+                    }
+
                 }
+
                 Text {
                     width: 180
                     text: calendar.monthName.charAt(0).toUpperCase() + calendar.monthName.slice(1) + " " + calendar.year
@@ -118,6 +148,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
                 }
+
                 Rectangle {
                     width: 40
                     height: 40
@@ -125,12 +156,7 @@ Item {
                     color: nextMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
-                    }
+
                     Text {
                         anchors.centerIn: parent
                         text: ">"
@@ -138,14 +164,19 @@ Item {
                         font.family: "CaskaydiaCove NF"
                         font.weight: Font.Light
                         color: nextMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
+
                         }
+
                     }
+
                     MouseArea {
                         id: nextMouse
+
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
@@ -153,23 +184,38 @@ Item {
                             calendar.nextMonth();
                         }
                     }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+
+                    }
+
                 }
+
             }
+
             Grid {
                 width: 280
                 anchors.horizontalCenter: parent.horizontalCenter
                 columns: 7
                 columnSpacing: 3
                 rowSpacing: 3
+
                 Repeater {
                     model: ["Ai", "So", "Ma", "Bu", "Bi", "Su", "Sa"]
+
                     delegate: Item {
                         id: dayHeaderItem
+
                         required property string modelData
                         required property int index
 
                         width: 38
                         height: 24
+
                         Text {
                             anchors.centerIn: parent
                             text: dayHeaderItem.modelData
@@ -179,27 +225,28 @@ Item {
                             color: Theme.onSurfaceVariant
                             opacity: 0.6
                         }
+
                     }
+
                 }
+
             }
+
             Grid {
                 id: daysGrid
-                width: 280
-                anchors.horizontalCenter: parent.horizontalCenter
-                columns: 7
-                columnSpacing: 3
-                rowSpacing: 3
+
                 property var cachedModel: []
+
                 function updateModel() {
                     var days = calendar.getMonthDays(calendar.month);
                     var firstDay = calendar.getFirstDayOfMonth(calendar.month);
                     var result = [];
                     for (var i = 0; i < firstDay; i++) {
                         result.push({
-                            day: 0,
-                            isToday: false,
-                            isSaturday: false,
-                            hasEvent: false
+                            "day": 0,
+                            "isToday": false,
+                            "isSaturday": false,
+                            "hasEvent": false
                         });
                     }
                     for (var j = 0; j < days.length; j++) {
@@ -211,25 +258,38 @@ Item {
                     }
                     daysGrid.cachedModel = result;
                 }
-                Connections {
-                    target: calendar
-                    function onMonthChanged() {
-                        daysGrid.updateModel();
-                    }
-                }
-                Connections {
-                    target: eventsAdapter
-                    function onDataLoaded() {
-                        daysGrid.updateModel();
-                    }
-                }
+
+                width: 280
+                anchors.horizontalCenter: parent.horizontalCenter
+                columns: 7
+                columnSpacing: 3
+                rowSpacing: 3
                 Component.onCompleted: {
                     daysGrid.updateModel();
                 }
+
+                Connections {
+                    function onMonthChanged() {
+                        daysGrid.updateModel();
+                    }
+
+                    target: calendar
+                }
+
+                Connections {
+                    function onDataLoaded() {
+                        daysGrid.updateModel();
+                    }
+
+                    target: eventsAdapter
+                }
+
                 Repeater {
                     model: daysGrid.cachedModel
+
                     delegate: Rectangle {
                         id: dayRect
+
                         required property var modelData
                         required property int index
 
@@ -237,36 +297,25 @@ Item {
                         height: 38
                         radius: dayMouse.containsMouse ? 19 : 10
                         color: {
-                            if (dayRect.modelData.day === 0) {
+                            if (dayRect.modelData.day === 0)
                                 return "transparent";
-                            }
-                            if (dayRect.modelData.isToday) {
+
+                            if (dayRect.modelData.isToday)
                                 return Theme.primaryContainer;
-                            }
-                            if (dayMouse.containsMouse) {
+
+                            if (dayMouse.containsMouse)
                                 return Theme.secondaryContainer;
-                            }
-                            if (dayRect.modelData.hasEvent) {
+
+                            if (dayRect.modelData.hasEvent)
                                 return Theme.tertiaryContainer;
-                            }
-                            if (dayRect.modelData.isSaturday) {
+
+                            if (dayRect.modelData.isSaturday)
                                 return Theme.errorContainer;
-                            }
+
                             return Theme.surfaceContainerHigh;
                         }
                         border.width: 0
-                        Behavior on radius {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                                easing.type: Easing.OutCubic
-                            }
-                        }
+
                         Rectangle {
                             width: 4
                             height: 4
@@ -278,6 +327,7 @@ Item {
                             visible: dayRect.modelData.hasEvent && !dayRect.modelData.isToday
                             opacity: 0.8
                         }
+
                         Text {
                             anchors.centerIn: parent
                             text: dayRect.modelData.day === 0 ? "" : dayRect.modelData.day
@@ -285,28 +335,33 @@ Item {
                             font.family: "CaskaydiaCove NF"
                             font.weight: dayRect.modelData.isToday ? Font.Medium : Font.Normal
                             color: {
-                                if (dayRect.modelData.isToday) {
+                                if (dayRect.modelData.isToday)
                                     return Theme.onPrimaryContainer;
-                                }
-                                if (dayMouse.containsMouse) {
+
+                                if (dayMouse.containsMouse)
                                     return Theme.onSecondaryContainer;
-                                }
-                                if (dayRect.modelData.hasEvent) {
+
+                                if (dayRect.modelData.hasEvent)
                                     return Theme.onTertiaryContainer;
-                                }
-                                if (dayRect.modelData.isSaturday) {
+
+                                if (dayRect.modelData.isSaturday)
                                     return Theme.onErrorContainer;
-                                }
+
                                 return Theme.onSurface;
                             }
+
                             Behavior on color {
                                 ColorAnimation {
                                     duration: 200
                                 }
+
                             }
+
                         }
+
                         MouseArea {
                             id: dayMouse
+
                             anchors.fill: parent
                             enabled: dayRect.modelData.day !== 0
                             hoverEnabled: true
@@ -321,15 +376,15 @@ Item {
                                     var pos = dayMouse.mapToItem(root, 0, 0);
                                     eventPopup.x = pos.x + (dayMouse.width - eventPopup.width) / 2;
                                     eventPopup.y = pos.y - eventPopup.height - 8;
-                                    if (eventPopup.x < 0) {
+                                    if (eventPopup.x < 0)
                                         eventPopup.x = 8;
-                                    }
-                                    if (eventPopup.x + eventPopup.width > root.width) {
+
+                                    if (eventPopup.x + eventPopup.width > root.width)
                                         eventPopup.x = root.width - eventPopup.width - 8;
-                                    }
-                                    if (eventPopup.y < 0) {
+
+                                    if (eventPopup.y < 0)
                                         eventPopup.y = pos.y + dayMouse.height + 8;
-                                    }
+
                                     eventPopup.visible = true;
                                     eventPopup.opacity = 1;
                                 }
@@ -339,9 +394,29 @@ Item {
                                 eventPopup.opacity = 0;
                             }
                         }
+
+                        Behavior on radius {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
                     }
+
                 }
+
             }
+
             Rectangle {
                 width: 90
                 height: 36
@@ -349,12 +424,7 @@ Item {
                 color: todayMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
                 border.width: 0
                 anchors.horizontalCenter: parent.horizontalCenter
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
+
                 Text {
                     anchors.centerIn: parent
                     text: "Today"
@@ -362,14 +432,19 @@ Item {
                     font.family: "CaskaydiaCove NF"
                     font.weight: Font.Normal
                     color: todayMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+
                     Behavior on color {
                         ColorAnimation {
                             duration: 200
                         }
+
                     }
+
                 }
+
                 MouseArea {
                     id: todayMouse
+
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
@@ -377,7 +452,19 @@ Item {
                         calendar.setToday();
                     }
                 }
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
             }
+
         }
+
     }
+
 }

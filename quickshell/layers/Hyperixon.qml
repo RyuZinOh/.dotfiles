@@ -33,6 +33,12 @@ Scope {
                 //     width: ashRef.implicitWidth
                 //     height: ashRef.implicitHeight
                 // }
+                // Region {
+                //     x: (hyperixonLayer.width / 2) - 720
+                //     y: 0
+                //     width: 1440
+                //     height: topJesusRef.maskHeight
+                // }
 
                 id: hyperixonLayer
 
@@ -276,14 +282,7 @@ Scope {
                  when not hovered: tiny strip at top, when hovered: full panel height
                 */
                 mask: Region {
-                    // Region {
-                    //     x: (hyperixonLayer.width / 2) - 720
-                    //     y: 0
-                    //     width: 1440
-                    //     height: topJesusRef.maskHeight
-                    // }
-                    //
-                     Region {
+                    Region {
                         x: (hyperixonLayer.width / 2) - (topJesusRef.width / 2) //now supporting width cause component lke wow has width factor so..
                         y: 0
                         width: topJesusRef.width
@@ -348,31 +347,30 @@ Scope {
                         y: 0
                         width: hutRef.maskWidth
                         height: hyperixonLayer.height
+                    }
+                    //Artiqa
 
-                        //Artiqa
-                        Region {
-                            x: 0
-                            y: 0
-                            width: artiqaRef.active ? hyperixonLayer.width : 1
-                            height: artiqaRef.active ? hyperixonLayer.height : 1
-                        }
+                    Region {
+                        x: 0
+                        y: 0
+                        width: artiqaRef.active ? hyperixonLayer.width : 1
+                        height: artiqaRef.active ? hyperixonLayer.height : 1
+                    }
 
-                        //wow
-                        Region {
-                            x: (hyperixonLayer.width / 2) - (wowRef.width / 2)
-                            y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
-                            width: WowConfig.isActive ? wowRef.width : 1
-                            height: WowConfig.isActive ? wowRef.height : 1
-                        }
+                    //wow
+                    Region {
+                        x: (hyperixonLayer.width / 2) - (wowRef.width / 2)
+                        y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
+                        width: WowConfig.isActive ? wowRef.width : 1
+                        height: WowConfig.isActive ? wowRef.height : 1
+                    }
 
-                        //Clipsy
-                        Region {
-                            x: (hyperixonLayer.width / 2) - 250
-                            y: (hyperixonLayer.height / 2) - (ClipsyConfig.panelHeight / 2)
-                            width: ClipsyConfig.isActive ? 500 : 1
-                            height: ClipsyConfig.isActive ? ClipsyConfig.panelHeight : 1
-                        }
-
+                    //Clipsy
+                    Region {
+                        x: (hyperixonLayer.width / 2) - 250
+                        y: (hyperixonLayer.height / 2) - (ClipsyConfig.panelHeight / 2)
+                        width: ClipsyConfig.isActive ? 500 : 1
+                        height: ClipsyConfig.isActive ? ClipsyConfig.panelHeight : 1
                     }
 
                 }
