@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
-/*I dont want to use qs for importing in modules for some weird reasons, well*/
+//I dont want to use qs for importing in modules for some weird reasons, well
 import "./Callgorl/"
+import "./CleaveViz/"
 import "./ControlRoom/"
 import "./MAL/"
 import "./Powerski/"
@@ -178,6 +179,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
+
                 // BongoCat {
                 // size: 64
                 // anchors.verticalCenter: parent.verticalCenter
@@ -436,6 +438,13 @@ Item {
 
         }
 
+    }
+
+    CleaveViz {
+        anchors.top: popout.bottom
+        anchors.topMargin: -4
+        anchors.horizontalCenter: parent.horizontalCenter
+        targetWidth: 1375
     }
 
     PopoutShape {
