@@ -1,15 +1,15 @@
+pragma Singleton
 import QtQuick
 import Quickshell
 import qs.utils
-pragma Singleton
 
 Singleton {
     id: root
 
     property bool isActive: false
 
-    signal showOmnitrix()
-    signal hideOmnitrix()
+    signal showOmnitrix
+    signal hideOmnitrix
 
     Connections {
         function onStatesChanged() {
@@ -25,5 +25,4 @@ Singleton {
 
         target: StateManager
     }
-
 }

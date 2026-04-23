@@ -142,7 +142,6 @@ Item {
                             duration: 600
                             easing.type: Easing.InOutCubic
                         }
-
                     }
 
                     ScriptAction {
@@ -151,7 +150,6 @@ Item {
                             omnitrix.isTransforming = false;
                         }
                     }
-
                 }
 
                 Item {
@@ -192,13 +190,9 @@ Item {
                                         fill: parent
                                         margins: 3
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
 
                     MouseArea {
@@ -208,14 +202,14 @@ Item {
                         anchors.fill: parent
                         cursorShape: omnitrix.morphProgress === 1 ? Qt.OpenHandCursor : Qt.ArrowCursor
                         enabled: omnitrix.morphProgress === 1
-                        onPressed: (mouse) => {
+                        onPressed: mouse => {
                             isDragging = true;
                             cursorShape = Qt.ClosedHandCursor;
                             lastAngle = Math.atan2(mouseY - omnitrix.height / 2, mouseX - omnitrix.width / 2) * 180 / Math.PI;
                         }
-                        onPositionChanged: (mouse) => {
+                        onPositionChanged: mouse => {
                             if (!isDragging)
-                                return ;
+                                return;
 
                             let cur = Math.atan2(mouseY - omnitrix.height / 2, mouseX - omnitrix.width / 2) * 180 / Math.PI;
                             let delta = cur - lastAngle;
@@ -228,7 +222,7 @@ Item {
                             omnitrix.ringRotation += delta;
                             lastAngle = cur;
                             if (pfpModel.count === 0)
-                                return ;
+                                return;
 
                             const newIdx = Math.round(((omnitrix.ringRotation % 360) + 360) % 360 / (360 / pfpModel.count)) % pfpModel.count;
                             if (newIdx !== omnitrix.currentIndex) {
@@ -248,9 +242,7 @@ Item {
                             direction: RotationAnimation.Shortest
                             easing.type: Easing.OutCubic
                         }
-
                     }
-
                 }
 
                 WatchRing {
@@ -262,7 +254,6 @@ Item {
                         color: root.watchBodyOuterBorder // 6
                         width: 1
                     }
-
                 }
 
                 WatchRing {
@@ -274,7 +265,6 @@ Item {
                         color: root.watchBodyMiddleBorder // 8
                         width: 1
                     }
-
                 }
 
                 WatchRing {
@@ -286,7 +276,6 @@ Item {
                         color: root.watchBodyInnerBorder // 10
                         width: 1
                     }
-
                 }
 
                 Item {
@@ -333,19 +322,22 @@ Item {
                                 }
 
                                 Repeater {
-                                    model: [{
-                                        "sx": 0,
-                                        "sy": 0,
-                                        "ex": 0,
-                                        "ey": 1,
-                                        "tx": 1
-                                    }, {
-                                        "sx": 1,
-                                        "sy": 0,
-                                        "ex": 1,
-                                        "ey": 1,
-                                        "tx": -1
-                                    }]
+                                    model: [
+                                        {
+                                            "sx": 0,
+                                            "sy": 0,
+                                            "ex": 0,
+                                            "ey": 1,
+                                            "tx": 1
+                                        },
+                                        {
+                                            "sx": 1,
+                                            "sy": 0,
+                                            "ex": 1,
+                                            "ey": 1,
+                                            "tx": -1
+                                        }
+                                    ]
 
                                     Shape {
                                         id: hourglassShape
@@ -387,11 +379,8 @@ Item {
                                                 x: hourglassShape.modelData.sx * hourglassContainer.width
                                                 y: hourglassShape.modelData.sy * hourglassContainer.height
                                             }
-
                                         }
-
                                     }
-
                                 }
 
                                 Item {
@@ -424,9 +413,7 @@ Item {
                                                 asynchronous: true
                                                 smooth: true
                                             }
-
                                         }
-
                                     }
 
                                     MouseArea {
@@ -445,9 +432,7 @@ Item {
                                             easing.type: Easing.OutBack
                                             easing.overshoot: 1.3
                                         }
-
                                     }
-
                                 }
 
                                 layer.effect: OpacityMask {
@@ -457,15 +442,10 @@ Item {
                                         height: innerGreenRect.height
                                         radius: width / 2
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
                 NumberAnimation on morphProgress {
@@ -477,14 +457,10 @@ Item {
                     onFinished: {
                         if (omnitrix.morphProgress === 1)
                             omnitrix.isTransformed = true;
-
                     }
                 }
-
             }
-
         }
-
     }
 
     component WatchRing: Rectangle {
@@ -495,8 +471,6 @@ Item {
 
     component SoundPlayer: MediaPlayer {
 
-        audioOutput: AudioOutput {
-        }
-
+        audioOutput: AudioOutput {}
     }
 }

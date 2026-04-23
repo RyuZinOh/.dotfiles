@@ -31,11 +31,8 @@ Item {
         Repeater {
             model: notifications
 
-            delegate: NotificationDelegate {
-            }
-
+            delegate: NotificationDelegate {}
         }
-
     }
 
     Connections {
@@ -54,7 +51,7 @@ Item {
             for (let i = 0; i < notifications.count; i++) {
                 if (notifications.get(i).notifId === id) {
                     notifications.remove(i);
-                    return ;
+                    return;
                 }
             }
         }
@@ -68,7 +65,6 @@ Item {
             easing.type: Easing.BezierSpline
             easing.bezierCurve: [0.34, 1.06, 0.64, 1, 1, 1]
         }
-
     }
 
     component NotificationDelegate: Item {
@@ -96,7 +92,7 @@ Item {
         function tryEnter() {
             if (naturalHeight <= 28) {
                 Qt.callLater(tryEnter);
-                return ;
+                return;
             }
             entering = false;
             readyTimer.start();
@@ -105,7 +101,6 @@ Item {
         function beginExit() {
             if (!exiting)
                 exiting = true;
-
         }
 
         width: column.width
@@ -129,7 +124,6 @@ Item {
                     tile.animatedHeight: 0
                     tile.x: 480
                 }
-
             },
             State {
                 name: "visible"
@@ -139,7 +133,6 @@ Item {
                     tile.animatedHeight: tile.naturalHeight
                     tile.x: 0
                 }
-
             },
             State {
                 name: "exiting"
@@ -149,7 +142,6 @@ Item {
                     tile.animatedHeight: 0
                     tile.x: 480
                 }
-
             }
         ]
         transitions: [
@@ -171,9 +163,7 @@ Item {
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: [0.18, 0.89, 0.32, 1.08, 1, 1]
                     }
-
                 }
-
             },
             Transition {
                 from: "visible"
@@ -200,9 +190,7 @@ Item {
                             tile.exiting = false;
                         }
                     }
-
                 }
-
             },
             Transition {
                 from: "visible"
@@ -214,7 +202,6 @@ Item {
                     easing.type: Easing.BezierSpline
                     easing.bezierCurve: [0.34, 1.02, 0.64, 1, 1, 1]
                 }
-
             }
         ]
 
@@ -237,7 +224,6 @@ Item {
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: [0.16, 1.1, 0.3, 1, 1, 1]
                     }
-
                 }
 
                 Behavior on yScale {
@@ -246,11 +232,8 @@ Item {
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: [0.16, 1.1, 0.3, 1, 1, 1]
                     }
-
                 }
-
             }
-
         }
 
         HoverHandler {
@@ -300,13 +283,12 @@ Item {
                             path: {
                                 const W = column.width, cy = 5, amp = 3.2, freq = 20;
                                 let d = `M 0 ${cy}`;
-                                for (let x = 1; x <= W; x += 1) d += ` L ${x} ${cy + amp * Math.sin(x / freq * Math.PI)}`
+                                for (let x = 1; x <= W; x += 1)
+                                    d += ` L ${x} ${cy + amp * Math.sin(x / freq * Math.PI)}`;
                                 return d;
                             }
                         }
-
                     }
-
                 }
 
                 Behavior on targetWidth {
@@ -314,9 +296,7 @@ Item {
                         duration: NotificationConfig.progressInterval
                         easing.type: Easing.InOutSine
                     }
-
                 }
-
             }
 
             RowLayout {
@@ -341,9 +321,7 @@ Item {
                             pixelSize: 17
                             weight: Font.Bold
                         }
-
                     }
-
                 }
 
                 Image {
@@ -367,7 +345,6 @@ Item {
                         pixelSize: 11
                         weight: Font.Medium
                     }
-
                 }
 
                 Item {
@@ -400,7 +377,6 @@ Item {
                         ColorAnimation {
                             duration: 280
                         }
-
                     }
 
                     Behavior on rotation {
@@ -409,11 +385,8 @@ Item {
                             easing.type: Easing.BezierSpline
                             easing.bezierCurve: [0.34, 1.56, 0.64, 1, 1, 1]
                         }
-
                     }
-
                 }
-
             }
 
             Text {
@@ -428,7 +401,6 @@ Item {
                     pixelSize: 14
                     weight: Font.DemiBold
                 }
-
             }
 
             Item {
@@ -456,11 +428,8 @@ Item {
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: [0.34, 1.02, 0.64, 1, 1, 1]
                     }
-
                 }
-
             }
-
         }
 
         Text {
@@ -489,7 +458,7 @@ Item {
             running: tile.isTop
             onTriggered: {
                 if (hover.hovered)
-                    return ;
+                    return;
 
                 tile.progress += NotificationConfig.progressInterval / NotificationConfig.autoCloseDuration;
                 if (tile.progress >= 1) {
@@ -498,7 +467,5 @@ Item {
                 }
             }
         }
-
     }
-
 }

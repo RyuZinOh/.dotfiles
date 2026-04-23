@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 
 Item {
@@ -20,7 +21,7 @@ Item {
 
             property real velocityX: 5
             property real velocityY: 5
-            //laptop screens arent perfect 
+            //laptop screens arent perfect
             readonly property real maxX: root.width + 30
             readonly property real maxY: root.height + 30
             readonly property real minX: -30

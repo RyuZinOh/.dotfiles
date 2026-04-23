@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
+pragma Singleton
 import QtQuick
 import Quickshell.Services.Notifications
-pragma Singleton
 
 QtObject {
     id: root
@@ -24,13 +24,12 @@ QtObject {
         });
         if (!processing)
             processNext();
-
     }
 
     function processNext() {
         if (queue.length === 0) {
             processing = false;
-            return ;
+            return;
         }
         processing = true;
         root.notificationReady(queue.shift());
@@ -54,9 +53,8 @@ QtObject {
         imageSupported: true
         keepOnReload: false
         persistenceSupported: true
-        onNotification: (n) => {
+        onNotification: n => {
             return root.enqueue(n);
         }
     }
-
 }

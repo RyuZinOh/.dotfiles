@@ -7,12 +7,12 @@ Item {
     IpcHandler {
         target: "cleave"
         function activate(): string {
-            CleaveConfig.activate()
-            return "cleave activated"
+            CleaveConfig.activate();
+            return "cleave activated";
         }
         function deactivate(): string {
-            CleaveConfig.deactivate()
-            return "cleave deactivated"
+            CleaveConfig.deactivate();
+            return "cleave deactivated";
         }
     }
 }

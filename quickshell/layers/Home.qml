@@ -48,8 +48,7 @@ Scope {
             }
 
             //touchpad gestured right click contextmenu [Just like Windows]
-            ContextMenu {
-            }
+            ContextMenu {}
 
             // wallski direct
             Wallski {
@@ -58,9 +57,6 @@ Scope {
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
             }
-
         }
-
     }
-
 }

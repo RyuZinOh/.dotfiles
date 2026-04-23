@@ -6,7 +6,6 @@ Item {
     // }
     //     id: poketwoIpc
     // }
-
     id: root
 
     LockIpc {
@@ -26,8 +25,8 @@ Item {
     }
     // PoketwoIpc {id: poketwoIpc}
 
-    CleaveIpc{
-      id: cleaveIpc
+    CleaveIpc {
+        id: cleaveIpc
     }
     DancerIpc {
         id: dancerIpc
@@ -44,5 +43,4 @@ Item {
     OsdIpc {
         id: osdIpc
     }
-
 }

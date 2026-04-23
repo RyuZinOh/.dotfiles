@@ -1,6 +1,6 @@
+pragma Singleton
 import QtQuick
 import Quickshell
-pragma Singleton
 
 Singleton {
     id: root
@@ -8,12 +8,11 @@ Singleton {
     property bool isActive: false
     property real panelHeight: 500
 
-    signal showClipsy()
-    signal hideClipsy()
+    signal showClipsy
+    signal hideClipsy
 
     function dismiss() {
         isActive = false;
         hideClipsy();
     }
-
 }

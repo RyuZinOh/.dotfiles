@@ -9,10 +9,10 @@ Item {
     id: root
 
     property var currentConfig: ({
-        "mode": WallpaperConfig.displayMode,
-        "transition": WallpaperConfig.transitionType,
-        "panning": WallpaperConfig.enablePanning
-    })
+            "mode": WallpaperConfig.displayMode,
+            "transition": WallpaperConfig.transitionType,
+            "panning": WallpaperConfig.enablePanning
+        })
 
     function callIpc(method, arg) {
         Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", method, arg]);
@@ -38,17 +38,17 @@ Item {
     }
 
     IpcHandler {
-        function show() : string {
+        function show(): string {
             root.visible = true;
             return "shown";
         }
 
-        function hide() : string {
+        function hide(): string {
             root.visible = false;
             return "hidden";
         }
 
-        function toggle() : string {
+        function toggle(): string {
             root.visible = !root.visible;
             return root.visible ? "shown" : "hidden";
         }
@@ -75,9 +75,7 @@ Item {
                     ipcMethod: "setMode"
                     ipcArg: modelData
                 }
-
             }
-
         }
 
         Row {
@@ -96,7 +94,6 @@ Item {
                     ipcMethod: "setTransition"
                     ipcArg: modelData
                 }
-
             }
 
             OptionButton {
@@ -106,9 +103,7 @@ Item {
                 ipcMethod: "setPanning"
                 ipcArg: root.currentConfig.panning ? "false" : "true"
             }
-
         }
-
     }
 
     component OptionButton: Item {
@@ -136,7 +131,6 @@ Item {
                     duration: 250
                     easing.type: Easing.OutCubic
                 }
-
             }
 
             Behavior on color {
@@ -144,23 +138,19 @@ Item {
                     duration: 200
                     easing.type: Easing.OutCubic
                 }
-
             }
 
             Behavior on border.width {
                 NumberAnimation {
                     duration: 200
                 }
-
             }
 
             Behavior on border.color {
                 ColorAnimation {
                     duration: 200
                 }
-
             }
-
         }
 
         Text {
@@ -175,9 +165,7 @@ Item {
                 ColorAnimation {
                     duration: 200
                 }
-
             }
-
         }
 
         MouseArea {
@@ -194,9 +182,6 @@ Item {
             NumberAnimation {
                 duration: 200
             }
-
         }
-
     }
-
 }

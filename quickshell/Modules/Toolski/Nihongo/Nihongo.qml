@@ -12,12 +12,13 @@ Item {
 
     function loadTab(tab) {
         charModel.clear();
-        db.readTransaction((tx) => {
+        db.readTransaction(tx => {
             const r = tx.executeSql("SELECT character, meaning FROM nihongo WHERE category = ?", [tab]);
-            for (let i = 0; i < r.rows.length; i++) charModel.append({
-                "kanji": r.rows.item(i).character,
-                "meaning": r.rows.item(i).meaning
-            })
+            for (let i = 0; i < r.rows.length; i++)
+                charModel.append({
+                    "kanji": r.rows.item(i).character,
+                    "meaning": r.rows.item(i).meaning
+                });
         });
     }
 
@@ -67,9 +68,7 @@ Item {
                         easing.type: Easing.OutBack
                         easing.overshoot: 1.4
                     }
-
                 }
-
             }
 
             Row {
@@ -101,9 +100,7 @@ Item {
                                 ColorAnimation {
                                     duration: 200
                                 }
-
                             }
-
                         }
 
                         MouseArea {
@@ -111,15 +108,10 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: root.currentTab = tabBtn.modelData
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
 
     GridView {
@@ -173,13 +165,8 @@ Item {
                         color: Theme.onSurfaceVariant
                         font.pixelSize: 10
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

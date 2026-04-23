@@ -20,7 +20,7 @@ Item {
 
     function positionToCurrentWallpaper() {
         if (!WallpaperConfig.currentWallpaper)
-            return ;
+            return;
 
         const cur = WallpaperConfig.currentWallpaper.split('/').pop();
         for (let i = 0; i < folderModel.count; i++) {
@@ -106,12 +106,12 @@ Item {
             id: contentWrapper
 
             anchors.fill: parent
-            
-            anchors{ 
-              topMargin:8 
-              bottomMargin: 8 
-              leftMargin: 8 
-              rightMargin: 8
+
+            anchors {
+                topMargin: 8
+                bottomMargin: 8
+                leftMargin: 8
+                rightMargin: 8
             }
             visible: false
             onVisibleChanged: visible ? Qt.callLater(root.positionToCurrentWallpaper) : (searchInput.focus = false)
@@ -178,7 +178,6 @@ Item {
                                         asynchronous: true
                                         cache: false
                                     }
-
                                 }
 
                                 Rectangle {
@@ -199,18 +198,14 @@ Item {
                                             family: "CaskaydiaCove NF"
                                             weight: Font.Medium
                                         }
-
                                     }
 
                                     Behavior on opacity {
                                         NumberAnimation {
                                             duration: 200
                                         }
-
                                     }
-
                                 }
-
                             }
 
                             MouseArea {
@@ -219,9 +214,7 @@ Item {
                                 enabled: del.isCurrent
                                 onClicked: root.applyWallpaper(del.index)
                             }
-
                         }
-
                     }
 
                     MouseArea {
@@ -230,9 +223,9 @@ Item {
                         anchors.fill: parent
                         z: -1
                         acceptedButtons: Qt.NoButton
-                        onWheel: (wheel) => {
+                        onWheel: wheel => {
                             if (wheel.pixelDelta.x === 0)
-                                return ;
+                                return;
 
                             acc -= wheel.pixelDelta.x;
                             if (Math.abs(acc) >= 50) {
@@ -258,7 +251,6 @@ Item {
                                 family: "CaskaydiaCove NF"
                                 weight: Font.Medium
                             }
-
                         }
 
                         Text {
@@ -270,11 +262,8 @@ Item {
                                 pixelSize: 13
                                 family: "CaskaydiaCove NF"
                             }
-
                         }
-
                     }
-
                 }
 
                 Item {
@@ -328,9 +317,7 @@ Item {
                                         ColorAnimation {
                                             duration: 200
                                         }
-
                                     }
-
                                 }
 
                                 TextInput {
@@ -369,7 +356,6 @@ Item {
                                             pixelSize: 13
                                             family: "CaskaydiaCove NF"
                                         }
-
                                     }
 
                                     Behavior on opacity {
@@ -377,9 +363,7 @@ Item {
                                             duration: 180
                                             easing.type: Easing.OutCubic
                                         }
-
                                     }
-
                                 }
 
                                 Rectangle {
@@ -398,7 +382,6 @@ Item {
                                             pixelSize: 16
                                             family: "CaskaydiaCove NF"
                                         }
-
                                     }
 
                                     MouseArea {
@@ -406,9 +389,7 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: searchInput.text = ""
                                     }
-
                                 }
-
                             }
 
                             Behavior on width {
@@ -417,16 +398,13 @@ Item {
                                     damping: 0.6
                                     epsilon: 0.5
                                 }
-
                             }
 
                             Behavior on border.color {
                                 ColorAnimation {
                                     duration: 200
                                 }
-
                             }
-
                         }
 
                         Item {
@@ -481,9 +459,7 @@ Item {
                                                 ColorAnimation {
                                                     duration: 200
                                                 }
-
                                             }
-
                                         }
 
                                         MouseArea {
@@ -500,31 +476,23 @@ Item {
                                                 duration: 220
                                                 easing.type: Easing.OutCubic
                                             }
-
                                         }
 
                                         Behavior on color {
                                             ColorAnimation {
                                                 duration: 200
                                             }
-
                                         }
 
                                         Behavior on border.color {
                                             ColorAnimation {
                                                 duration: 200
                                             }
-
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
 
                     Rectangle {
@@ -557,7 +525,6 @@ Item {
                                 duration: 1000
                                 loops: Animation.Infinite
                             }
-
                         }
 
                         MouseArea {
@@ -577,22 +544,16 @@ Item {
                                 duration: 250
                                 easing.type: Easing.OutCubic
                             }
-
                         }
 
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         Behavior on height {
@@ -600,9 +561,6 @@ Item {
                 duration: 350
                 easing.type: Easing.OutCubic
             }
-
         }
-
     }
-
 }

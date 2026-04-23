@@ -1,14 +1,14 @@
+pragma Singleton
 import QtQuick
 import Quickshell
-pragma Singleton
 
 Singleton {
     id: root
 
     property bool isActive: false
 
-    signal activated()
-    signal deactivated()
+    signal activated
+    signal deactivated
 
     function activate() {
         isActive = true;
@@ -19,5 +19,4 @@ Singleton {
         isActive = false;
         deactivated();
     }
-
 }

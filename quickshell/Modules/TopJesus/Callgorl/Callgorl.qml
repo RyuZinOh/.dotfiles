@@ -15,28 +15,32 @@ Item {
         spacing: 12
 
         Repeater {
-            model: [{
-                "icon": "󱗎",
-                "active": DancerConfig.isActive,
-                "activeColor": Theme.primaryContainer,
-                "activeBorder": Theme.primaryColor,
-                "activeText": Theme.onPrimaryContainer,
-                "service": "dancer"
-            }, {
-                "icon": "󰚱",
-                "active": OmnitrixConfig.isActive,
-                "activeColor": Theme.secondaryContainer,
-                "activeBorder": Theme.secondaryColor,
-                "activeText": Theme.onSecondaryContainer,
-                "service": "omnitrix"
-            }, {
-                "icon": "✎",
-                "active": ArtiqaConfig.isActive,
-                "activeColor": Theme.tertiaryContainer,
-                "activeBorder": Theme.tertiaryColor,
-                "activeText": Theme.onTertiaryContainer,
-                "service": "artiqa"
-            }]
+            model: [
+                {
+                    "icon": "󱗎",
+                    "active": DancerConfig.isActive,
+                    "activeColor": Theme.primaryContainer,
+                    "activeBorder": Theme.primaryColor,
+                    "activeText": Theme.onPrimaryContainer,
+                    "service": "dancer"
+                },
+                {
+                    "icon": "󰚱",
+                    "active": OmnitrixConfig.isActive,
+                    "activeColor": Theme.secondaryContainer,
+                    "activeBorder": Theme.secondaryColor,
+                    "activeText": Theme.onSecondaryContainer,
+                    "service": "omnitrix"
+                },
+                {
+                    "icon": "✎",
+                    "active": ArtiqaConfig.isActive,
+                    "activeColor": Theme.tertiaryContainer,
+                    "activeBorder": Theme.tertiaryColor,
+                    "activeText": Theme.onTertiaryContainer,
+                    "service": "artiqa"
+                }
+            ]
 
             delegate: Rectangle {
                 id: btn
@@ -62,9 +66,7 @@ Item {
                         ColorAnimation {
                             duration: 200
                         }
-
                     }
-
                 }
 
                 MouseArea {
@@ -81,7 +83,6 @@ Item {
                         duration: 250
                         easing.type: Easing.OutCubic
                     }
-
                 }
 
                 Behavior on color {
@@ -89,27 +90,20 @@ Item {
                         duration: 200
                         easing.type: Easing.OutCubic
                     }
-
                 }
 
                 Behavior on border.width {
                     NumberAnimation {
                         duration: 200
                     }
-
                 }
 
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 200
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

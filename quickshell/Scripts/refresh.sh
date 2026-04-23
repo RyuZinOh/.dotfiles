@@ -12,6 +12,7 @@ static_dirs=(
   "ImageMagick"
   "Microsoft"
   "mozilla"
+  "net.imput.helium"
   "gstreamer-1.0"
   "mesa_shader_cache"
   "QtProject"

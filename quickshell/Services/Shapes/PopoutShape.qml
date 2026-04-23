@@ -27,7 +27,6 @@ Item {
             leftMargin: root.radius
             rightMargin: root.radius
         }
-
     }
 
     Component {
@@ -83,9 +82,7 @@ Item {
                 x: 0
                 y: 0
             }
-
         }
-
     }
 
     Component {
@@ -144,9 +141,7 @@ Item {
                 x: 0
                 y: root.height
             }
-
         }
-
     }
 
     component BubbleShape: Shape {
@@ -164,7 +159,5 @@ Item {
             fillColor: root.color
             strokeWidth: -1
         }
-
     }
-
 }

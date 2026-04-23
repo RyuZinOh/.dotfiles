@@ -33,12 +33,21 @@ Item {
         property string fileName: "name"
         path: folderListModel.status === FolderListModel.Ready ? `file:///sys/class/hwmon/hwmon${Math.min(hwmon.index, folderListModel.count - 1)}/${hwmon.fileName}` : ""
         onLoaded: {
-            if (!root.componentActive) return;
+            if (!root.componentActive)
+                return;
             if (!hwmon.done) {
                 if (hwmon.text().includes("coretemp"))
-                    Qt.callLater(() => { if (!root.componentActive) return; hwmon.done = true; hwmon.fileName = "temp1_input"; });
+                    Qt.callLater(() => {
+                        if (!root.componentActive)
+                            return;
+                        hwmon.done = true;
+                        hwmon.fileName = "temp1_input";
+                    });
                 else if (hwmon.index < folderListModel.count - 1)
-                    Qt.callLater(() => { if (root.componentActive) ++hwmon.index; });
+                    Qt.callLater(() => {
+                        if (root.componentActive)
+                            ++hwmon.index;
+                    });
             } else {
                 root.cpuTemp = Number(hwmon.text()) / 1000;
             }
@@ -49,7 +58,8 @@ Item {
         id: procStat
         path: "file:///proc/stat"
         onLoaded: {
-            if (!root.componentActive) return;
+            if (!root.componentActive)
+                return;
             const t = procStat.text().split(' ').slice(2, 9).map(Number);
             const idle = t[3] + t[4];
             const total = t.reduce((a, c) => a + c, 0);
@@ -65,7 +75,8 @@ Item {
         id: procMemInfo
         path: "file:///proc/meminfo"
         onLoaded: {
-            if (!root.componentActive) return;
+            if (!root.componentActive)
+                return;
             const n = procMemInfo.text().split('\n').map(m => parseInt(m.split(':')[1]));
             root.usedMemoryPerc = 1 - n[2] / n[0];
         }
@@ -77,7 +88,8 @@ Item {
         running: root.componentActive
         repeat: true
         onTriggered: {
-            if (!root.componentActive) return;
+            if (!root.componentActive)
+                return;
             hwmon.reload();
             procStat.reload();
             procMemInfo.reload();
@@ -90,19 +102,23 @@ Item {
         spacing: 10
 
         Repeater {
-            model: [{
-                "label": "RAM",
-                "icon": "\udb80\udf5b",
-                "idx": 0
-            }, {
-                "label": "CPU",
-                "icon": "\udb83\udee0",
-                "idx": 1
-            }, {
-                "label": "TEMP",
-                "icon": "\udb82\udd8c",
-                "idx": 2
-            }]
+            model: [
+                {
+                    "label": "RAM",
+                    "icon": "\udb80\udf5b",
+                    "idx": 0
+                },
+                {
+                    "label": "CPU",
+                    "icon": "\udb83\udee0",
+                    "idx": 1
+                },
+                {
+                    "label": "TEMP",
+                    "icon": "\udb82\udd8c",
+                    "idx": 2
+                }
+            ]
 
             delegate: Item {
                 id: card
@@ -114,7 +130,10 @@ Item {
                 property real animatedVal: 0
 
                 Behavior on animatedVal {
-                    NumberAnimation { duration: 700; easing.type: Easing.OutCubic }
+                    NumberAnimation {
+                        duration: 700
+                        easing.type: Easing.OutCubic
+                    }
                 }
 
                 onValChanged: card.animatedVal = card.val
@@ -167,15 +186,7 @@ Item {
                             capStyle: ShapePath.RoundCap
 
                             PathSvg {
-                                path: ring.sineArcPath(
-                                    ring.width / 2,
-                                    ring.height / 2,
-                                    ring.arcR,
-                                    ring.arcStartDeg,
-                                    ring.fullSweep * card.animatedVal,
-                                    2.5,
-                                    5
-                                )
+                                path: ring.sineArcPath(ring.width / 2, ring.height / 2, ring.arcR, ring.arcStartDeg, ring.fullSweep * card.animatedVal, 2.5, 5)
                             }
                         }
                     }
@@ -189,7 +200,9 @@ Item {
                         y: ring.height / 2 + ring.arcR * Math.sin(ring.iconRad) - height / 2
 
                         Behavior on color {
-                            ColorAnimation { duration: 300 }
+                            ColorAnimation {
+                                duration: 300
+                            }
                         }
                     }
 

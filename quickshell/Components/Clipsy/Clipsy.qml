@@ -29,7 +29,7 @@ Item {
     readonly property string font: "CaskaydiaCove NF"
 
     function contentHeight() {
-        const cnt = clipsh.history.filter((e) => {
+        const cnt = clipsh.history.filter(e => {
             return searchInput.text === "" || clipsh.previewText(e).toLowerCase().includes(searchInput.text.toLowerCase());
         }).length;
         if (cnt === 0)
@@ -48,7 +48,7 @@ Item {
         openAnim.start();
     }
     Component.onDestruction: console.log("[Clipsy] destroyed")
-    Keys.onPressed: (event) => {
+    Keys.onPressed: event => {
         if (event.key === Qt.Key_Escape) {
             ClipsyConfig.dismiss();
             event.accepted = true;
@@ -59,7 +59,7 @@ Item {
         id: clipsh
 
         Component.onCompleted: fetchHistory()
-        onError: (msg) => {
+        onError: msg => {
             return console.warn("[Clipsy] error:", msg);
         }
         onItemCopied: ClipsyConfig.dismiss()
@@ -91,12 +91,11 @@ Item {
                 duration: 680
                 easing.type: Easing.OutExpo
             }
-
         }
 
         MouseArea {
             anchors.fill: parent
-            onClicked: (mouse) => {
+            onClicked: mouse => {
                 return mouse.accepted = true;
             }
         }
@@ -151,18 +150,15 @@ Item {
                     font.pixelSize: 13
                     focus: true
                     onTextChanged: listView.forceLayout()
-                    Keys.onPressed: (event) => {
+                    Keys.onPressed: event => {
                         if (event.key === Qt.Key_Escape) {
                             ClipsyConfig.dismiss();
                             event.accepted = false;
                         }
                     }
 
-                    background: Item {
-                    }
-
+                    background: Item {}
                 }
-
             }
 
             Rectangle {
@@ -194,11 +190,8 @@ Item {
                         duration: 150
                         easing.type: Easing.OutQuad
                     }
-
                 }
-
             }
-
         }
 
         Item {
@@ -217,7 +210,7 @@ Item {
                 anchors.fill: parent
                 spacing: 5
                 clip: true
-                model: clipsh.history.filter((e) => {
+                model: clipsh.history.filter(e => {
                     return searchInput.text === "" || clipsh.previewText(e).toLowerCase().includes(searchInput.text.toLowerCase());
                 })
 
@@ -245,7 +238,6 @@ Item {
                         duration: 260
                         easing.type: Easing.OutExpo
                     }
-
                 }
 
                 delegate: Rectangle {
@@ -286,9 +278,7 @@ Item {
                                 duration: 120
                                 easing.type: Easing.OutQuad
                             }
-
                         }
-
                     }
 
                     MouseArea {
@@ -305,13 +295,9 @@ Item {
                             duration: 120
                             easing.type: Easing.OutQuad
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         transform: Scale {
@@ -327,9 +313,7 @@ Item {
                 easing.amplitude: 1
                 easing.period: 0.55
             }
-
         }
-
     }
 
     Connections {
@@ -341,5 +325,4 @@ Item {
 
         target: ClipsyConfig
     }
-
 }

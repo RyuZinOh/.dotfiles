@@ -1,33 +1,34 @@
 pragma ComponentBehavior: Bound
+pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
-pragma Singleton
 
 Singleton {
     id: root
 
     property var iconOverrides: ({
-        "org.godotengine.ProjectManager": "godot",
-        "codium": "vscodium",
-        "obsidian": "md.obsidian.Obsidian", 
-        "Postman": "postman",
-        "org.qt-project.qtcreator": "QtProject-qtcreator",
-        "org.kde.krita": "krita",
-        "com.pokemmo.PokeMMO": "pokemmo-launcher",
-        "Waydroid": "waydroid",
-        "code": "visual-studio-code"
-    })
+            "org.godotengine.ProjectManager": "godot",
+            "codium": "vscodium",
+            "obsidian": "md.obsidian.Obsidian",
+            "Postman": "postman",
+            "org.qt-project.qtcreator": "QtProject-qtcreator",
+            "org.kde.krita": "krita",
+            "com.pokemmo.PokeMMO": "pokemmo-launcher",
+            "Waydroid": "waydroid",
+            "code": "visual-studio-code",
+            "helium": "helium-browser"
+        })
     readonly property var model: ToplevelManager.toplevels
     readonly property var enriched: {
-        return ToplevelManager.toplevels.values.map((tl) => {
+        return ToplevelManager.toplevels.values.map(tl => {
             return ({
-                "toplevel": tl,
-                "hypr": Hyprland.toplevels.values.find((h) => {
-                    return h.title === tl.title;
-                }) ?? null
-            });
+                    "toplevel": tl,
+                    "hypr": Hyprland.toplevels.values.find(h => {
+                        return h.title === tl.title;
+                    }) ?? null
+                });
         });
     }
 
@@ -53,9 +54,8 @@ Singleton {
     }
 
     function hyprFor(toplevel) {
-        return Hyprland.toplevels.values.find((h) => {
+        return Hyprland.toplevels.values.find(h => {
             return h.title === toplevel.title;
         }) ?? null;
     }
-
 }

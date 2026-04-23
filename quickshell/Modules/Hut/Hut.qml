@@ -11,18 +11,18 @@ Item {
     id: root
     property bool isHovered: false
     property color barColor: Theme.surfaceContainerLow
-    
+
     property real collapsedWidth: 0.1
     property real expandedWidth: 380
 
     property real currentBarWidth: isHovered ? expandedWidth : collapsedWidth
-    
+
     property real maskWidth: isHovered ? expandedWidth : 1
 
     Behavior on currentBarWidth {
-        NumberAnimation { 
-            duration: 350; 
-            easing.type: Easing.OutCubic 
+        NumberAnimation {
+            duration: 350
+            easing.type: Easing.OutCubic
         }
     }
 
@@ -33,15 +33,16 @@ Item {
     Timer {
         id: unloadTimer
         interval: 700
-        onTriggered: if (!root.isHovered) contentLoader.active = false
+        onTriggered: if (!root.isHovered)
+            contentLoader.active = false
     }
 
     onIsHoveredChanged: {
         if (isHovered) {
-            unloadTimer.stop()
-            contentLoader.active = true
+            unloadTimer.stop();
+            contentLoader.active = true;
         } else {
-            unloadTimer.start()
+            unloadTimer.start();
         }
     }
 
@@ -56,16 +57,16 @@ Item {
 
         Component.onCompleted: {
             switch (corner) {
-                case 1:
-                    anchors.top = parent.top
-                    anchors.right = parent.left
-                    rotation = 90
-                    break
-                case 2:
-                    anchors.bottom = parent.bottom
-                    anchors.right = parent.left
-                    rotation = 180
-                    break
+            case 1:
+                anchors.top = parent.top;
+                anchors.right = parent.left;
+                rotation = 90;
+                break;
+            case 2:
+                anchors.bottom = parent.bottom;
+                anchors.right = parent.left;
+                rotation = 180;
+                break;
             }
         }
 
@@ -82,8 +83,14 @@ Item {
                     radiusY: radiusX
                     direction: PathArc.Counterclockwise
                 }
-                PathLine { relativeX: 0; relativeY: -cornerRoot.radius }
-                PathLine { relativeX: cornerRoot.radius; relativeY: 0 }
+                PathLine {
+                    relativeX: 0
+                    relativeY: -cornerRoot.radius
+                }
+                PathLine {
+                    relativeX: cornerRoot.radius
+                    relativeY: 0
+                }
             }
         }
     }
@@ -92,7 +99,7 @@ Item {
         id: bar
         anchors.fill: parent
         color: root.barColor
-        
+
         clip: root.currentBarWidth < 5
 
         Corner {
@@ -108,25 +115,33 @@ Item {
         Loader {
             id: contentLoader
             anchors.fill: parent
-           
+
             active: false
             asynchronous: true
             clip: true
 
             property real contentOpacity: root.isHovered ? 1 : 0
             property real contentTranslateX: root.isHovered ? 0 : 30
-            
+
             Behavior on contentOpacity {
-                NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
+                NumberAnimation {
+                    duration: 350
+                    easing.type: Easing.OutCubic
+                }
             }
             Behavior on contentTranslateX {
-                NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
+                NumberAnimation {
+                    duration: 350
+                    easing.type: Easing.OutCubic
+                }
             }
 
             sourceComponent: Component {
                 Item {
                     opacity: contentLoader.contentOpacity
-                    transform: Translate { x: contentLoader.contentTranslateX }
+                    transform: Translate {
+                        x: contentLoader.contentTranslateX
+                    }
 
                     Column {
                         spacing: 16
@@ -136,13 +151,17 @@ Item {
                             anchors.horizontalCenter: parent.horizontalCenter
                             active: root.isHovered
                             asynchronous: true
-                            sourceComponent: Component { Areuok {} }
+                            sourceComponent: Component {
+                                Areuok {}
+                            }
                         }
                         Loader {
                             anchors.horizontalCenter: parent.horizontalCenter
                             active: root.isHovered
                             asynchronous: true
-                            sourceComponent: Component { Warsa {} }
+                            sourceComponent: Component {
+                                Warsa {}
+                            }
                         }
                     }
                 }

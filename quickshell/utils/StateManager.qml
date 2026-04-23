@@ -24,7 +24,9 @@ Singleton {
     }
 
     function loadStates() {
-        loadProcess.createObject(root, { running: true });
+        loadProcess.createObject(root, {
+            running: true
+        });
     }
 
     property Component loadProcess: Component {
@@ -87,9 +89,9 @@ Singleton {
             }
 
             onRunningChanged: {
-              if (!running){
+                if (!running) {
                     saveProc.destroy();
-              }
+                }
             }
         }
     }

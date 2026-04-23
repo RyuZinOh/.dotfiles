@@ -1,9 +1,9 @@
-import Kraken
 /*
  https://git.safallama.com.np/ashborn/warsa [check here for the Warsa Module]
  https://git.safallama.com.np/ashborn/kraken [check here for the Kraken Module]
  */
 pragma ComponentBehavior: Bound
+import Kraken
 import QtQuick
 import Warsa
 import qs.Services.Theme
@@ -67,9 +67,7 @@ Item {
                 duration: 150
                 easing.type: Easing.OutCubic
             }
-
         }
-
     }
 
     Rectangle {
@@ -112,9 +110,7 @@ Item {
                             ColorAnimation {
                                 duration: 200
                             }
-
                         }
-
                     }
 
                     MouseArea {
@@ -133,9 +129,7 @@ Item {
                             duration: 200
                             easing.type: Easing.OutCubic
                         }
-
                     }
-
                 }
 
                 Text {
@@ -169,9 +163,7 @@ Item {
                             ColorAnimation {
                                 duration: 200
                             }
-
                         }
-
                     }
 
                     MouseArea {
@@ -190,11 +182,8 @@ Item {
                             duration: 200
                             easing.type: Easing.OutCubic
                         }
-
                     }
-
                 }
-
             }
 
             Grid {
@@ -225,11 +214,8 @@ Item {
                             color: Theme.onSurfaceVariant
                             opacity: 0.6
                         }
-
                     }
-
                 }
-
             }
 
             Grid {
@@ -354,9 +340,7 @@ Item {
                                 ColorAnimation {
                                     duration: 200
                                 }
-
                             }
-
                         }
 
                         MouseArea {
@@ -400,7 +384,6 @@ Item {
                                 duration: 250
                                 easing.type: Easing.OutCubic
                             }
-
                         }
 
                         Behavior on color {
@@ -408,13 +391,9 @@ Item {
                                 duration: 200
                                 easing.type: Easing.OutCubic
                             }
-
                         }
-
                     }
-
                 }
-
             }
 
             Rectangle {
@@ -437,9 +416,7 @@ Item {
                         ColorAnimation {
                             duration: 200
                         }
-
                     }
-
                 }
 
                 MouseArea {
@@ -458,13 +435,8 @@ Item {
                         duration: 200
                         easing.type: Easing.OutCubic
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

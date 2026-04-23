@@ -37,7 +37,7 @@ Item {
             readonly property int workspaceId: index + 1
             readonly property bool isActive: Wow.activeWorkspaceId === workspaceId
             property bool isDropTarget: false
-            readonly property HyprlandWorkspace wsp: Hyprland.workspaces.values.find((s) => {
+            readonly property HyprlandWorkspace wsp: Hyprland.workspaces.values.find(s => {
                 return s.id === workspaceId;
             }) || null
             readonly property var geo: Wow.workspaceGeometry(wsp)
@@ -141,7 +141,6 @@ Item {
                                 live: true
                                 Component.onCompleted: Hyprland.refreshToplevels()
                             }
-
                         }
 
                         Item {
@@ -165,10 +164,8 @@ Item {
                                     var c = Toplevels.iconCandidates(windowItem.ipc ? windowItem.ipc.class : "");
                                     if (status === Image.Error && attempt < c.length - 1)
                                         attempt++;
-
                                 }
                             }
-
                         }
 
                         HoverHandler {
@@ -197,7 +194,6 @@ Item {
                                 duration: 220
                                 easing.type: Easing.OutQuad
                             }
-
                         }
 
                         Behavior on scale {
@@ -205,7 +201,6 @@ Item {
                                 duration: 220
                                 easing.type: Easing.OutQuad
                             }
-
                         }
 
                         states: State {
@@ -215,11 +210,8 @@ Item {
                                 target: windowItem
                                 parent: root
                             }
-
                         }
-
                     }
-
                 }
 
                 Behavior on color {
@@ -227,9 +219,7 @@ Item {
                         duration: 200
                         easing.type: Easing.OutQuad
                     }
-
                 }
-
             }
 
             Rectangle {
@@ -243,7 +233,6 @@ Item {
                     ColorAnimation {
                         duration: 150
                     }
-
                 }
 
                 Behavior on border.width {
@@ -251,16 +240,14 @@ Item {
                         duration: 150
                         easing.type: Easing.OutQuad
                     }
-
                 }
-
             }
 
             DropArea {
                 anchors.fill: parent
                 onEntered: workspaceWrapper.isDropTarget = true
                 onExited: workspaceWrapper.isDropTarget = false
-                onDropped: function(drop) {
+                onDropped: function (drop) {
                     workspaceWrapper.isDropTarget = false;
                     if (drop.source.address) {
                         Hyprland.dispatch("movetoworkspacesilent " + workspaceWrapper.workspaceId + ", address:" + drop.source.address);
@@ -270,9 +257,6 @@ Item {
                     }
                 }
             }
-
         }
-
     }
-
 }

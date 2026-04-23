@@ -18,11 +18,11 @@ Item {
         id: cleave
 
         bandCount: 100
-        smoothing: 0.1 
+        smoothing: 0.1
         peakDecay: 0.006
         silenceThreshold: 0.0001
         debugMode: false
-        onError: (msg) => {
+        onError: msg => {
             return console.warn("[CleaveViz]", msg);
         }
     }
@@ -57,9 +57,10 @@ Item {
         property real lerpFactor: 0.18
 
         function allSettled() {
-            for (var i = 0; i < smoothed.length; i++) if (smoothed[i] > 0.0001) {
-                return false;
-            }
+            for (var i = 0; i < smoothed.length; i++)
+                if (smoothed[i] > 0.0001) {
+                    return false;
+                }
             return true;
         }
 
@@ -69,25 +70,29 @@ Item {
             var n = data.length;
             if (smoothed.length !== n) {
                 smoothed = new Array(n);
-                for (var s = 0; s < n; s++) smoothed[s] = 0
+                for (var s = 0; s < n; s++)
+                    smoothed[s] = 0;
             }
-            for (var t = 0; t < n; t++) smoothed[t] = smoothed[t] + (data[t] - smoothed[t]) * lerpFactor
+            for (var t = 0; t < n; t++)
+                smoothed[t] = smoothed[t] + (data[t] - smoothed[t]) * lerpFactor;
             if (allSettled()) {
                 decayTimer.stop();
                 ctx.clearRect(0, 0, w, h);
-                return ;
+                return;
             }
             var peak = 0;
-            for (var k = 0; k < n; k++) if (smoothed[k] > peak) {
-                peak = smoothed[k];
-            }
+            for (var k = 0; k < n; k++)
+                if (smoothed[k] > peak) {
+                    peak = smoothed[k];
+                }
             var amp = (peak > 0.001) ? (h * 0.92 / peak) : 1;
             var step = w / (n - 1);
             var pts = [];
-            for (var i = 0; i < n; i++) pts.push({
-                "x": i * step,
-                "y": smoothed[i] * amp
-            })
+            for (var i = 0; i < n; i++)
+                pts.push({
+                    "x": i * step,
+                    "y": smoothed[i] * amp
+                });
             ctx.save();
             ctx.fillStyle = Theme.surfaceContainer;
             ctx.beginPath();
@@ -113,7 +118,7 @@ Item {
             ctx.clearRect(0, 0, width, height);
             var rawData = cleave.magnitudes;
             if (!rawData || rawData.length < 2)
-                return ;
+                return;
 
             var n = rawData.length;
             var processedData = new Array(n);
@@ -139,12 +144,10 @@ Item {
             function onSuspendedChanged() {
                 if (cleave.suspended)
                     decayTimer.start();
-
             }
 
             target: cleave
         }
-
     }
 
     Behavior on opacity {
@@ -152,7 +155,5 @@ Item {
             duration: 600
             easing.type: Easing.OutCubic
         }
-
     }
-
 }

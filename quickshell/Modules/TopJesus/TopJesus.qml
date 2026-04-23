@@ -23,37 +23,43 @@ Item {
     property bool iconRowHovered: false
     property bool bridgeHovered: false
     property bool nestedHovered: false
-    readonly property var popoutIcons: [{
-        "id": 1,
-        "icon": "\udb81\udfea",
-        "xOff": 75,
-        "w": 580,
-        "h": 180
-    }, {
-        "id": 2,
-        "icon": "\uefa7",
-        "xOff": 200,
-        "w": 320,
-        "h": 200
-    }, {
-        "id": 3,
-        "icon": "\uee34",
-        "xOff": 200,
-        "w": 450,
-        "h": 400
-    }, {
-        "id": 4,
-        "icon": "\uee82",
-        "xOff": 225,
-        "w": 320,
-        "h": 110
-    }, {
-        "id": 5,
-        "icon": "\udb81\udce0",
-        "xOff": 200,
-        "w": 320,
-        "h": 110
-    }]
+    readonly property var popoutIcons: [
+        {
+            "id": 1,
+            "icon": "\udb81\udfea",
+            "xOff": 75,
+            "w": 580,
+            "h": 180
+        },
+        {
+            "id": 2,
+            "icon": "\uefa7",
+            "xOff": 200,
+            "w": 320,
+            "h": 200
+        },
+        {
+            "id": 3,
+            "icon": "\uee34",
+            "xOff": 200,
+            "w": 450,
+            "h": 400
+        },
+        {
+            "id": 4,
+            "icon": "\uee82",
+            "xOff": 225,
+            "w": 320,
+            "h": 110
+        },
+        {
+            "id": 5,
+            "icon": "\udb81\udce0",
+            "xOff": 200,
+            "w": 320,
+            "h": 110
+        }
+    ]
     readonly property var popoutComponents: [null, controlRoomComp, wsetComp, anilistComp, powerskiComp, callgorlComp]
 
     function checkClose() {
@@ -67,7 +73,7 @@ Item {
     onActivePopoutChanged: {
         if (root.activePopout > 0) {
             nestedPopout.lastActive = root.activePopout;
-            const c = root.popoutIcons.find((p) => {
+            const c = root.popoutIcons.find(p => {
                 return p.id === root.activePopout;
             });
             const tx = root.width - c.w - c.xOff;
@@ -96,48 +102,37 @@ Item {
         onTriggered: {
             if (!root.iconRowHovered && !root.bridgeHovered && !root.nestedHovered)
                 root.activePopout = 0;
-
         }
     }
 
     Component {
         id: controlRoomComp
 
-        ControlRoom {
-        }
-
+        ControlRoom {}
     }
 
     Component {
         id: wsetComp
 
-        Wset {
-        }
-
+        Wset {}
     }
 
     Component {
         id: anilistComp
 
-        Anilist {
-        }
-
+        Anilist {}
     }
 
     Component {
         id: powerskiComp
 
-        Powerski {
-        }
-
+        Powerski {}
     }
 
     Component {
         id: callgorlComp
 
-        Callgorl {
-        }
-
+        Callgorl {}
     }
 
     MouseArea {
@@ -203,7 +198,6 @@ Item {
                             ColorAnimation {
                                 duration: 200
                             }
-
                         }
 
                         Behavior on rotation {
@@ -211,9 +205,7 @@ Item {
                                 duration: 200
                                 easing.type: Easing.OutCubic
                             }
-
                         }
-
                     }
 
                     MouseArea {
@@ -229,9 +221,7 @@ Item {
                         ColorAnimation {
                             duration: 150
                         }
-
                     }
-
                 }
 
                 Battery {
@@ -291,7 +281,6 @@ Item {
                                             ColorAnimation {
                                                 duration: 200
                                             }
-
                                         }
 
                                         Behavior on rotation {
@@ -299,9 +288,7 @@ Item {
                                                 duration: 500
                                                 easing.type: Easing.OutCubic
                                             }
-
                                         }
-
                                     }
 
                                     MouseArea {
@@ -321,13 +308,9 @@ Item {
                                             duration: 300
                                             easing.type: Easing.OutCubic
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
 
                         Behavior on width {
@@ -335,30 +318,25 @@ Item {
                                 duration: 300
                                 easing.type: Easing.OutCubic
                             }
-
                         }
 
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
                             }
-
                         }
 
                         Behavior on border.color {
                             ColorAnimation {
                                 duration: 200
                             }
-
                         }
 
                         Behavior on border.width {
                             NumberAnimation {
                                 duration: 200
                             }
-
                         }
-
                     }
 
                     Rectangle {
@@ -374,10 +352,8 @@ Item {
                                 root.bridgeHovered = hovered;
                                 if (!hovered)
                                     root.checkClose();
-
                             }
                         }
-
                     }
 
                     HoverHandler {
@@ -386,10 +362,8 @@ Item {
                             root.iconRowHovered = hovered;
                             if (!hovered)
                                 root.checkClose();
-
                         }
                     }
-
                 }
 
                 DayWidget {
@@ -415,9 +389,7 @@ Item {
                         font.pixelSize: 14
                         color: Theme.onSurface
                     }
-
                 }
-
             }
 
             Behavior on opacity {
@@ -425,9 +397,7 @@ Item {
                     duration: 300
                     easing.type: Easing.OutQuad
                 }
-
             }
-
         }
 
         Behavior on height {
@@ -435,9 +405,7 @@ Item {
                 duration: 200
                 easing.type: Easing.OutQuad
             }
-
         }
-
     }
 
     CleaveViz {
@@ -474,7 +442,6 @@ Item {
             }
             if (height === 0 && isOpen)
                 isOpen = false;
-
         }
 
         HoverHandler {
@@ -482,7 +449,6 @@ Item {
                 root.nestedHovered = hovered;
                 if (!hovered)
                     root.checkClose();
-
             }
         }
 
@@ -510,13 +476,9 @@ Item {
                             duration: 150
                             easing.type: Easing.InOutQuad
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         Behavior on width {
@@ -528,7 +490,6 @@ Item {
                 duration: 300
                 easing.type: Easing.InOutQuad
             }
-
         }
 
         Behavior on height {
@@ -544,7 +505,6 @@ Item {
                         nestedPopout.isOpen = false;
                 }
             }
-
         }
 
         Behavior on x {
@@ -556,9 +516,7 @@ Item {
                 duration: 300
                 easing.type: Easing.InOutQuad
             }
-
         }
-
     }
 
     HoverHandler {
@@ -566,8 +524,6 @@ Item {
             root.isHovered = hovered;
             if (!hovered)
                 root.hoveredWayland = null;
-
         }
     }
-
 }

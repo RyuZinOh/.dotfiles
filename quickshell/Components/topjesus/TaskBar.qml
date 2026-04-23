@@ -11,7 +11,7 @@ Item {
     property bool barOpen: false
 
     signal windowHovered(var wayland, real xPos)
-    signal windowUnhovered()
+    signal windowUnhovered
 
     visible: Toplevels.model.values.length > 0
     implicitWidth: pill.width
@@ -56,7 +56,6 @@ Item {
                             const candidates = Toplevels.iconCandidates(iconDelegate.modelData.appId);
                             if (status === Image.Error && attempt < candidates.length - 1)
                                 attempt++;
-
                         }
                     }
 
@@ -70,11 +69,8 @@ Item {
                         anchors.bottomMargin: 2
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
-
                 }
-
             }
-
         }
 
         Behavior on width {
@@ -82,9 +78,6 @@ Item {
                 duration: 200
                 easing.type: Easing.OutQuad
             }
-
         }
-
     }
-
 }

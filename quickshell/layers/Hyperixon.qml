@@ -109,9 +109,7 @@ Scope {
                             target: ClipsyConfig
                         }
 
-                        sourceComponent: Clipsy {
-                        }
-
+                        sourceComponent: Clipsy {}
                     }
 
                     //notification [Also we can implement our own layershell overlay for this one but nah...]
@@ -124,7 +122,6 @@ Scope {
                             rightMargin: 4
                             topMargin: 4
                         }
-
                     }
 
                     //toolski
@@ -142,9 +139,7 @@ Scope {
                         anchors.centerIn: parent
                         active: WowConfig.isActive
 
-                        sourceComponent: Wow {
-                        }
-
+                        sourceComponent: Wow {}
                     }
 
                     //     Connections {
@@ -166,7 +161,6 @@ Scope {
                             bottom: parent.bottom
                             right: parent.right
                         }
-
                     }
 
                     //omnitrix launcher
@@ -187,7 +181,6 @@ Scope {
 
                             target: OmnitrixConfig
                         }
-
                     }
 
                     //bouncing dancer
@@ -208,7 +201,6 @@ Scope {
 
                             target: DancerConfig
                         }
-
                     }
 
                     //artiqa drawing utility
@@ -220,7 +212,7 @@ Scope {
                         anchors.fill: parent
                         active: false
                         focus: active
-                        Keys.onPressed: (event) => {
+                        Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
                                 pimp.call("artiqa", "deactivate");
                                 event.accepted = true;
@@ -229,7 +221,6 @@ Scope {
                         onActiveChanged: {
                             if (!active && ArtiqaConfig.isActive)
                                 pimp.call("artiqa", "deactivate");
-
                         }
 
                         Connections {
@@ -244,9 +235,7 @@ Scope {
                             target: ArtiqaConfig
                         }
 
-                        pimp: Pimp {
-                        }
-
+                        pimp: Pimp {}
                     }
 
                     //osd
@@ -259,9 +248,7 @@ Scope {
                             rightMargin: 20
                             topMargin: 20
                         }
-
                     }
-
                 }
 
                 //enable this for extra pin stuff [very interesthing]
@@ -372,13 +359,8 @@ Scope {
                         width: ClipsyConfig.isActive ? 500 : 1
                         height: ClipsyConfig.isActive ? ClipsyConfig.panelHeight : 1
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

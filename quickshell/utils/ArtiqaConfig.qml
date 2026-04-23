@@ -1,15 +1,15 @@
+pragma Singleton
 import QtQuick
 import Quickshell
 import qs.utils
-pragma Singleton
 
 Singleton {
     id: root
 
     property bool isActive: false
 
-    signal showArtiqa()
-    signal hideArtiqa()
+    signal showArtiqa
+    signal hideArtiqa
 
     Connections {
         function onStatesChanged() {
@@ -25,5 +25,4 @@ Singleton {
 
         target: StateManager
     }
-
 }
