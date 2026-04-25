@@ -1,11 +1,12 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
 
 Rectangle {
     id: colorSection
 
-    property string currentColor: Theme.primaryColor
-    signal colorSelected(string color)
+    property color currentColor: Theme.primaryColor
+    signal colorSelected(color color)
 
     width: 250
     height: 64
@@ -14,25 +15,29 @@ Rectangle {
     border.color: Theme.outlineVariant
     border.width: 1
 
+    readonly property list<color> colorPalette: [Theme.errorColor, Theme.secondaryColor, Theme.primaryColor, Theme.tertiaryColor, Theme.onSurface, Theme.surfaceContainerHighest]
+
     Row {
         anchors.centerIn: parent
         spacing: 8
 
         Repeater {
-            model: [Theme.errorColor, Theme.secondaryColor, Theme.primaryColor, Theme.tertiaryColor, Theme.onSurface, Theme.surfaceContainerHighest]
+            model: colorSection.colorPalette
 
             delegate: Rectangle {
                 id: colorButton
+
+                required property color modelData
+
+                readonly property bool isActive: colorSection.currentColor === colorButton.modelData
+
                 width: 32
                 height: 32
-
-                property bool isActive: currentColor.toString().toUpperCase() === modelData.toString().toUpperCase()
-
-                radius: (isActive || colorMouse.containsMouse) ? 16 : 6
-                color: modelData
-                border.color: isActive ? Theme.primaryColor : (colorMouse.containsMouse ? Theme.outlineVariant : "transparent")
-                border.width: isActive ? 3 : (colorMouse.containsMouse ? 2 : 0)
-                scale: colorMouse.pressed ? 0.9 : ((colorMouse.containsMouse || isActive) ? 1.1 : 1.0)
+                radius: (colorButton.isActive || colorMouse.containsMouse) ? 16 : 6
+                color: colorButton.modelData
+                border.color: colorButton.isActive ? Theme.primaryColor : (colorMouse.containsMouse ? Theme.outlineVariant : "transparent")
+                border.width: colorButton.isActive ? 3 : (colorMouse.containsMouse ? 2 : 0)
+                scale: colorMouse.pressed ? 0.9 : ((colorMouse.containsMouse || colorButton.isActive) ? 1.1 : 1.0)
 
                 Behavior on radius {
                     NumberAnimation {
@@ -40,19 +45,16 @@ Rectangle {
                         easing.type: Easing.OutCubic
                     }
                 }
-
                 Behavior on border.width {
                     NumberAnimation {
                         duration: 150
                     }
                 }
-
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 150
                     }
                 }
-
                 Behavior on scale {
                     NumberAnimation {
                         duration: 150
@@ -65,9 +67,7 @@ Rectangle {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        colorSection.colorSelected(modelData);
-                    }
+                    onClicked: colorSection.colorSelected(colorButton.modelData.toString())
                 }
             }
         }

@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
 
@@ -23,6 +24,8 @@ Rectangle {
         spacing: 8
 
         Rectangle {
+            id: undoBtn
+
             width: 42
             height: 42
             radius: undoMouse.containsMouse ? 21 : 6
@@ -30,7 +33,7 @@ Rectangle {
             border.color: undoMouse.containsMouse ? Theme.secondaryColor : "transparent"
             border.width: undoMouse.containsMouse ? 2 : 0
             scale: undoMouse.pressed ? 0.9 : (undoMouse.containsMouse ? 1.1 : 1.0)
-            opacity: canUndo ? 1.0 : 0.3
+            opacity: actionsSection.canUndo ? 1.0 : 0.3
 
             Behavior on radius {
                 NumberAnimation {
@@ -38,13 +41,11 @@ Rectangle {
                     easing.type: Easing.OutCubic
                 }
             }
-
             Behavior on color {
                 ColorAnimation {
                     duration: 150
                 }
             }
-
             Behavior on scale {
                 NumberAnimation {
                     duration: 150
@@ -57,7 +58,6 @@ Rectangle {
                 text: "󰕍"
                 font.pixelSize: 20
                 color: undoMouse.containsMouse ? Theme.onSecondaryContainer : Theme.onSurface
-
                 Behavior on color {
                     ColorAnimation {
                         duration: 150
@@ -69,16 +69,17 @@ Rectangle {
                 id: undoMouse
                 anchors.fill: parent
                 hoverEnabled: true
-                cursorShape: canUndo ? Qt.PointingHandCursor : Qt.ArrowCursor
+                cursorShape: actionsSection.canUndo ? Qt.PointingHandCursor : Qt.ArrowCursor
                 onClicked: {
-                    if (canUndo) {
+                    if (actionsSection.canUndo)
                         actionsSection.undoClicked();
-                    }
                 }
             }
         }
 
         Rectangle {
+            id: redoBtn
+
             width: 42
             height: 42
             radius: redoMouse.containsMouse ? 21 : 6
@@ -86,7 +87,7 @@ Rectangle {
             border.color: redoMouse.containsMouse ? Theme.tertiaryColor : "transparent"
             border.width: redoMouse.containsMouse ? 2 : 0
             scale: redoMouse.pressed ? 0.9 : (redoMouse.containsMouse ? 1.1 : 1.0)
-            opacity: canRedo ? 1.0 : 0.3
+            opacity: actionsSection.canRedo ? 1.0 : 0.3
 
             Behavior on radius {
                 NumberAnimation {
@@ -94,13 +95,11 @@ Rectangle {
                     easing.type: Easing.OutCubic
                 }
             }
-
             Behavior on color {
                 ColorAnimation {
                     duration: 150
                 }
             }
-
             Behavior on scale {
                 NumberAnimation {
                     duration: 150
@@ -113,7 +112,6 @@ Rectangle {
                 text: "󰑏"
                 font.pixelSize: 20
                 color: redoMouse.containsMouse ? Theme.onTertiaryContainer : Theme.onSurface
-
                 Behavior on color {
                     ColorAnimation {
                         duration: 150
@@ -125,16 +123,17 @@ Rectangle {
                 id: redoMouse
                 anchors.fill: parent
                 hoverEnabled: true
-                cursorShape: canRedo ? Qt.PointingHandCursor : Qt.ArrowCursor
+                cursorShape: actionsSection.canRedo ? Qt.PointingHandCursor : Qt.ArrowCursor
                 onClicked: {
-                    if (canRedo) {
+                    if (actionsSection.canRedo)
                         actionsSection.redoClicked();
-                    }
                 }
             }
         }
 
         Rectangle {
+            id: clearBtn
+
             width: 42
             height: 42
             radius: clearMouse.containsMouse ? 21 : 6
@@ -149,13 +148,11 @@ Rectangle {
                     easing.type: Easing.OutCubic
                 }
             }
-
             Behavior on color {
                 ColorAnimation {
                     duration: 150
                 }
             }
-
             Behavior on scale {
                 NumberAnimation {
                     duration: 150
@@ -165,10 +162,9 @@ Rectangle {
 
             Text {
                 anchors.centerIn: parent
-                text: ""
+                text: ""
                 font.pixelSize: 20
                 color: clearMouse.containsMouse ? Theme.onErrorContainer : Theme.onSurface
-
                 Behavior on color {
                     ColorAnimation {
                         duration: 150
@@ -181,9 +177,7 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    actionsSection.clearClicked();
-                }
+                onClicked: actionsSection.clearClicked()
             }
         }
     }

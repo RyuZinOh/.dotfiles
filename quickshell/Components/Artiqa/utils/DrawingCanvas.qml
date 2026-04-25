@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 
 Canvas {
@@ -6,45 +7,42 @@ Canvas {
     property var drawingState: null
 
     Connections {
-        target: drawingState
+        target: canvas.drawingState
         function onStateChanged() {
             canvas.requestPaint();
         }
     }
 
     onPaint: {
-        if (!drawingState)
+        if (!canvas.drawingState)
             return;
 
-        var ctx = getContext("2d");
-        ctx.clearRect(0, 0, width, height);
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (var i = 0; i < drawingState.pathData.length; i++) {
-            var path = drawingState.pathData[i];
-            drawPath(ctx, path);
-        }
+        const paths = canvas.drawingState.pathData;
+        for (let i = 0; i < paths.length; i++)
+            canvas.drawPath(ctx, paths[i]);
 
-        if (drawingState.currentPath.length > 1) {
-            drawPath(ctx, {
-                points: drawingState.currentPath,
-                color: drawingState.drawColor,
-                size: drawingState.brushSize,
+        const cur = canvas.drawingState.currentPath;
+        if (cur.length > 1) {
+            canvas.drawPath(ctx, {
+                points: cur,
+                color: canvas.drawingState.drawColor,
+                size: canvas.drawingState.brushSize,
                 type: "pencil"
             });
         }
     }
 
     function drawPath(ctx, path) {
-        if (!path.points || path.points.length < 2) {
+        if (!path.points || path.points.length < 2)
             return;
-        }
-
         switch (path.type) {
         case "pencil":
         default:
-            drawPencilPath(ctx, path);
+            canvas.drawPencilPath(ctx, path);
             break;
-        //future stuff
         }
     }
 
@@ -53,14 +51,10 @@ Canvas {
         ctx.lineWidth = path.size;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
-
         ctx.beginPath();
         ctx.moveTo(path.points[0].x, path.points[0].y);
-
-        for (var i = 1; i < path.points.length; i++) {
+        for (let i = 1; i < path.points.length; i++)
             ctx.lineTo(path.points[i].x, path.points[i].y);
-        }
-
         ctx.stroke();
     }
 }

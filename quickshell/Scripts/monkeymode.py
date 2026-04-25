@@ -9,4 +9,4 @@ data = THEME_JSON.read_bytes()
 encoded = base64.b64encode(data).decode()
 url = f"https://monkeytype.com/?customTheme={encoded}"
 
-subprocess.run(["firefox", "--new-tab", url])
+subprocess.run(["helium-browser", "--new-tab", url])
