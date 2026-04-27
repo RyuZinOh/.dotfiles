@@ -55,7 +55,7 @@ Rectangle {
 
             Text {
                 anchors.centerIn: parent
-                text: "󰕍"
+                text: "\uf0e2"
                 font.pixelSize: 20
                 color: undoMouse.containsMouse ? Theme.onSecondaryContainer : Theme.onSurface
                 Behavior on color {
@@ -108,10 +108,15 @@ Rectangle {
             }
 
             Text {
+                id: redoIcon
                 anchors.centerIn: parent
-                text: "󰑏"
+                text: "\uf0e2"
                 font.pixelSize: 20
                 color: redoMouse.containsMouse ? Theme.onTertiaryContainer : Theme.onSurface
+                transform: Scale {
+                    xScale: -1
+                    origin.x: redoIcon.width / 2
+                }
                 Behavior on color {
                     ColorAnimation {
                         duration: 150
@@ -162,7 +167,7 @@ Rectangle {
 
             Text {
                 anchors.centerIn: parent
-                text: ""
+                text: "\udb81\udfff"
                 font.pixelSize: 20
                 color: clearMouse.containsMouse ? Theme.onErrorContainer : Theme.onSurface
                 Behavior on color {

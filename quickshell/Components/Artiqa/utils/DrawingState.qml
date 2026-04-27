@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Services.Theme
 
 QtObject {
     id: drawingState
@@ -7,13 +8,13 @@ QtObject {
     property var currentPath: []
     property bool isDrawing: false
 
-    property string drawColor: "#FF3B30"
+    property color drawColor: Theme.errorColor
     property real brushSize: 2.0
 
     property var undoStack: []
 
-    readonly property bool canUndo: pathData.length > 0
-    readonly property bool canRedo: undoStack.length > 0
+    property bool canUndo: false
+    property bool canRedo: false
 
     signal stateChanged
 
@@ -22,8 +23,10 @@ QtObject {
         currentPath = [];
         undoStack = [];
         isDrawing = false;
-        drawColor;
+        drawColor = Theme.errorColor;
         brushSize = 2.0;
+        canUndo = false;
+        canRedo = false;
         stateChanged();
     }
 
@@ -33,67 +36,64 @@ QtObject {
     }
 
     function addPoint(point) {
-        if (!isDrawing) {
+        if (!isDrawing)
             return;
-        }
         currentPath.push(point);
+        currentPath = currentPath;
         stateChanged();
     }
 
     function finishPath() {
-        if (!isDrawing) {
+        if (!isDrawing)
             return;
-        }
         isDrawing = false;
-
         if (currentPath.length > 1) {
-            var newPathData = pathData.slice();
-            newPathData.push({
-                points: currentPath.slice(),
-                color: drawColor,
-                size: brushSize,
-                type: "pencil"
-                //other stuffs
+            pathData.push({
+                points: currentPath,
+                color: drawColor.toString(),
+                size: brushSize
             });
-            pathData = newPathData;
+            pathData = pathData;
             undoStack = [];
+            canUndo = true;
+            canRedo = false;
         }
         currentPath = [];
         stateChanged();
     }
 
     function undo() {
-        if (!canUndo) {
+        if (!canUndo)
             return;
-        }
-
-        var newPathData = pathData.slice();
-        var lastPath = newPathData.pop();
-
-        var newUndoStack = undoStack.slice();
-        newUndoStack.push(lastPath);
-
-        pathData = newPathData;
-        undoStack = newUndoStack;
+        const pd = pathData.slice();
+        const us = undoStack.slice();
+        us.push(pd.pop());
+        pathData = pd;
+        undoStack = us;
+        canUndo = pd.length > 0;
+        canRedo = true;
         stateChanged();
     }
 
     function redo() {
-        if (!canRedo) {
+        if (!canRedo)
             return;
-        }
-        var newUndoStack = undoStack.slice();
-        var redoPath = newUndoStack.pop();
-        var newPathData = pathData.slice();
-        newPathData.push(redoPath);
-        undoStack = newUndoStack;
-        pathData = newPathData;
+        const pd = pathData.slice();
+        const us = undoStack.slice();
+        pd.push(us.pop());
+        pathData = pd;
+        undoStack = us;
+        canUndo = true;
+        canRedo = us.length > 0;
         stateChanged();
     }
+
     function clear() {
         pathData = [];
         undoStack = [];
         currentPath = [];
+        canUndo = false;
+        canRedo = false;
         stateChanged();
     }
 }

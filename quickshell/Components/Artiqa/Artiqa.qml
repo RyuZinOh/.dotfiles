@@ -1,9 +1,8 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import qs.Services.Theme
-import qs.Components.Artiqa
-import qs.Components.Artiqa.tools
-import qs.Components.Artiqa.utils
+import "./utils/"
+import "./tools/"
 
 Item {
     id: artiqa
@@ -22,77 +21,154 @@ Item {
         drawingState: drawingStateManager
     }
 
-    onActiveChanged: drawingStateManager.reset()
+    property var jiggleTool: JiggleTool {
+        id: jiggleTool
+        drawingState: drawingStateManager
+        jiggleLayer: jiggleLayer
+    }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "transparent"
+    readonly property bool isJiggleMode: artiqa.currentTool === jiggleTool
+
+    onActiveChanged: {
+        if (!active) {
+            if (isJiggleMode) {
+                currentTool = pencilTool;
+                jiggleTool.deactivate();
+            }
+            drawingStateManager.clear();
+        }
     }
 
     DrawingCanvas {
         id: canvas
         anchors.fill: parent
         drawingState: artiqa.drawingState
+        visible: !artiqa.isJiggleMode
+    }
+
+    JiggleLayer {
+        id: jiggleLayer
+        anchors.fill: parent
+        z: 1
     }
 
     MouseArea {
         anchors.fill: parent
-        z: 0
+        z: 2
         hoverEnabled: true
-        cursorShape: containsMouse ? Qt.CrossCursor : Qt.ArrowCursor
+        cursorShape: artiqa.isJiggleMode ? Qt.OpenHandCursor : (containsMouse ? Qt.CrossCursor : Qt.ArrowCursor)
         onPressed: mouse => artiqa.currentTool?.handlePress(mouse)
         onPositionChanged: mouse => artiqa.currentTool?.handleMove(mouse)
         onReleased: mouse => artiqa.currentTool?.handleRelease(mouse)
     }
 
-    Loader {
-        id: toolbarLoader
-
+    Rectangle {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: 24
         z: 10
-        active: artiqa.active
+        visible: artiqa.active
+        width: 620
+        height: 80
+        radius: 16
+        color: Theme.surfaceContainer
+        border.color: Theme.outlineVariant
+        border.width: 1
 
-        sourceComponent: Rectangle {
-            width: 560
-            height: 80
-            radius: 16
-            color: Theme.surfaceContainer
-            border.color: Theme.outlineVariant
-            border.width: 1
+        Row {
+            anchors.centerIn: parent
+            spacing: 12
 
-            Row {
-                anchors.centerIn: parent
-                spacing: 12
+            ColorSection {
+                currentColor: artiqa.drawingState.drawColor
+                onColorSelected: c => artiqa.drawingState.drawColor = c
+                opacity: artiqa.isJiggleMode ? 0.3 : 1.0
+                enabled: !artiqa.isJiggleMode
+            }
 
-                ColorSection {
-                    currentColor: artiqa.drawingState.drawColor
-                    onColorSelected: c => artiqa.drawingState.drawColor = c
+            SizeSection {
+                id: sizeSection
+                currentSize: artiqa.drawingState.brushSize
+                opacity: artiqa.isJiggleMode ? 0.3 : 1.0
+                enabled: !artiqa.isJiggleMode
+                onSizeSelected: size => {
+                    artiqa.drawingState.brushSize = size;
+                    sizeDropdownOverlay.visible = false;
+                }
+                onDropdownToggled: (open, gx, gy) => {
+                    if (open) {
+                        sizeDropdownOverlay.anchorX = gx;
+                        sizeDropdownOverlay.anchorY = gy;
+                        sizeDropdownOverlay.visible = true;
+                    }
+                }
+            }
+
+            ActionsSection {
+                canUndo: artiqa.drawingState.canUndo
+                canRedo: artiqa.drawingState.canRedo
+                opacity: artiqa.isJiggleMode ? 0.3 : 1.0
+                enabled: !artiqa.isJiggleMode
+                onUndoClicked: artiqa.drawingState.undo()
+                onRedoClicked: artiqa.drawingState.redo()
+                onClearClicked: artiqa.drawingState.clear()
+            }
+
+            Rectangle {
+                id: jiggleBtn
+
+                width: 52
+                height: 52
+                radius: jiggleMouse.containsMouse ? 26 : 8
+                color: artiqa.isJiggleMode ? Theme.primaryContainer : (jiggleMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent")
+                border.color: artiqa.isJiggleMode ? Theme.primaryColor : (jiggleMouse.containsMouse ? Theme.outlineVariant : "transparent")
+                border.width: artiqa.isJiggleMode ? 2 : (jiggleMouse.containsMouse ? 1 : 0)
+                scale: jiggleMouse.pressed ? 0.9 : (jiggleMouse.containsMouse ? 1.05 : 1.0)
+
+                Behavior on radius {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 150
+                    }
+                }
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 150
+                        easing.type: Easing.OutBack
+                    }
                 }
 
-                SizeSection {
-                    id: sizeSection
-                    currentSize: artiqa.drawingState.brushSize
-                    onSizeSelected: size => {
-                        artiqa.drawingState.brushSize = size;
-                        sizeDropdownOverlay.visible = false;
-                    }
-                    onDropdownToggled: (open, gx, gy) => {
-                        if (open) {
-                            sizeDropdownOverlay.anchorX = gx;
-                            sizeDropdownOverlay.anchorY = gy;
-                            sizeDropdownOverlay.visible = true;
+                Text {
+                    anchors.centerIn: parent
+                    text: "\ued71"
+                    font.pixelSize: 22
+                    color: artiqa.isJiggleMode ? Theme.onPrimaryContainer : Theme.onSurface
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
                         }
                     }
                 }
 
-                ActionsSection {
-                    canUndo: artiqa.drawingState.canUndo
-                    canRedo: artiqa.drawingState.canRedo
-                    onUndoClicked: artiqa.drawingState.undo()
-                    onRedoClicked: artiqa.drawingState.redo()
-                    onClearClicked: artiqa.drawingState.clear()
+                MouseArea {
+                    id: jiggleMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (artiqa.isJiggleMode) {
+                            artiqa.currentTool = artiqa.pencilTool;
+                            jiggleTool.deactivate();
+                        } else {
+                            artiqa.currentTool = artiqa.jiggleTool;
+                            jiggleTool.activate();
+                        }
+                    }
                 }
             }
         }

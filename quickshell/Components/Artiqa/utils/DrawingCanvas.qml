@@ -1,52 +1,75 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 
-Canvas {
-    id: canvas
+Item {
+    id: root
 
     property var drawingState: null
 
-    Connections {
-        target: canvas.drawingState
-        function onStateChanged() {
-            canvas.requestPaint();
+    Canvas {
+        id: committedCanvas
+        anchors.fill: parent
+
+        property int lastPathCount: -1
+
+        Connections {
+            target: root.drawingState
+            function onStateChanged() {
+                const len = root.drawingState.pathData.length;
+                if (len !== committedCanvas.lastPathCount) {
+                    committedCanvas.lastPathCount = len;
+                    committedCanvas.requestPaint();
+                }
+            }
+        }
+
+        onPaint: {
+            if (!root.drawingState)
+                return;
+            const ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+            const paths = root.drawingState.pathData;
+            for (let i = 0; i < paths.length; i++)
+                root.drawPencilPath(ctx, paths[i]);
         }
     }
 
-    onPaint: {
-        if (!canvas.drawingState)
-            return;
+    Canvas {
+        id: liveCanvas
+        anchors.fill: parent
 
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        property bool dirty: false
 
-        const paths = canvas.drawingState.pathData;
-        for (let i = 0; i < paths.length; i++)
-            canvas.drawPath(ctx, paths[i]);
-
-        const cur = canvas.drawingState.currentPath;
-        if (cur.length > 1) {
-            canvas.drawPath(ctx, {
-                points: cur,
-                color: canvas.drawingState.drawColor,
-                size: canvas.drawingState.brushSize,
-                type: "pencil"
-            });
+        Connections {
+            target: root.drawingState
+            function onStateChanged() {
+                if (root.drawingState.isDrawing || liveCanvas.dirty)
+                    liveCanvas.requestPaint();
+            }
         }
-    }
 
-    function drawPath(ctx, path) {
-        if (!path.points || path.points.length < 2)
-            return;
-        switch (path.type) {
-        case "pencil":
-        default:
-            canvas.drawPencilPath(ctx, path);
-            break;
+        onPaint: {
+            if (!root.drawingState)
+                return;
+            const ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+            const cur = root.drawingState.currentPath;
+            if (cur.length > 1) {
+                root.drawPencilPath(ctx, {
+                    points: cur,
+                    color: root.drawingState.drawColor.toString(),
+                    size: root.drawingState.brushSize
+                });
+                dirty = true;
+            } else {
+                dirty = false;
+            }
         }
     }
 
     function drawPencilPath(ctx, path) {
+        if (!path.points || path.points.length < 2)
+            return;
         ctx.strokeStyle = path.color;
         ctx.lineWidth = path.size;
         ctx.lineCap = "round";
