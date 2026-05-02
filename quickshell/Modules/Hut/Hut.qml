@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import qs.Services.Theme
 import "./Warsa/"
 import "./Areuok/"
+import "./Siphon/"
 
 Item {
     id: root
@@ -144,7 +145,7 @@ Item {
                     }
 
                     Column {
-                        spacing: 16
+                        spacing: 4
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         Loader {
@@ -161,6 +162,14 @@ Item {
                             asynchronous: true
                             sourceComponent: Component {
                                 Warsa {}
+                            }
+                        }
+                        Loader {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            active: root.isHovered
+                            asynchronous: true
+                            sourceComponent: Component {
+                                Siphon {}
                             }
                         }
                     }

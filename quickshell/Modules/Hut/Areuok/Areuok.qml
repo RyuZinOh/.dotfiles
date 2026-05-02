@@ -7,8 +7,8 @@ import qs.Services.Shapes
 
 Item {
     id: root
-    implicitWidth: serviceRow.width
-    implicitHeight: 64
+    implicitWidth: inner.width + 24
+    implicitHeight: 38
 
     property var services: ({})
     property var activeProcesses: ({})
@@ -76,130 +76,138 @@ Item {
         root.activeProcesses[name] = proc;
     }
 
-    Row {
-        id: serviceRow
-        spacing: 12
-        anchors.centerIn: parent
+    Rectangle {
+        anchors.fill: parent
+        radius: 18
+        color: Theme.surfaceContainerLow
+        border.width: 1
+        border.color: Theme.outlineVariant
 
-        Repeater {
-            model: [
-                {
-                    name: "docker",
-                    icon: "\uF308",
-                    display: "Docker",
-                    shapeIdx: 28
-                },
-                {
-                    name: "mariadb",
-                    icon: "\ue828",
-                    display: "MariaDB",
-                    shapeIdx: 13
-                },
-                {
-                    name: "nginx",
-                    icon: "\ue776",
-                    display: "Nginx",
-                    shapeIdx: 14
-                },
-                {
-                    name: "httpd",
-                    icon: "\ue72b",
-                    display: "Apache",
-                    shapeIdx: 22
-                }
-            ]
+        Row {
+            id: inner
+            spacing: 8
+            anchors.centerIn: parent
 
-            delegate: Item {
-                id: chip
-                required property var modelData
-                required property int index
-
-                width: 56
-                height: 56
-
-                readonly property bool running: root.services[chip.modelData.name] === true
-                readonly property bool hovered: hoverArea.containsMouse
-
-                property int morphIdx: chip.modelData.shapeIdx
-
-                Timer {
-                    interval: 700
-                    running: chip.running && !chip.hovered
-                    repeat: true
-                    onTriggered: chip.morphIdx = (chip.morphIdx + 1) % 35
-                }
-
-                onRunningChanged: {
-                    if (!chip.running)
-                        chip.morphIdx = chip.modelData.shapeIdx;
-                }
-
-                ShapeCanvas {
-                    anchors.fill: parent
-                    roundedPolygon: GetMShapes.get(chip.morphIdx)
-                    color: {
-                        if (chip.hovered)
-                            return chip.running ? Theme.primaryContainer : Theme.errorContainer;
-                        return chip.running ? Theme.primaryColor : Theme.surfaceContainerHigh;
+            Repeater {
+                model: [
+                    {
+                        name: "docker",
+                        icon: "\uF308",
+                        display: "Docker",
+                        shapeIdx: 28
+                    },
+                    {
+                        name: "mariadb",
+                        icon: "\ue828",
+                        display: "MariaDB",
+                        shapeIdx: 13
+                    },
+                    {
+                        name: "nginx",
+                        icon: "\ue776",
+                        display: "Nginx",
+                        shapeIdx: 14
+                    },
+                    {
+                        name: "httpd",
+                        icon: "\ue72b",
+                        display: "Apache",
+                        shapeIdx: 22
                     }
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 300
-                            easing.type: Easing.InOutCubic
+                ]
+
+                delegate: Item {
+                    id: chip
+                    required property var modelData
+                    required property int index
+
+                    width: 38
+                    height: 38
+
+                    readonly property bool running: root.services[chip.modelData.name] === true
+                    readonly property bool hovered: hoverArea.containsMouse
+
+                    property int morphIdx: chip.modelData.shapeIdx
+
+                    Timer {
+                        interval: 700
+                        running: chip.running && !chip.hovered
+                        repeat: true
+                        onTriggered: chip.morphIdx = (chip.morphIdx + 1) % 35
+                    }
+
+                    onRunningChanged: {
+                        if (!chip.running)
+                            chip.morphIdx = chip.modelData.shapeIdx;
+                    }
+
+                    ShapeCanvas {
+                        anchors.fill: parent
+                        roundedPolygon: GetMShapes.get(chip.morphIdx)
+                        color: {
+                            if (chip.hovered)
+                                return chip.running ? Theme.primaryContainer : Theme.errorContainer;
+                            return chip.running ? Theme.primaryColor : Theme.surfaceContainerHigh;
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 300
+                                easing.type: Easing.InOutCubic
+                            }
+                        }
+                        scale: chip.hovered ? 1.08 : 1.0
+                        Behavior on scale {
+                            NumberAnimation {
+                                duration: 320
+                                easing.type: Easing.OutBack
+                            }
                         }
                     }
-                    scale: chip.hovered ? 1.08 : 1.0
-                    Behavior on scale {
-                        NumberAnimation {
-                            duration: 320
-                            easing.type: Easing.OutBack
-                        }
-                    }
-                }
 
-                Text {
-                    anchors.centerIn: parent
-                    text: chip.modelData.icon
-                    font.pixelSize: 22
-                    font.family: "CaskaydiaCove NF"
-                    color: {
-                        if (chip.hovered)
-                            return chip.running ? Theme.onPrimaryContainer : Theme.onErrorContainer;
-                        return chip.running ? Theme.surfaceContainer : Theme.onSurfaceVariant;
-                    }
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 300
-                            easing.type: Easing.InOutCubic
-                        }
-                    }
-                }
-
-                ToolTip {
-                    id: tooltip
-                    visible: chip.hovered
-                    delay: 300
-                    text: chip.modelData.display + (chip.running ? " running" : " stopped")
-                    background: Rectangle {
-                        color: Theme.surfaceContainer
-                        radius: 8
-                        border.width: 1
-                        border.color: Theme.outlineVariant
-                    }
-                    contentItem: Text {
-                        text: tooltip.text
-                        color: Theme.onSurface
-                        font.pixelSize: 11
+                    Text {
+                        anchors.centerIn: parent
+                        text: chip.modelData.icon
+                        font.pixelSize: 16
                         font.family: "CaskaydiaCove NF"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                        color: {
+                            if (chip.hovered)
+                                return chip.running ? Theme.onPrimaryContainer : Theme.onErrorContainer;
+                            return chip.running ? Theme.surfaceContainer : Theme.onSurfaceVariant;
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 300
+                                easing.type: Easing.InOutCubic
+                            }
+                        }
                     }
-                }
 
-                MouseArea {
-                    id: hoverArea
-                    anchors.fill: parent
-                    hoverEnabled: true
+                    ToolTip {
+                        id: tooltip
+                        visible: chip.hovered
+                        delay: 300
+                        text: chip.modelData.display + (chip.running ? " running" : " stopped")
+                        background: Rectangle {
+                            color: Theme.surfaceContainer
+                            radius: 8
+                            border.width: 1
+                            border.color: Theme.outlineVariant
+                        }
+                        contentItem: Text {
+                            text: tooltip.text
+                            color: Theme.onSurface
+                            font.pixelSize: 11
+                            font.family: "CaskaydiaCove NF"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    MouseArea {
+                        id: hoverArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                    }
                 }
             }
         }
