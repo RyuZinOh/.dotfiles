@@ -21,6 +21,7 @@ Singleton {
     property int currentValue: 0
     property bool isMuted: false
     property bool isVisible: false
+    property bool pipewireReady: false
 
     enum Character {
         Ororon,
@@ -29,16 +30,20 @@ Singleton {
     }
 
     property int character: OsdConfig.Character.Ororon
-
     readonly property int maxLimit: 100
     readonly property var characterNames: ["Ororon", "Skirk", "Chasca"]
     readonly property string currentCharacterName: root.characterNames[root.character] || "Ororon"
     readonly property string configPath: Quickshell.env("HOME") + "/.cache/safalQuick/osd.json"
-
     property bool loaded: false
 
-    onSinkVolumeChanged: pushVolumeOsd()
-    onSinkMutedChanged: pushVolumeOsd()
+    onSinkVolumeChanged: {
+        if (root.pipewireReady)
+            pushVolumeOsd();
+    }
+    onSinkMutedChanged: {
+        if (root.pipewireReady)
+            pushVolumeOsd();
+    }
 
     function pushVolumeOsd() {
         root.mode = "volume";
@@ -95,6 +100,13 @@ Singleton {
         interval: 2000
         running: root.isVisible
         onTriggered: root.isVisible = false
+    }
+
+    Timer {
+        interval: 500
+        running: true
+        repeat: false
+        onTriggered: root.pipewireReady = true
     }
 
     Kraken {
