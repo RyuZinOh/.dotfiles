@@ -8,7 +8,7 @@ import qs.Services.Shapes
 Item {
     id: root
     implicitWidth: inner.width + 24
-    implicitHeight: 38
+    implicitHeight: 50
 
     property var services: ({})
     property var activeProcesses: ({})

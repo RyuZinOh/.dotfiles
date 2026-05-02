@@ -25,7 +25,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: 18
-        color: Theme.surfaceContainerLow
+        color: Theme.surfaceContainer
         border.color: Theme.outlineVariant
         border.width: 1
 
@@ -36,9 +36,8 @@ Item {
             y: (root.btnH - root.pillH) / 2
             x: 4 + root.activeIdx * root.btnW + (root.btnW - pill.width) / 2
             radius: 13
-            color: Theme.tertiaryColor
-            border.width: 1
-            border.color: Theme.outlineVariant
+            color: Theme.primaryContainer
+            border.width: 0
 
             Behavior on x {
                 NumberAnimation {
@@ -115,7 +114,7 @@ Item {
             text: btn.icon
             font.family: "CaskaydiaCove NF"
             font.pixelSize: 20
-            color: btn.active ? Theme.onTertiary : Theme.onSurfaceVariant
+            color: btn.active ? Theme.onPrimaryContainer : Theme.onSurfaceVariant
             scale: btn.active ? 1.15 : (btn.hovered ? 1.05 : 1.0)
             Behavior on color {
                 ColorAnimation {
@@ -142,7 +141,7 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 radius: 7
-                color: Theme.tertiaryColor
+                color: Theme.primaryContainer
             }
 
             Text {
@@ -152,7 +151,7 @@ Item {
                 font.family: "CaskaydiaCove NF"
                 font.pixelSize: 10
                 font.weight: Font.Medium
-                color: Theme.onTertiary
+                color: Theme.onPrimaryContainer
             }
         }
 

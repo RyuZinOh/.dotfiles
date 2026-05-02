@@ -12,21 +12,7 @@ Item {
     property string uptime: ""
     property bool ready: false
     property bool hov: false
-    property int morphIdx: 8
-
     Component.onCompleted: proc.running = true
-
-    Timer {
-        interval: 600
-        running: root.hov
-        repeat: true
-        onTriggered: root.morphIdx = (root.morphIdx + 1) % 35
-    }
-
-    onHovChanged: {
-        if (!hov)
-            root.morphIdx = 8;
-    }
 
     Process {
         id: proc
@@ -81,15 +67,8 @@ Item {
 
             ShapeCanvas {
                 anchors.fill: parent
-                roundedPolygon: GetMShapes.get(root.morphIdx)
-                color: Theme.tertiaryColor
-                scale: root.hov ? 1.08 : 1.0
-                Behavior on scale {
-                    NumberAnimation {
-                        duration: 280
-                        easing.type: Easing.OutBack
-                    }
-                }
+                roundedPolygon: GetMShapes.get(21)
+                color: Theme.primaryContainer
             }
 
             Text {
@@ -97,7 +76,7 @@ Item {
                 text: "\udb82\udd54"
                 font.family: "CaskaydiaCove NF"
                 font.pixelSize: 20
-                color: Theme.surfaceContainer
+                color: Theme.onPrimaryContainer
             }
         }
 
@@ -124,12 +103,5 @@ Item {
                 width: root.implicitWidth - 14 * 2 - 40 - 12
             }
         }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: root.hov = true
-        onExited: root.hov = false
     }
 }

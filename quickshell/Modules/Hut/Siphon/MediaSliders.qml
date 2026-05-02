@@ -20,12 +20,13 @@ Item {
         width: 52 * 2 + 4 + 12
         radius: 22
         color: Theme.surfaceContainer
-        border.color: Theme.outlineVariant
-        border.width: 1
+        border {
+            color: Theme.outlineVariant
+            width: 1
+        }
     }
 
     Row {
-        id: slidersRow
         anchors {
             right: parent.right
             top: parent.top
@@ -39,13 +40,11 @@ Item {
             height: parent.height
             value: Math.round(OsdConfig.sinkVolume)
             muted: OsdConfig.sinkMuted
-            shapeIdx: 8
-            iconLow: "\uf027"
-            iconMid: "\uf027"
-            iconHigh: "\uf028"
-            iconMuted: "\uf026"
-            onScrubUp: OsdConfig.adjustVolume("2%+")
-            onScrubDown: OsdConfig.adjustVolume("2%-")
+            accentFill: Theme.inversePrimary
+            accentOnFill: Theme.onPrimaryContainer
+            trackFill: Theme.primaryContainer
+            icons: ["\uf026", "\uf027", "\uf027", "\uf028"]
+            onScrub: delta => OsdConfig.adjustVolume(delta > 0 ? "2%+" : "2%-")
         }
 
         MediaSlider {
@@ -53,21 +52,16 @@ Item {
             width: 52
             height: parent.height
             value: brightnessVal
-            shapeIdx: 14
-            iconLow: "\udb80\udcde"
-            iconMid: "\udb80\udcdd"
-            iconHigh: "\udb80\udce0"
+            accentFill: "red"
+            accentOnFill: Theme.onPrimaryContainer
+            trackFill: Theme.primaryContainer
+            icons: ["", "\udb80\udcde", "\udb80\udcdd", "\udb80\udce0"]
+            onScrub: delta => {
+                brightnessVal = Math.max(0, Math.min(100, brightnessVal + delta));
+                OsdConfig.adjustBrightness(delta > 0 ? "2%+" : "2%-");
+            }
 
             property int brightnessVal: 50
-
-            onScrubUp: {
-                brightnessVal = Math.min(100, brightnessVal + 2);
-                OsdConfig.adjustBrightness("2%+");
-            }
-            onScrubDown: {
-                brightnessVal = Math.max(0, brightnessVal - 2);
-                OsdConfig.adjustBrightness("2%-");
-            }
 
             Connections {
                 target: OsdConfig
@@ -78,35 +72,27 @@ Item {
             }
 
             Process {
-                id: brightnessQuery
                 command: ["sh", "-c", "brightnessctl -m | awk -F, '{print substr($4, 1, length($4)-1)}'"]
                 stdout: StdioCollector {
                     onStreamFinished: brightSlider.brightnessVal = Math.round(parseFloat(text.trim()))
                 }
+                running: true
             }
-            Component.onCompleted: brightnessQuery.running = true
         }
     }
 
-    Rectangle {
-        id: muteBg
+    Item {
         width: 48
         height: 48
         anchors {
             left: parent.left
             bottom: parent.bottom
         }
-        radius: 14
-        color: Theme.surfaceContainer
-        border.color: Theme.outlineVariant
-        border.width: 1
 
         ShapeCanvas {
-            anchors.centerIn: parent
-            width: 36
-            height: 36
+            anchors.fill: parent
             roundedPolygon: GetMShapes.get(2)
-            color: OsdConfig.sinkMuted ? Theme.tertiaryColor : Theme.tertiaryContainer
+            color: OsdConfig.sinkMuted ? Theme.errorContainer : Theme.primaryContainer
             Behavior on color {
                 ColorAnimation {
                     duration: 200
@@ -121,7 +107,7 @@ Item {
                 family: "CaskaydiaCove NF"
                 pixelSize: 15
             }
-            color: OsdConfig.sinkMuted ? Theme.onTertiary : Theme.onTertiaryContainer
+            color: OsdConfig.sinkMuted ? Theme.onErrorContainer : Theme.onPrimaryContainer
             Behavior on color {
                 ColorAnimation {
                     duration: 200
@@ -140,83 +126,72 @@ Item {
         id: ms
 
         required property real value
-        required property int shapeIdx
-        required property string iconLow
-        required property string iconMid
-        required property string iconHigh
-        property string iconMuted: ""
+        required property var icons
         property bool muted: false
+        required property color accentFill
+        required property color accentOnFill
+        required property color trackFill
 
-        signal scrubUp
-        signal scrubDown
+        signal scrub(int delta)
 
-        readonly property real thumbH: 38
-        readonly property real travelH: ms.height - ms.thumbH
-        readonly property real fillFrac: ms.muted ? 0 : ms.value / 100
-
+        readonly property real fillFrac: muted ? 0 : value / 100
         readonly property string currentIcon: {
-            if (ms.muted && ms.iconMuted !== "")
-                return ms.iconMuted;
-            if (ms.value >= 66)
-                return ms.iconHigh;
-            if (ms.value >= 33)
-                return ms.iconMid;
-            return ms.iconLow;
+            if (muted && icons[0])
+                return icons[0];
+            if (value >= 66)
+                return icons[3];
+            if (value >= 33)
+                return icons[2];
+            return icons[1];
         }
 
-        Item {
+        ClippingRectangle {
+            id: track
             anchors.centerIn: parent
-            width: 36
+            width: 45
             height: ms.height
-
-            ClippingRectangle {
-                anchors.fill: parent
-                radius: 18
-                color: Theme.surfaceContainerHighest
-
-                Rectangle {
-                    anchors {
-                        bottom: parent.bottom
-                        left: parent.left
-                        right: parent.right
-                    }
-                    height: parent.height * ms.fillFrac
-                    color: Theme.tertiaryFixed
-                    Behavior on height {
-                        NumberAnimation {
-                            duration: 80
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                }
+            radius: 18
+            color: Theme.surfaceContainer
+            border {
+                width: 1
+                color: Theme.outlineVariant
             }
 
-            Item {
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: ms.thumbH
-                height: ms.thumbH
-                y: ms.travelH * (1 - ms.fillFrac)
-                Behavior on y {
+            Rectangle {
+                anchors {
+                    bottom: parent.bottom
+                    left: parent.left
+                    right: parent.right
+                }
+                height: track.height * ms.fillFrac
+                color: ms.trackFill
+                Behavior on height {
                     NumberAnimation {
                         duration: 80
                         easing.type: Easing.OutCubic
                     }
                 }
+            }
 
-                ShapeCanvas {
-                    anchors.fill: parent
-                    roundedPolygon: GetMShapes.get(ms.shapeIdx)
-                    color: Theme.tertiaryColor
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: Math.min(track.height - 28, track.height - track.height * ms.fillFrac + 6)
+                text: ms.currentIcon
+                font {
+                    family: "CaskaydiaCove NF"
+                    pixelSize: 16
                 }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: ms.currentIcon
-                    font {
-                        family: "CaskaydiaCove NF"
-                        pixelSize: 15
+                color: ms.fillFrac > 0.15 ? ms.accentOnFill : Theme.onSurfaceVariant
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 80
                     }
-                    color: Theme.onTertiary
+                }
+                Behavior on y {
+                    NumberAnimation {
+                        duration: 80
+                        easing.type: Easing.OutCubic
+                    }
                 }
             }
 
@@ -230,21 +205,16 @@ Item {
                     startVal = ms.value;
                 }
                 onPositionChanged: e => {
-                    const dy = startY - e.y;
-                    const newVal = Math.max(0, Math.min(100, Math.round(startVal + dy / ms.travelH * 100)));
-                    if (newVal > ms.value)
-                        ms.scrubUp();
-                    else if (newVal < ms.value)
-                        ms.scrubDown();
+                    const delta = Math.round((startY - e.y) / ms.height * 100);
+                    const newVal = Math.max(0, Math.min(100, Math.round(startVal + delta)));
+                    if (newVal !== ms.value)
+                        ms.scrub(newVal > ms.value ? 2 : -2);
                     startY = e.y;
                     startVal = ms.value;
                 }
                 onWheel: w => {
                     const d = w.angleDelta.y !== 0 ? w.angleDelta.y : -w.angleDelta.x;
-                    if (d > 0)
-                        ms.scrubUp();
-                    else
-                        ms.scrubDown();
+                    ms.scrub(d > 0 ? 2 : -2);
                 }
             }
         }

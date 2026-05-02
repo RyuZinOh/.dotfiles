@@ -145,7 +145,7 @@ Item {
                     }
 
                     Column {
-                        spacing: 4
+                        spacing: 8
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         Loader {
