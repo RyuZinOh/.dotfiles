@@ -1,44 +1,41 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import Quickshell
 import Quickshell.Io
 import qs.Services.Theme
 import qs.Services.Shapes
 
 Item {
     id: root
-    implicitWidth: 320
-    implicitHeight: 72
+    implicitWidth: 200
+    implicitHeight: 60
 
-    property string uptime: ""
-    property bool ready: false
-    property bool hov: false
-    Component.onCompleted: proc.running = true
+    property string _uptime: ""
+    property bool _ready: false
+
+    function _fmt(raw) {
+        const h = raw.match(/(\d+)\s*hour/);
+        const m = raw.match(/(\d+)\s*min/);
+        const parts = [];
+        if (h)
+            parts.push(h[1] + "h");
+        if (m)
+            parts.push(m[1] + "m");
+        return parts.join(" ") || raw;
+    }
+
+    Component.onCompleted: _proc.running = true
 
     Process {
-        id: proc
+        id: _proc
         command: ["bash", "-c", "uptime -p | sed 's/^up //'"]
         property string buf: ""
         stdout: SplitParser {
-            onRead: data => proc.buf += data
+            onRead: data => _proc.buf += data
         }
         onExited: {
-            root.uptime = proc.buf.trim();
-            root.ready = true;
-        }
-    }
-
-    opacity: root.ready ? 1 : 0
-    scale: root.ready ? 1 : 0.95
-    Behavior on opacity {
-        NumberAnimation {
-            duration: 400
-            easing.type: Easing.OutCubic
-        }
-    }
-    Behavior on scale {
-        NumberAnimation {
-            duration: 400
-            easing.type: Easing.OutCubic
+            root._uptime = root._fmt(_proc.buf.trim());
+            root._ready = true;
         }
     }
 
@@ -46,61 +43,61 @@ Item {
         anchors.fill: parent
         radius: 20
         color: Theme.surfaceContainer
-        border.color: Theme.outlineVariant
-        border.width: 1
-    }
-
-    Row {
-        anchors {
-            left: parent.left
-            right: parent.right
-            verticalCenter: parent.verticalCenter
-            leftMargin: 14
-            rightMargin: 14
-        }
-        spacing: 12
-
-        Item {
-            width: 40
-            height: 40
-            anchors.verticalCenter: parent.verticalCenter
-
-            ShapeCanvas {
-                anchors.fill: parent
-                roundedPolygon: GetMShapes.get(21)
-                color: Theme.primaryContainer
-            }
-
-            Text {
-                anchors.centerIn: parent
-                text: "\udb82\udd54"
-                font.family: "CaskaydiaCove NF"
-                font.pixelSize: 20
-                color: Theme.onPrimaryContainer
-            }
+        border {
+            color: Theme.outlineVariant
+            width: 1
         }
 
-        Column {
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 2
+        Row {
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+                leftMargin: 14
+                rightMargin: 14
+            }
+            spacing: 20
 
-            Text {
-                text: "uptime"
-                font.family: "CaskaydiaCove NF"
-                font.pixelSize: 11
-                font.weight: Font.Medium
-                color: Theme.onSurfaceVariant
-                opacity: 0.75
+            Item {
+                width: 64
+                height: 64
+                anchors.verticalCenter: parent.verticalCenter
+
+                ShapeCanvas {
+                    anchors.fill: parent
+                    roundedPolygon: GetMShapes.get(21)
+                    color: Theme.primaryColor
+                    imageSource: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/pfp.jpeg"
+                    borderWidth: 4
+                    borderColor: Theme.primaryColor
+                }
             }
 
-            Text {
-                text: root.uptime !== "" ? root.uptime : "—"
-                font.family: "CaskaydiaCove NF"
-                font.pixelSize: 14
-                font.weight: Font.Medium
-                color: Theme.onSurface
-                elide: Text.ElideRight
-                width: root.implicitWidth - 14 * 2 - 40 - 12
+            Column {
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+
+                Text {
+                    text: "uptime"
+                    font {
+                        family: "CaskaydiaCove NF"
+                        pixelSize: 11
+                        weight: Font.Medium
+                    }
+                    color: Theme.onSurfaceVariant
+                    opacity: 0.7
+                }
+                Text {
+                    text: root._uptime !== "" ? root._uptime : "—"
+                    font {
+                        family: "CaskaydiaCove NF"
+                        pixelSize: 18
+                        weight: Font.Medium
+                    }
+                    color: Theme.onSurface
+                    elide: Text.ElideRight
+                }
             }
         }
     }

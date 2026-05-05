@@ -35,6 +35,7 @@ Item {
                 root.checkAllServices();
         }
     }
+
     Timer {
         id: startupDelay
         interval: 400
@@ -78,7 +79,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: 18
+        radius: 20
         color: Theme.surfaceContainerLow
         border.width: 1
         border.color: Theme.outlineVariant
@@ -127,23 +128,9 @@ Item {
                     readonly property bool running: root.services[chip.modelData.name] === true
                     readonly property bool hovered: hoverArea.containsMouse
 
-                    property int morphIdx: chip.modelData.shapeIdx
-
-                    Timer {
-                        interval: 700
-                        running: chip.running && !chip.hovered
-                        repeat: true
-                        onTriggered: chip.morphIdx = (chip.morphIdx + 1) % 35
-                    }
-
-                    onRunningChanged: {
-                        if (!chip.running)
-                            chip.morphIdx = chip.modelData.shapeIdx;
-                    }
-
                     ShapeCanvas {
                         anchors.fill: parent
-                        roundedPolygon: GetMShapes.get(chip.morphIdx)
+                        roundedPolygon: GetMShapes.get(chip.modelData.shapeIdx)
                         color: {
                             if (chip.hovered)
                                 return chip.running ? Theme.primaryContainer : Theme.errorContainer;

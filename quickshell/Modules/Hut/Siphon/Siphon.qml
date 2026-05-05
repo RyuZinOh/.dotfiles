@@ -10,7 +10,6 @@ Item {
         id: col
         anchors.fill: parent
         spacing: 8
-        Uptime {}
         PowerProfiles {}
         MediaSliders {}
     }

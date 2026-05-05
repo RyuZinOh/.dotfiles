@@ -36,6 +36,8 @@ Singleton {
     readonly property string configPath: Quickshell.env("HOME") + "/.cache/safalQuick/osd.json"
     property bool loaded: false
 
+    signal brightnessRead(int value)
+
     onSinkVolumeChanged: {
         if (root.pipewireReady)
             pushVolumeOsd();
@@ -71,6 +73,23 @@ Singleton {
         sink.audio.muted = !sink.audio.muted;
     }
 
+    function readBrightness() {
+        brightnessReadExec.running = true;
+    }
+
+    function adjustBrightness(step: string) {
+        brightnessExec.command = ["sh", "-c", "brightnessctl set " + step + " -q && brightnessctl -m | awk -F, '{print substr($4,1,length($4)-1)}'"];
+        brightnessExec.running = true;
+    }
+
+    Process {
+        id: brightnessReadExec
+        command: ["sh", "-c", "brightnessctl -m | awk -F, '{print substr($4,1,length($4)-1)}'"]
+        stdout: StdioCollector {
+            onStreamFinished: root.brightnessRead(Math.round(parseFloat(text.trim())))
+        }
+    }
+
     Process {
         id: brightnessExec
         command: []
@@ -83,11 +102,6 @@ Singleton {
                 hideTimer.restart();
             }
         }
-    }
-
-    function adjustBrightness(step: string) {
-        brightnessExec.command = ["sh", "-c", "brightnessctl set " + step + " -q && brightnessctl -m | awk -F, '{print substr($4, 1, length($4)-1)}'"];
-        brightnessExec.running = true;
     }
 
     function saveConfig() {
@@ -121,16 +135,6 @@ Singleton {
             root.character = OsdConfig.Character.Ororon;
             root.loaded = true;
             root.saveConfig();
-        }
-    }
-
-    FileView {
-        id: configFile
-        path: root.configPath
-        watchChanges: true
-        onFileChanged: {
-            if (root.loaded)
-                configKraken.reload();
         }
     }
 

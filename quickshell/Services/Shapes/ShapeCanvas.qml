@@ -11,6 +11,7 @@ Canvas {
     property bool debug: false
     property real xOffset: 0
     property real yOffset: 0
+    property string imageSource: ""
 
     // Internals: size
     property var bounds: roundedPolygon.calculateBounds()
@@ -24,8 +25,15 @@ Canvas {
     property Animation animation: NumberAnimation {
         duration: 350
         easing.type: Easing.BezierSpline
-        easing.bezierCurve: [0.42, 1.67, 0.21, 0.90, 1, 1] // Material 3 Expressive fast spatial (https://m3.material.io/styles/motion/overview/specs)
+        easing.bezierCurve: [0.42, 1.67, 0.21, 0.90, 1, 1]
     }
+
+    onImageSourceChanged: {
+        if (imageSource !== "")
+            loadImage(imageSource);
+    }
+
+    onImageLoaded: requestPaint()
 
     onRoundedPolygonChanged: {
         delete root.morph;
@@ -52,7 +60,6 @@ Canvas {
 
     onPaint: {
         var ctx = getContext("2d");
-        ctx.fillStyle = root.color;
         ctx.clearRect(0, 0, width, height);
         if (!root.morph)
             return;
@@ -62,23 +69,42 @@ Canvas {
         const size = Math.min(root.width, root.height);
 
         ctx.save();
-        if (root.polygonIsNormalized) {
+        if (root.polygonIsNormalized)
             ctx.scale(size, size);
-        }
         ctx.translate(root.xOffset, root.yOffset);
 
         ctx.beginPath();
         ctx.moveTo(cubics[0].anchor0X, cubics[0].anchor0Y);
-        for (const cubic of cubics) {
+        for (const cubic of cubics)
             ctx.bezierCurveTo(cubic.control0X, cubic.control0Y, cubic.control1X, cubic.control1Y, cubic.anchor1X, cubic.anchor1Y);
-        }
         ctx.closePath();
-        ctx.fill();
+
+        if (root.imageSource !== "" && root.isImageLoaded(root.imageSource)) {
+            ctx.restore();
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(cubics[0].anchor0X * size, cubics[0].anchor0Y * size);
+            for (const cubic of cubics)
+                ctx.bezierCurveTo(cubic.control0X * size, cubic.control0Y * size, cubic.control1X * size, cubic.control1Y * size, cubic.anchor1X * size, cubic.anchor1Y * size);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(root.imageSource, 0, 0, root.width, root.height);
+        } else {
+            ctx.fillStyle = root.color;
+            ctx.fill();
+        }
 
         if (root.borderWidth > 0) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(cubics[0].anchor0X * size, cubics[0].anchor0Y * size);
+            for (const cubic of cubics)
+                ctx.bezierCurveTo(cubic.control0X * size, cubic.control0Y * size, cubic.control1X * size, cubic.control1Y * size, cubic.anchor1X * size, cubic.anchor1Y * size);
+            ctx.closePath();
             ctx.strokeStyle = root.borderColor;
             ctx.lineWidth = root.borderWidth;
             ctx.stroke();
+            ctx.restore();
         }
 
         if (root.debug) {
@@ -95,13 +121,10 @@ Canvas {
                     y: c.anchor1Y
                 });
             }
-
-            let radius = 2;
-
             ctx.fillStyle = "red";
             for (const p of points) {
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
                 ctx.fill();
             }
         }

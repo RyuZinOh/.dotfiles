@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell.Io
 import Quickshell.Widgets
 import qs.Services.Theme
 import qs.Services.Shapes
@@ -11,14 +10,18 @@ Item {
     implicitWidth: 320
     implicitHeight: 200
 
+    component ColorBehavior: ColorAnimation {
+        duration: 200
+    }
+
     Rectangle {
         anchors {
             right: parent.right
             top: parent.top
             bottom: parent.bottom
         }
-        width: 52 * 2 + 4 + 12
-        radius: 22
+        width: 120
+        radius: 20
         color: Theme.surfaceContainer
         border {
             color: Theme.outlineVariant
@@ -42,9 +45,9 @@ Item {
             muted: OsdConfig.sinkMuted
             accentFill: Theme.inversePrimary
             accentOnFill: Theme.onPrimaryContainer
-            trackFill: Theme.primaryContainer
+            trackFill: Theme.primaryColor
             icons: ["\uf026", "\uf027", "\uf027", "\uf028"]
-            onScrub: delta => OsdConfig.adjustVolume(delta > 0 ? "2%+" : "2%-")
+            onScrub: d => OsdConfig.adjustVolume(d > 0 ? "2%+" : "2%-")
         }
 
         MediaSlider {
@@ -52,105 +55,218 @@ Item {
             width: 52
             height: parent.height
             value: brightnessVal
+            animate: ready
             accentFill: "red"
             accentOnFill: Theme.onPrimaryContainer
-            trackFill: Theme.primaryContainer
+            trackFill: Theme.primaryColor
             icons: ["", "\udb80\udcde", "\udb80\udcdd", "\udb80\udce0"]
-            onScrub: delta => {
-                brightnessVal = Math.max(0, Math.min(100, brightnessVal + delta));
-                OsdConfig.adjustBrightness(delta > 0 ? "2%+" : "2%-");
+            onScrub: d => {
+                brightnessVal = Math.max(0, Math.min(100, brightnessVal + d));
+                OsdConfig.adjustBrightness(d > 0 ? "2%+" : "2%-");
             }
 
-            property int brightnessVal: 50
+            property int brightnessVal: 0
+            property bool ready: false
 
             Connections {
                 target: OsdConfig
+                function onBrightnessRead(value) {
+                    brightSlider.brightnessVal = value;
+                    brightSlider.ready = true;
+                }
                 function onCurrentValueChanged() {
                     if (OsdConfig.mode === "brightness")
                         brightSlider.brightnessVal = OsdConfig.currentValue;
                 }
             }
 
-            Process {
-                command: ["sh", "-c", "brightnessctl -m | awk -F, '{print substr($4, 1, length($4)-1)}'"]
-                stdout: StdioCollector {
-                    onStreamFinished: brightSlider.brightnessVal = Math.round(parseFloat(text.trim()))
-                }
-                running: true
-            }
+            Component.onCompleted: OsdConfig.readBrightness()
         }
     }
 
-    Item {
-        width: 48
-        height: 48
+    Row {
         anchors {
             left: parent.left
             bottom: parent.bottom
         }
+        spacing: 6
+
+        IconButton {
+            active: !OsdConfig.sinkMuted
+            activeColor: Theme.primaryColor
+            inactiveColor: Theme.errorContainer
+            activeIconColor: Theme.onPrimaryContainer
+            inactiveIconColor: Theme.onErrorContainer
+            icon: OsdConfig.sinkMuted ? "\uf026" : OsdConfig.sinkVolume >= 66 ? "\uf028" : OsdConfig.sinkVolume >= 33 ? "\uf027" : "\uf026"
+            onClicked: OsdConfig.toggleMute()
+        }
+
+        IconButton {
+            active: CommunicationConfig.hyprsunsetActive
+            activeColor: Theme.primaryColor
+            inactiveColor: Theme.surfaceContainer
+            activeIconColor: Theme.onPrimaryContainer
+            inactiveIconColor: Theme.onSurfaceVariant
+            icon: "\ueeef"
+            onClicked: CommunicationConfig.toggle()
+        }
+    }
+
+    Item {
+        anchors {
+            left: parent.left
+            right: parent.right
+            rightMargin: 120 + 12
+            top: parent.top
+            bottom: parent.bottom
+            bottomMargin: 54
+        }
+
+        Rectangle {
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                bottom: _sliders.top
+                bottomMargin: 6
+            }
+            radius: 20
+            color: Theme.surfaceContainer
+            border {
+                color: Theme.outlineVariant
+                width: 1
+            }
+
+            Uptime {
+                anchors.fill: parent
+            }
+        }
+
+        Column {
+            id: _sliders
+            anchors {
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
+            spacing: 6
+
+            Row {
+                width: parent.width
+                height: 28
+                spacing: 6
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "G"
+                    font {
+                        family: "CaskaydiaCove NF"
+                        pixelSize: 14
+                    }
+                    color: Theme.onSurfaceVariant
+                }
+
+                SineWaveSlider {
+                    width: parent.width - 22
+                    height: parent.height
+                    value: CommunicationConfig.gamma
+                    minVal: CommunicationConfig.gammaMin
+                    maxVal: CommunicationConfig.gammaMax
+                    accentFill: Theme.primaryColor
+                    trackFill: Theme.primaryContainer
+                    onScrub: d => d > 0 ? CommunicationConfig.increaseGamma() : CommunicationConfig.decreaseGamma()
+                }
+            }
+
+            Row {
+                width: parent.width
+                height: 28
+                spacing: 6
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "T"
+                    font {
+                        family: "CaskaydiaCove NF"
+                        pixelSize: 14
+                    }
+                    color: Theme.onSurfaceVariant
+                }
+
+                SineWaveSlider {
+                    width: parent.width - 22
+                    height: parent.height
+                    value: CommunicationConfig.temperature
+                    minVal: CommunicationConfig.tempMin
+                    maxVal: CommunicationConfig.tempMax
+                    accentFill: Theme.primaryColor
+                    trackFill: Theme.primaryContainer
+                    onScrub: d => d > 0 ? CommunicationConfig.increaseTemperature() : CommunicationConfig.decreaseTemperature()
+                }
+            }
+        }
+    }
+
+    component IconButton: Item {
+        width: 48
+        height: 48
+        required property bool active
+        required property color activeColor
+        required property color inactiveColor
+        required property color activeIconColor
+        required property color inactiveIconColor
+        required property string icon
+        signal clicked
 
         ShapeCanvas {
             anchors.fill: parent
             roundedPolygon: GetMShapes.get(2)
-            color: OsdConfig.sinkMuted ? Theme.errorContainer : Theme.primaryContainer
+            color: parent.active ? parent.activeColor : parent.inactiveColor
             Behavior on color {
-                ColorAnimation {
-                    duration: 200
-                }
+                ColorBehavior {}
             }
         }
 
         Text {
             anchors.centerIn: parent
-            text: OsdConfig.sinkMuted ? "\uf026" : "\uf027"
+            text: parent.icon
             font {
                 family: "CaskaydiaCove NF"
                 pixelSize: 15
             }
-            color: OsdConfig.sinkMuted ? Theme.onErrorContainer : Theme.onPrimaryContainer
+            color: parent.active ? parent.activeIconColor : parent.inactiveIconColor
             Behavior on color {
-                ColorAnimation {
-                    duration: 200
-                }
+                ColorBehavior {}
             }
         }
 
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: OsdConfig.toggleMute()
+            onClicked: parent.clicked()
         }
     }
 
     component MediaSlider: Item {
         id: ms
-
         required property real value
         required property var icons
         property bool muted: false
         required property color accentFill
         required property color accentOnFill
         required property color trackFill
-
+        property bool animate: true
         signal scrub(int delta)
 
         readonly property real fillFrac: muted ? 0 : value / 100
-        readonly property string currentIcon: {
-            if (muted && icons[0])
-                return icons[0];
-            if (value >= 66)
-                return icons[3];
-            if (value >= 33)
-                return icons[2];
-            return icons[1];
-        }
+        readonly property string currentIcon: muted && icons[0] ? icons[0] : value >= 66 ? icons[3] : value >= 33 ? icons[2] : icons[1]
 
         ClippingRectangle {
             id: track
             anchors.centerIn: parent
             width: 45
             height: ms.height
-            radius: 18
+            radius: 20
             color: Theme.surfaceContainer
             border {
                 width: 1
@@ -166,8 +282,9 @@ Item {
                 height: track.height * ms.fillFrac
                 color: ms.trackFill
                 Behavior on height {
+                    enabled: ms.animate
                     NumberAnimation {
-                        duration: 80
+                        duration: 120
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -188,8 +305,9 @@ Item {
                     }
                 }
                 Behavior on y {
+                    enabled: ms.animate
                     NumberAnimation {
-                        duration: 80
+                        duration: 120
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -209,11 +327,13 @@ Item {
                     const newVal = Math.max(0, Math.min(100, Math.round(startVal + delta)));
                     if (newVal !== ms.value)
                         ms.scrub(newVal > ms.value ? 2 : -2);
-                    startY = e.y;
-                    startVal = ms.value;
+                    if (newVal > 0 && newVal < 100) {
+                        startY = e.y;
+                        startVal = ms.value;
+                    }
                 }
                 onWheel: w => {
-                    const d = w.angleDelta.y !== 0 ? w.angleDelta.y : -w.angleDelta.x;
+                    const d = w.angleDelta.y || -w.angleDelta.x;
                     ms.scrub(d > 0 ? 2 : -2);
                 }
             }

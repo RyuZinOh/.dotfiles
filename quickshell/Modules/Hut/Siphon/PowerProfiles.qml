@@ -24,7 +24,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: 18
+        radius: 20
         color: Theme.surfaceContainer
         border.color: Theme.outlineVariant
         border.width: 1
@@ -36,7 +36,7 @@ Item {
             y: (root.btnH - root.pillH) / 2
             x: 4 + root.activeIdx * root.btnW + (root.btnW - pill.width) / 2
             radius: 13
-            color: Theme.primaryContainer
+            color: Theme.primaryColor
             border.width: 0
 
             Behavior on x {
@@ -140,8 +140,10 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 7
-                color: Theme.primaryContainer
+                radius: 8
+                color: Theme.surfaceContainer
+                border.width: 1
+                border.color: Theme.outlineVariant
             }
 
             Text {
@@ -149,9 +151,9 @@ Item {
                 anchors.centerIn: parent
                 text: btn.label
                 font.family: "CaskaydiaCove NF"
-                font.pixelSize: 10
+                font.pixelSize: 11
                 font.weight: Font.Medium
-                color: Theme.onPrimaryContainer
+                color: Theme.onSurface
             }
         }
 

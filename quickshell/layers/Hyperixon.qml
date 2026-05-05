@@ -282,10 +282,10 @@ Scope {
                     */
 
                     Region {
-                        x: hyperixonLayer.width - 440
-                        y: 0
-                        width: 440
-                        height: notifWindow.visible ? notifWindow.height : 1
+                        x: notifWindow.x
+                        y: notifWindow.y
+                        width: notifWindow.visible ? notifWindow.width + 4 : 1
+                        height: notifWindow.visible ? notifWindow.height + 4 : 1
                     }
 
                     Region {

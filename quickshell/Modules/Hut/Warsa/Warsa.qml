@@ -1,4 +1,4 @@
-/*
+/*warsa
  https://git.safallama.com.np/ashborn/warsa [check here for the Warsa Module]
  https://git.safallama.com.np/ashborn/kraken [check here for the Kraken Module]
  */
@@ -75,7 +75,7 @@ Item {
 
         width: calendarContent.width + 32
         height: calendarContent.height + 32
-        radius: 28
+        radius: 20
         color: Theme.surfaceContainer
         border.width: 1
         border.color: Theme.outlineVariant
@@ -94,7 +94,7 @@ Item {
                     width: 40
                     height: 40
                     radius: 20
-                    color: prevMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
+                    color: prevMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -147,7 +147,7 @@ Item {
                     width: 40
                     height: 40
                     radius: 20
-                    color: nextMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
+                    color: nextMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -287,13 +287,13 @@ Item {
                                 return "transparent";
 
                             if (dayRect.modelData.isToday)
-                                return Theme.primaryContainer;
+                                return Theme.primaryColor;
 
                             if (dayMouse.containsMouse)
-                                return Theme.secondaryContainer;
+                                return Theme.secondaryColor;
 
                             if (dayRect.modelData.hasEvent)
-                                return Theme.tertiaryContainer;
+                                return Theme.tertiaryColor;
 
                             if (dayRect.modelData.isSaturday)
                                 return Theme.errorContainer;

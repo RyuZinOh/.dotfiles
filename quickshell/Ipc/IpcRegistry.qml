@@ -43,4 +43,7 @@ Item {
     OsdIpc {
         id: osdIpc
     }
+    CommunicationIpc {
+        id: communicationIpc
+    }
 }

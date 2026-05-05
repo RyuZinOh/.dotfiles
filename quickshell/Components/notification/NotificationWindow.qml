@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Shapes
 import qs.Services
 import qs.Services.Theme
 import qs.utils
@@ -109,6 +108,7 @@ Item {
         Component.onCompleted: Qt.callLater(tryEnter)
         onIsTopChanged: {
             if (isTop) {
+                progressBar.animating = false;
                 tile.progress = 0;
                 autoClose.restart();
             } else {
@@ -258,43 +258,26 @@ Item {
             }
 
             Item {
-                property real targetWidth: width * tile.progress
-
                 width: content.width
-                height: tile.isTop ? 10 : 0
+                height: tile.isTop ? 2 : 0
                 visible: tile.isTop
-                clip: true
 
-                Shape {
-                    width: parent.targetWidth
-                    height: parent.height
-                    clip: true
-                    layer.enabled: true
-                    layer.samples: 8
+                Rectangle {
+                    id: progressBar
 
-                    ShapePath {
-                        strokeWidth: 2
-                        strokeColor: Theme.primaryColor
-                        fillColor: "transparent"
-                        capStyle: ShapePath.RoundCap
-                        joinStyle: ShapePath.RoundJoin
+                    property bool animating: false
 
-                        PathSvg {
-                            path: {
-                                const W = column.width, cy = 5, amp = 3.2, freq = 20;
-                                let d = `M 0 ${cy}`;
-                                for (let x = 1; x <= W; x += 1)
-                                    d += ` L ${x} ${cy + amp * Math.sin(x / freq * Math.PI)}`;
-                                return d;
-                            }
+                    width: parent.width * tile.progress
+                    height: 2
+                    radius: 1
+                    color: Theme.primaryColor
+
+                    Behavior on width {
+                        enabled: progressBar.animating
+                        NumberAnimation {
+                            duration: NotificationConfig.progressInterval
+                            easing.type: Easing.InOutSine
                         }
-                    }
-                }
-
-                Behavior on targetWidth {
-                    NumberAnimation {
-                        duration: NotificationConfig.progressInterval
-                        easing.type: Easing.InOutSine
                     }
                 }
             }
@@ -460,6 +443,7 @@ Item {
                 if (hover.hovered)
                     return;
 
+                progressBar.animating = true;
                 tile.progress += NotificationConfig.progressInterval / NotificationConfig.autoCloseDuration;
                 if (tile.progress >= 1) {
                     stop();
