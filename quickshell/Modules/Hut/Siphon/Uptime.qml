@@ -69,7 +69,7 @@ Item {
                     roundedPolygon: GetMShapes.get(21)
                     color: Theme.primaryColor
                     imageSource: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/pfp.jpeg"
-                    borderWidth: 4
+                    borderWidth: 2
                     borderColor: Theme.primaryColor
                 }
             }

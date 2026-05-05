@@ -61,9 +61,8 @@ Item {
 
             ctx.strokeStyle = Theme.outlineVariant.toString();
             ctx.beginPath();
-            ctx.moveTo(split, wavePath(split));
-            for (let x = split + 1; x <= width - pad; x++)
-                ctx.lineTo(x, wavePath(x));
+            ctx.moveTo(split, cy);
+            ctx.lineTo(width - pad, cy);
             ctx.stroke();
 
             if (split > pad) {

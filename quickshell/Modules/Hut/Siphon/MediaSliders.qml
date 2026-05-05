@@ -220,7 +220,9 @@ Item {
 
         ShapeCanvas {
             anchors.fill: parent
-            roundedPolygon: GetMShapes.get(2)
+            roundedPolygon: GetMShapes.get(1)
+            borderWidth: 2
+            borderColor: Theme.outlineVariant
             color: parent.active ? parent.activeColor : parent.inactiveColor
             Behavior on color {
                 ColorBehavior {}
