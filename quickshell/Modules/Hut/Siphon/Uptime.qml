@@ -60,17 +60,101 @@ Item {
             spacing: 20
 
             Item {
-                width: 64
-                height: 64
+                id: pfpItem
+                width: 72
+                height: 72
                 anchors.verticalCenter: parent.verticalCenter
 
                 ShapeCanvas {
                     anchors.fill: parent
-                    roundedPolygon: GetMShapes.get(21)
+                    roundedPolygon: GetMShapes.get(18)
                     color: Theme.primaryColor
                     imageSource: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/pfp.jpeg"
                     borderWidth: 2
                     borderColor: Theme.primaryColor
+                }
+
+                HoverHandler {
+                    id: pfpHover
+                }
+
+                Item {
+                    id: bubble
+                    width: bubbleRect.width + 24
+                    height: bubbleRect.height + 16
+                    x: pfpItem.width - 4
+                    y: -height + 25
+                    z: 10
+
+                    opacity: pfpHover.hovered ? 1 : 0
+                    scale: pfpHover.hovered ? 1 : 0.7
+                    transformOrigin: Item.BottomLeft
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 180
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on scale {
+                        NumberAnimation {
+                            duration: 180
+                            easing.type: Easing.OutBack
+                        }
+                    }
+
+                    Rectangle {
+                        id: bubbleRect
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        width: bubbleText.implicitWidth + 20
+                        height: bubbleText.implicitHeight + 12
+                        radius: 10
+                        color: Theme.surfaceContainerHigh
+                        border {
+                            color: Theme.outlineVariant
+                            width: 1
+                        }
+
+                        Text {
+                            id: bubbleText
+                            anchors.centerIn: parent
+                            text: "proper use of free will.."
+                            font {
+                                family: "CaskaydiaCove NF"
+                                pixelSize: 11
+                                weight: Font.Medium
+                            }
+                            color: Theme.onSurface
+                        }
+                    }
+
+                    Rectangle {
+                        width: 7
+                        height: 7
+                        radius: 4
+                        color: Theme.surfaceContainerHigh
+                        border {
+                            color: Theme.outlineVariant
+                            width: 1
+                        }
+                        x: 4
+                        y: parent.height - 16
+                    }
+
+                    Rectangle {
+                        width: 5
+                        height: 5
+                        radius: 3
+                        color: Theme.surfaceContainerHigh
+                        border {
+                            color: Theme.outlineVariant
+                            width: 1
+                        }
+                        x: 0
+                        y: parent.height - 8
+                    }
                 }
             }
 
@@ -88,6 +172,7 @@ Item {
                     color: Theme.onSurfaceVariant
                     opacity: 0.7
                 }
+
                 Text {
                     text: root._uptime !== "" ? root._uptime : "—"
                     font {

@@ -218,11 +218,11 @@ Item {
         required property string icon
         signal clicked
 
-        ShapeCanvas {
+        Rectangle {
             anchors.fill: parent
-            roundedPolygon: GetMShapes.get(1)
-            borderWidth: 2
-            borderColor: Theme.outlineVariant
+            border.width: 2
+            radius: 15
+            border.color: Theme.outlineVariant
             color: parent.active ? parent.activeColor : parent.inactiveColor
             Behavior on color {
                 ColorBehavior {}

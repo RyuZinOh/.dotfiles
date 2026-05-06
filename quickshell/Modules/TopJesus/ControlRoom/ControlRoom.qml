@@ -98,8 +98,6 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 10
-        spacing: 10
 
         Repeater {
             model: [
@@ -124,9 +122,13 @@ Item {
                 id: card
 
                 required property var modelData
+
                 readonly property real val: modelData.idx === 0 ? root.usedMemoryPerc : modelData.idx === 1 ? root.cpuPerc : Math.min(root.cpuTemp / 100, 1)
+
                 readonly property color accent: modelData.idx === 0 ? Theme.secondaryColor : modelData.idx === 1 ? Theme.primaryColor : Theme.tertiaryColor
+
                 readonly property string valueText: modelData.idx === 2 ? Math.round(root.cpuTemp) + "°" : Math.round(val * 100) + "%"
+
                 property real animatedVal: 0
 
                 Behavior on animatedVal {
@@ -144,29 +146,13 @@ Item {
                 Item {
                     id: ring
 
-                    readonly property real gapAngle: 80
-                    readonly property real gapStart: 50
                     readonly property real arcR: (width - 8) / 2
-                    readonly property real fullSweep: 360 - gapAngle
-                    readonly property real arcStartDeg: gapStart + gapAngle / 2
-                    readonly property real iconRad: gapStart * Math.PI / 180
-
-                    function sineArcPath(cx, cy, r, startDeg, sweepDeg, amp, freq) {
-                        const steps = Math.max(2, Math.round(Math.abs(sweepDeg) * 2));
-                        const startRad = startDeg * Math.PI / 180;
-                        const sweepRad = sweepDeg * Math.PI / 180;
-                        let d = "";
-                        for (let i = 0; i <= steps; i++) {
-                            const t = i / steps;
-                            const angle = startRad + sweepRad * t;
-                            const wave = amp * Math.sin(t * freq * Math.PI);
-                            const rr = r + wave;
-                            const x = cx + rr * Math.cos(angle);
-                            const y = cy + rr * Math.sin(angle);
-                            d += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
-                        }
-                        return d;
-                    }
+                    readonly property real cx: width / 2
+                    readonly property real cy: height / 2
+                    readonly property real gapAngle: 50
+                    readonly property real iconAngleDeg: 60
+                    readonly property real trackStart: iconAngleDeg + gapAngle / 2
+                    readonly property real trackSweep: 360 - gapAngle
 
                     anchors.centerIn: parent
                     width: Math.min(parent.width, parent.height) * 0.8
@@ -181,23 +167,47 @@ Item {
 
                         ShapePath {
                             strokeWidth: 3
+                            strokeColor: Qt.rgba(card.accent.r, card.accent.g, card.accent.b, 0.18)
+                            fillColor: "transparent"
+                            capStyle: ShapePath.RoundCap
+
+                            PathAngleArc {
+                                centerX: ring.cx
+                                centerY: ring.cy
+                                radiusX: ring.arcR
+                                radiusY: ring.arcR
+                                startAngle: ring.trackStart
+                                sweepAngle: ring.trackSweep
+                            }
+                        }
+
+                        ShapePath {
+                            strokeWidth: 3
                             strokeColor: card.accent
                             fillColor: "transparent"
                             capStyle: ShapePath.RoundCap
 
-                            PathSvg {
-                                path: ring.sineArcPath(ring.width / 2, ring.height / 2, ring.arcR, ring.arcStartDeg, ring.fullSweep * card.animatedVal, 2.5, 5)
+                            PathAngleArc {
+                                centerX: ring.cx
+                                centerY: ring.cy
+                                radiusX: ring.arcR
+                                radiusY: ring.arcR
+                                startAngle: ring.trackStart
+                                sweepAngle: ring.trackSweep * card.animatedVal
                             }
                         }
                     }
 
                     Text {
+                        id: iconText
                         text: card.modelData.icon
                         font.family: "CaskaydiaCove NF"
                         font.pixelSize: Math.max(16, ring.width * 0.26)
                         color: card.accent
-                        x: ring.width / 2 + ring.arcR * Math.cos(ring.iconRad) - width / 2
-                        y: ring.height / 2 + ring.arcR * Math.sin(ring.iconRad) - height / 2
+
+                        readonly property real iconAngleRad: ring.iconAngleDeg * Math.PI / 180
+                        x: ring.cx + ring.arcR * Math.cos(iconAngleRad) - width / 2
+                        y: ring.cy + ring.arcR * Math.sin(iconAngleRad) - height / 2
 
                         Behavior on color {
                             ColorAnimation {
