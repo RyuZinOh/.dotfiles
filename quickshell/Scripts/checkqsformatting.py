@@ -4,7 +4,8 @@ import sys
 from pathlib import Path
 
 QMLFORMAT = "qmlformat"
-ROOT = Path("/home/safalski/.dotfiles/quickshell")
+
+ROOT = Path.home() / ".dotfiles/quickshell"
 
 
 def check():

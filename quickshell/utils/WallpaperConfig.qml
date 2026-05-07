@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 pragma Singleton
 import QtQuick
 import Quickshell
+import qs.Services.Paths
 import Quickshell.Io
 import Kraken
 
@@ -12,7 +13,7 @@ Singleton {
     property string transitionType: "bubble"
     property bool enablePanning: true
     readonly property int bubbleDuration: transitionType === "bubble" ? 1000 : 0
-    readonly property string configPath: Quickshell.env("HOME") + "/.cache/safalQuick/wallpaper-config.json"
+    readonly property string configPath: PathService.home + "/.cache/safalQuick/wallpaper-config.json"
     property bool loaded: false
 
     function saveConfig() {

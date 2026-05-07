@@ -3,11 +3,12 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Services.Paths
 
 Singleton {
     id: root
 
-    readonly property string statePath: Quickshell.env("HOME") + "/.cache/safalQuick/ipcstate.json"
+    readonly property string statePath: PathService.home + "/.cache/safalQuick/ipcstate.json"
     property var states: ({})
     property bool loaded: false
 

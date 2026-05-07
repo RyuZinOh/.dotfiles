@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 import qs.Services.Theme
+import qs.Services.Paths
 import qs.utils
 import "./variants/"
 
@@ -11,7 +12,7 @@ Item {
     height: 600
     visible: OsdConfig.isVisible
 
-    property string spriteCache: "/home/safalski/.cache/safalQuick/nightsoul/" + OsdConfig.currentCharacterName
+    property string spriteCache: PathService.home + "/.cache/safalQuick/nightsoul/" + OsdConfig.currentCharacterName
     readonly property int segmentCount: 15
     property real normalizedValue: 0
     readonly property int filledSegments: Math.floor(normalizedValue * segmentCount)

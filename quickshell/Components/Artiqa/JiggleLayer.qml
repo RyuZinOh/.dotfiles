@@ -1,11 +1,12 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Wayland
+import qs.Services.Paths
 
 Item {
     id: root
 
-    property string shaderPath: "/home/safalski/.cache/safalQuick/nightsoul/bounce/"
+    property string shaderPath: PathService.home + "/.cache/safalQuick/nightsoul/bounce/"
     property var captureSource: null
     property bool ready: false
 

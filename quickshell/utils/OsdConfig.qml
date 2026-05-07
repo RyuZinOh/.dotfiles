@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 pragma Singleton
 import QtQuick
 import Quickshell
+import qs.Services.Paths
 import Quickshell.Io
 import Quickshell.Services.Pipewire
 import Kraken
@@ -33,7 +34,7 @@ Singleton {
     readonly property int maxLimit: 100
     readonly property var characterNames: ["Ororon", "Skirk", "Chasca"]
     readonly property string currentCharacterName: root.characterNames[root.character] || "Ororon"
-    readonly property string configPath: Quickshell.env("HOME") + "/.cache/safalQuick/osd.json"
+    readonly property string configPath: PathService.home + "/.cache/safalQuick/osd.json"
     property bool loaded: false
 
     signal brightnessRead(int value)

@@ -1,9 +1,9 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell
 import Quickshell.Io
 import qs.Services.Theme
 import qs.Services.Shapes
+import qs.Services.Paths
 
 Item {
     id: root
@@ -69,7 +69,7 @@ Item {
                     anchors.fill: parent
                     roundedPolygon: GetMShapes.get(18)
                     color: Theme.primaryColor
-                    imageSource: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/pfp.jpeg"
+                    imageSource: "file://" + PathService.home + "/.cache/safalQuick/pfp.jpeg"
                     borderWidth: 2
                     borderColor: Theme.primaryColor
                 }

@@ -7,6 +7,7 @@ import Kraken
 import QtQuick
 import Warsa
 import qs.Services.Theme
+import qs.Services.Paths
 
 Item {
     id: root
@@ -30,7 +31,7 @@ Item {
     Kraken {
         id: eventsAdapter
 
-        filePath: "/home/safalski/.cache/safalQuick/warsa.json"
+        filePath: PathService.home + "/.cache/safalQuick/warsa.json"
     }
 
     Rectangle {

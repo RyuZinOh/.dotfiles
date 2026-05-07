@@ -62,7 +62,6 @@ Item {
                     onClicked: {
                         contextMenu.visible = false;
                         Quickshell.execDetached(["bash", Qt.resolvedUrl("../../Scripts/refresh.sh").toString().replace("file://", "")]);
-                        Theme.generateColors();
                     }
                 }
             }

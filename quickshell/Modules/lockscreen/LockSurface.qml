@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
-import Quickshell
 import qs.Services.Theme
+import qs.Services.Paths
 
 Rectangle {
     id: root
@@ -13,7 +13,7 @@ Rectangle {
 
     Image {
         anchors.fill: parent
-        source: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/bg.jpg"
+        source: "file://" + PathService.home + "/.cache/safalQuick/bg.jpg"
         fillMode: Image.PreserveAspectCrop
 
         Rectangle {
@@ -151,7 +151,7 @@ Rectangle {
                         id: pfpImage
                         anchors.fill: parent
                         anchors.margins: 4
-                        source: "file://" + Quickshell.env("HOME") + "/.cache/safalQuick/pfp.jpeg"
+                        source: "file://" + PathService.home + "/.cache/safalQuick/pfp.jpeg"
                         fillMode: Image.PreserveAspectCrop
                         smooth: true
                         asynchronous: true

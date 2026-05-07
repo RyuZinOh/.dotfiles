@@ -1,6 +1,7 @@
 import QtQuick
 import Kraken
 import qs.Services.Theme
+import qs.Services.Paths
 
 /*
 read-> https://safallama.com.np/posts/quests/
@@ -10,7 +11,7 @@ Item {
     width: 360
     implicitHeight: mainCol.implicitHeight
 
-    property string warFile: "/home/safalski/.cache/safalQuick/todaywarpick.json"
+    property string warFile: PathService.home + "/.cache/safalQuick/todaywarpick.json"
     property var war: ({})
     property bool active: false
     signal warLoaded

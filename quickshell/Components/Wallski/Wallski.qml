@@ -7,14 +7,15 @@ import Quickshell.Widgets
 import qs.Services.Shapes
 import qs.Services.Theme
 import qs.utils
+import qs.Services.Paths
 
 Item {
     id: root
 
     property bool isHovered: false
     property bool isRefreshing: false
-    readonly property string thumbsPath: "file:///home/safalski/thumbs/"
-    readonly property string picturesPath: "/home/safalski/Pictures/"
+    readonly property string thumbsPath: "file://" + PathService.home + "/thumbs/"
+    readonly property string picturesPath: PathService.home + "/Pictures/"
 
     signal wallpaperChanged(string path)
 
@@ -37,8 +38,9 @@ Item {
         const fp = root.picturesPath + fn;
         Theme.thumbPath = root.thumbsPath + fn;
         Theme.saveTheme();
+        Theme.generateColors();
         Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fp]);
-        Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p /home/safalski/.cache/safalQuick/ && cp "${fp}" /home/safalski/.cache/safalQuick/bg.jpg`]);
+        Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p ${PathService.home}/.cache/safalQuick/ && cp "${fp}" ${PathService.home}/.cache/safalQuick/bg.jpg`]);
         Quickshell.execDetached(["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", fn.replace(/\.[^/.]+$/, "").replace(/_/g, " ")]);
         root.wallpaperChanged(fp);
     }
@@ -75,7 +77,7 @@ Item {
     Process {
         id: bamProcess
 
-        command: ["/bin/bash", "/home/safalski/.dotfiles/quickshell/Scripts/bam.sh"]
+        command: ["/bin/bash", PathService.home + "/.config/quickshell/Scripts/bam.sh"]
         running: false
         onExited: {
             root.isRefreshing = false;

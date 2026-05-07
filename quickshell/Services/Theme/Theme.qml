@@ -3,12 +3,13 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Kraken
+import qs.Services.Paths
 
 Singleton {
     id: root
 
-    readonly property string themePath: Quickshell.env("HOME") + "/.cache/safalQuick/theme.json"
-    readonly property string colorsPath: Quickshell.env("HOME") + "/.cache/safalQuick/colors.json"
+    readonly property string themePath: PathService.home + "/.cache/safalQuick/theme.json"
+    readonly property string colorsPath: PathService.home + "/.cache/safalQuick/colors.json"
 
     property bool isDarkMode: true
     property string currentSchemeType: "scheme-fruit-salad"
@@ -39,12 +40,10 @@ Singleton {
         root.generateColors();
     }
 
-    /* parsed color palette from json, auto-updates on mode change */
     property var colors: {
         const text = jsonFile.text();
         if (!text || !text.trim())
             return {};
-
         try {
             const data = JSON.parse(text);
             return data?.colors ?? {};
@@ -125,33 +124,20 @@ Singleton {
     property color scrimColor: root.colors.scrim
     property color shadowColor: root.colors.shadow
 
-    /* legacy aliases for backward compatibility */
+    /* legacy aliases */
     property color accentColor: root.primaryColor
     property color textColor: root.onBackground
     property color dimColor: root.outlineColor
 
-    // kraken for theme config
     Kraken {
         id: themeKraken
         filePath: root.themePath
 
         onDataLoaded: {
             if (themeKraken.loaded && themeKraken.isObject) {
-                const wasDark = root.isDarkMode;
-
-                if (themeKraken.has("schemeType")) {
-                    root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
-                }
-                if (themeKraken.has("thumbPath")) {
-                    root.thumbPath = themeKraken.get("thumbPath", "");
-                }
-                if (themeKraken.has("isDarkMode")) {
-                    root.isDarkMode = themeKraken.get("isDarkMode", true);
-                }
-                // generate colors on load if thumbPath exists
-                if (root.thumbPath) {
-                    root.generateColors();
-                }
+                root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
+                root.thumbPath = themeKraken.get("thumbPath", "");
+                root.isDarkMode = themeKraken.get("isDarkMode", true);
             }
         }
 
@@ -166,23 +152,7 @@ Singleton {
         path: root.colorsPath
         blockLoading: true
         watchChanges: true
-        onFileChanged: reloadTimer.restart()
-    }
-
-    FileView {
-        id: themeFile
-        path: root.themePath
-        blockLoading: true
-        watchChanges: true
         onFileChanged: {
-            themeKraken.reload();
-        }
-    }
-
-    Timer {
-        id: reloadTimer
-        interval: 100
-        onTriggered: {
             jsonFile.reload();
             root.colorsChanged();
         }
@@ -194,23 +164,17 @@ Singleton {
     }
 
     function generateColors() {
-        if (!root.thumbPath) {
+        if (!root.thumbPath)
             return;
-        }
-
-        const cleanPath = root.thumbPath.replace("file://", "");
         const mode = root.isDarkMode ? "dark" : "light";
-        const scheme = root.currentSchemeType;
-
-        Quickshell.execDetached(["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${scheme}" image "${cleanPath}"`]);
+        Quickshell.execDetached(["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${root.currentSchemeType}" image "${root.thumbPath.replace("file://", "")}"`]);
     }
 
     function saveTheme() {
         themeKraken.set("isDarkMode", root.isDarkMode);
         themeKraken.set("schemeType", root.currentSchemeType);
-        if (root.thumbPath) {
+        if (root.thumbPath)
             themeKraken.set("thumbPath", root.thumbPath);
-        }
         themeKraken.save();
     }
 

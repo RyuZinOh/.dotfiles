@@ -5,6 +5,7 @@ import QtMultimedia
 import QtQuick
 import QtQuick.Shapes
 import Quickshell.Io
+import qs.Services.Paths
 
 Item {
     id: root
@@ -24,7 +25,9 @@ Item {
     readonly property color hourglassTriangle: "#000000"
     readonly property color diamondBg: "#00ff00"
     readonly property color flashColor: "#a8ff00"
-    readonly property string pfpsPath: "file:///home/safalski/pfps/"
+    readonly property string pfpsPath: "file://" + PathService.home + "/pfps/"
+    readonly property string cachePath: PathService.home + "/.cache/safalQuick/"
+    readonly property string azmuthIcon: PathService.home + "/pfps/commander/OfficialAzmuth.png"
 
     Loader {
         id: omnitrixLoader
@@ -93,9 +96,11 @@ Item {
                 }
 
                 function copyToCache() {
-                    copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${currentFilePath().replace("file://", "")}" "/home/safalski/.cache/safalQuick/pfp.jpeg"`];
+                    copyPfpProcess.command = ["/usr/bin/sh", "-c", `cp "${currentFilePath().replace("file://", "")}" "${root.cachePath}pfp.jpeg"`];
+
                     copyPfpProcess.running = true;
-                    notifyProcess.command = ["notify-send", "-a", "Azmuth", "-i", "/home/safalski/pfps/commander/OfficialAzmuth.png", "Lockscreen Applied", currentFileName()];
+
+                    notifyProcess.command = ["notify-send", "-a", "Azmuth", "-i", root.azmuthIcon, "Lockscreen Applied", currentFileName()];
                     notifyProcess.running = true;
                 }
 

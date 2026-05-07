@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+import json
+import os
+import shutil
+import subprocess
+import sys
+import urllib.request
+
+HOME = os.path.expanduser("~")
+
+
+def run(cmd, cwd=None):
+    result = subprocess.run(cmd, cwd=cwd)
+    if result.returncode != 0:
+        print(f"error: {' '.join(cmd)}")
+        sys.exit(1)
+
+
+def safe_copy(src, dst, label):
+    if os.path.exists(dst):
+        ans = (
+            input(f"{label} already exists at {dst}, replace? [y/N]: ").strip().lower()
+        )
+        if ans != "y":
+            print(f"skipping {label}")
+            return
+        shutil.rmtree(dst)
+    print(f"copying {label}...")
+    shutil.copytree(src, dst)
+
+
+def check_deps():
+    missing = []
+    for dep in ["paru", "git"]:
+        if shutil.which(dep) is None:
+            missing.append(dep)
+    if missing:
+        print("missing required tools: " + ", ".join(missing))
+        print("install these first and then try...")
+        sys.exit(1)
+
+
+def main():
+    check_deps()
+
+    print("updating system...")
+    run(["paru", "-Syu"])
+    pkgs = ["warsa", "ryu-krken", "cleave", "clipsh"]
+    print(f"installing packages: {' '.join(pkgs)}")
+    run(["paru", "-S"] + pkgs)
+
+    # clone cache 
+    cache_dest = os.path.join(HOME, ".cache", "safalquick")
+    if os.path.exists(cache_dest):
+        ans = (
+            input("cache already exists at ~/.cache/safalquick, replace? [y/N]: ")
+            .strip()
+            .lower()
+        )
+        if ans == "y":
+            shutil.rmtree(cache_dest)
+            run(["git", "clone", "https://codeberg.org/safalski/cache", cache_dest])
+        else:
+            print("skipping cache repo")
+    else:
+        print("cloning cache repo...")
+        run(["git", "clone", "https://codeberg.org/safalski/cache", cache_dest])
+
+    # clone dotfiles into temp
+    tmp = os.path.join(HOME, "_ryutmp_dotfiles")
+    if os.path.exists(tmp):
+        shutil.rmtree(tmp)
+    print("cloning dotfiles...")
+    run(["git", "clone", "https://github.com/RyuZinOh/.dotfiles", tmp])
+
+    # copy each config dir
+    safe_copy(
+        os.path.join(tmp, "quickshell"),
+        os.path.join(HOME, ".config", "quickshell"),
+        "quickshell",
+    )
+    safe_copy(
+        os.path.join(tmp, "matugen"),
+        os.path.join(HOME, ".config", "matugen"),
+        "matugen",
+    )
+    safe_copy(os.path.join(tmp, "hypr"), os.path.join(HOME, ".config", "hypr"), "hypr")
+    safe_copy(os.path.join(tmp, "Pictures"), os.path.join(HOME, "Pictures"), "pictures")
+
+    # remove temp clone
+    shutil.rmtree(tmp)
+    print("removed temp clone")
+
+    # download github pfp
+    pfp_dir = os.path.join(HOME, "pfp")
+    pfp_path = os.path.join(pfp_dir, "ryuzinoh.png")
+    if os.path.exists(pfp_path):
+        ans = (
+            input("pfp already exists at ~/pfp/ryuzinoh.png, replace? [y/N]: ")
+            .strip()
+            .lower()
+        )
+        if ans != "y":
+            print("skipping pfp")
+        else:
+            os.makedirs(pfp_dir, exist_ok=True)
+            _download_pfp(pfp_path)
+    else:
+        os.makedirs(pfp_dir, exist_ok=True)
+        print("fetching ryuzinoh github profile picture...")
+        _download_pfp(pfp_path)
+
+    print("\ndone")
+    print("  quickshell  ->  ~/.config/quickshell")
+    print("  matugen     ->  ~/.config/matugen")
+    print("  hypr        ->  ~/.config/hypr")
+    print("  pictures    ->  ~/pictures")
+    print("  pfp         ->  ~/pfp/ryuzinoh.png")
+    print("  cache       ->  ~/.cache/safalquick")
+
+
+def _download_pfp(path):
+    req = urllib.request.Request(
+        "https://api.github.com/users/RyuZinOh", headers={"User-Agent": "ryusetup"}
+    )
+    with urllib.request.urlopen(req) as r:
+        avatar_url = json.loads(r.read())["avatar_url"]
+    urllib.request.urlretrieve(avatar_url, path)
+    print(f"saved pfp to {path}")
+
+
+if __name__ == "__main__":
+    main()

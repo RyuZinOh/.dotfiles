@@ -1,6 +1,7 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import qs.Services.Paths
 import Kraken
 
 Singleton {
@@ -16,7 +17,7 @@ Singleton {
     readonly property int tempMax: 6500
     readonly property int gammaMin: 10
     readonly property int gammaMax: 100
-    readonly property string configPath: Quickshell.env("HOME") + "/.cache/safalQuick/communication-config.json"
+    readonly property string configPath: PathService.home + "/.cache/safalQuick/communication-config.json"
 
     signal hyprsunsetToggled(bool active)
 

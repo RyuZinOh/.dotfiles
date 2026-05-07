@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import qs.Services.Paths
 
 Item {
     id: root
@@ -8,8 +9,7 @@ Item {
     y: -120
 
     property real normalizedValue: 0
-    property string spriteCache: "/home/safalski/.cache/safalQuick/nightsoul/Skirk"
-
+    property string spriteCache: PathService.home + "/.cache/safalQuick/nightsoul/Skirk"
     readonly property int zBarBg: 1
     readonly property int zBarFillOutline: 2
     readonly property int zBarFill: 3
