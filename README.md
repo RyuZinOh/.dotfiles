@@ -1,1 +1,2 @@
-to install run the script of ``./quickshell/Scripts/ryusetup.py`` this is like minmimal version installation...
+minimal install script: 
+``curl -fsSL https://raw.githubusercontent.com/RyuZinOh/.dotfiles/main/quickshell/Scripts/ryusetup.py -o ryusetup.py && python3 ryusetup.py``
