@@ -16,6 +16,15 @@ def run(cmd, cwd=None):
         sys.exit(1)
 
 
+def get_aur_helper():
+    for helper in ["paru", "yay"]:
+        if shutil.which(helper):
+            print(f"using AUR helper: {helper}")
+            return helper
+    print("missing required AUR helper: install paru or yay first and then try...")
+    sys.exit(1)
+
+
 def safe_copy(src, dst, label):
     if os.path.exists(dst):
         ans = (
@@ -30,24 +39,21 @@ def safe_copy(src, dst, label):
 
 
 def check_deps():
-    missing = []
-    for dep in ["paru", "git"]:
-        if shutil.which(dep) is None:
-            missing.append(dep)
-    if missing:
-        print("missing required tools: " + ", ".join(missing))
-        print("install these first and then try...")
+    if shutil.which("git") is None:
+        print("missing required tool: git")
+        print("install git first and then try...")
         sys.exit(1)
 
 
 def main():
     check_deps()
+    aur = get_aur_helper()
 
     print("updating system...")
-    run(["paru", "-Syu"])
+    run([aur, "-Syu"])
     pkgs = ["warsa", "ryu-krken", "cleave", "clipsh"]
     print(f"installing packages: {' '.join(pkgs)}")
-    run(["paru", "-S"] + pkgs)
+    run([aur, "-S"] + pkgs)
 
     # clone cache 
     cache_dest = os.path.join(HOME, ".cache", "safalquick")
@@ -111,10 +117,11 @@ def main():
         _download_pfp(pfp_path)
 
     print("\ndone")
+    print(f"  AUR helper  ->  {aur}")
     print("  quickshell  ->  ~/.config/quickshell")
     print("  matugen     ->  ~/.config/matugen")
     print("  hypr        ->  ~/.config/hypr")
-    print("  pictures    ->  ~/pictures")
+    print("  pictures    ->  ~/Pictures")
     print("  pfp         ->  ~/pfp/ryuzinoh.png")
     print("  cache       ->  ~/.cache/safalquick")
 
@@ -131,3 +138,4 @@ def _download_pfp(path):
 
 if __name__ == "__main__":
     main()
+    
