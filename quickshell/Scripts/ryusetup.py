@@ -51,7 +51,7 @@ def main():
 
     print("updating system...")
     run([aur, "-Syu"])
-    pkgs = ["warsa", "ryu-krken", "cleave", "clipsh"]
+    pkgs = ["warsa", "ryu-kraken", "cleave", "clipsh"]
     print(f"installing packages: {' '.join(pkgs)}")
     run([aur, "-S"] + pkgs)
 
