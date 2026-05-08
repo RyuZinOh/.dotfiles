@@ -10,8 +10,7 @@ Item {
         target: "wallpaper"
 
         function setWallpaper(path: string): string {
-            const fullPath = path.startsWith("file://") ? path : "file://" + path;
-            WallpaperConfig.currentWallpaper = fullPath;
+            WallpaperConfig.currentWallpaper = path;
             WallpaperConfig.saveConfig();
             return "ok";
         }

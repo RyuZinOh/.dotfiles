@@ -136,7 +136,8 @@ Singleton {
         onDataLoaded: {
             if (themeKraken.loaded && themeKraken.isObject) {
                 root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
-                root.thumbPath = themeKraken.get("thumbPath", "");
+                const saved = themeKraken.get("thumbPath", "");
+                root.thumbPath = saved ? PathService.home + '/thumbs/' + saved : "";
                 root.isDarkMode = themeKraken.get("isDarkMode", true);
             }
         }
@@ -167,14 +168,16 @@ Singleton {
         if (!root.thumbPath)
             return;
         const mode = root.isDarkMode ? "dark" : "light";
-        Quickshell.execDetached(["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${root.currentSchemeType}" image "${root.thumbPath.replace("file://", "")}"`]);
+        Quickshell.execDetached(["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${root.currentSchemeType}" image "${root.thumbPath}"`]);
     }
 
     function saveTheme() {
         themeKraken.set("isDarkMode", root.isDarkMode);
         themeKraken.set("schemeType", root.currentSchemeType);
-        if (root.thumbPath)
-            themeKraken.set("thumbPath", root.thumbPath);
+        if (root.thumbPath) {
+            const filename = root.thumbPath.split("/").pop();
+            themeKraken.set("thumbPath", filename);
+        }
         themeKraken.save();
     }
 

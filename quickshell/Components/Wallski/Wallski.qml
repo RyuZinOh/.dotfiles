@@ -14,8 +14,9 @@ Item {
 
     property bool isHovered: false
     property bool isRefreshing: false
-    readonly property string thumbsPath: "file://" + PathService.home + "/thumbs/"
+    readonly property string thumbsPath: PathService.home + "/thumbs/"
     readonly property string picturesPath: PathService.home + "/Pictures/"
+    readonly property string thumbsUrl: "file://" + PathService.home + "/thumbs/"
 
     signal wallpaperChanged(string path)
 
@@ -82,14 +83,14 @@ Item {
         onExited: {
             root.isRefreshing = false;
             folderModel.folder = "";
-            folderModel.folder = root.thumbsPath;
+            folderModel.folder = root.thumbsUrl;
         }
     }
 
     FolderListModel {
         id: folderModel
 
-        folder: root.thumbsPath
+        folder: root.thumbsUrl
         nameFilters: ["*.jpg", "*.jpeg"]
         showDirs: false
     }
@@ -174,7 +175,7 @@ Item {
 
                                     Image {
                                         anchors.fill: parent
-                                        source: root.thumbsPath + del.fileName
+                                        source: root.thumbsUrl + del.fileName
                                         fillMode: Image.PreserveAspectCrop
                                         smooth: true
                                         asynchronous: true

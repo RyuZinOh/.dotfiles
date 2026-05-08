@@ -3,7 +3,6 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.Services.Paths
-import Quickshell.Io
 import Kraken
 
 Singleton {
@@ -17,7 +16,7 @@ Singleton {
     property bool loaded: false
 
     function saveConfig() {
-        configKraken.set("wallpaper", root.currentWallpaper);
+        configKraken.set("wallpaper", root.currentWallpaper.split("/").pop());
         configKraken.set("displayMode", root.displayMode);
         configKraken.set("transitionType", root.transitionType);
         configKraken.set("enablePanning", root.enablePanning);
@@ -29,8 +28,10 @@ Singleton {
         filePath: root.configPath
         onDataLoaded: {
             if (loaded && isObject) {
-                if (has("wallpaper"))
-                    root.currentWallpaper = get("wallpaper", "");
+                if (has("wallpaper")) {
+                    const saved = get("wallpaper", "");
+                    root.currentWallpaper = saved ? PathService.home + "/Pictures/" + saved : "";
+                }
                 if (has("displayMode"))
                     root.displayMode = get("displayMode", "wallpaper");
                 if (has("transitionType"))
@@ -44,12 +45,5 @@ Singleton {
             console.warn("wallpaper config failed:", error);
             root.saveConfig();
         }
-    }
-
-    FileView {
-        id: configFile
-        path: root.configPath
-        watchChanges: true
-        onFileChanged: configKraken.reload()
     }
 }
