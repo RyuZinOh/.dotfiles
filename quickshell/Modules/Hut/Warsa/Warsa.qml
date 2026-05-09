@@ -1,80 +1,30 @@
 /*warsa
  https://git.safallama.com.np/ashborn/warsa [check here for the Warsa Module]
- https://git.safallama.com.np/ashborn/kraken [check here for the Kraken Module]
  */
 pragma ComponentBehavior: Bound
-import Kraken
-import QtQuick
 import Warsa
+import QtQuick
 import qs.Services.Theme
-import qs.Services.Paths
 
 Item {
     id: root
 
-    function getEventForDate(month, day) {
-        var key = month + "-" + day;
-        return eventsAdapter.get(key, null);
-    }
-
     implicitWidth: calendarCard.width
     implicitHeight: calendarCard.height
 
+    EventsDB {
+        id: eventsDb
+        Component.onCompleted: eventsDb.init()
+    }
     Warsa {
         id: calendar
-
-        Component.onCompleted: {
-            calendar.setToday();
-        }
-    }
-
-    Kraken {
-        id: eventsAdapter
-
-        filePath: PathService.home + "/.cache/safalQuick/warsa.json"
-    }
-
-    Rectangle {
-        id: eventPopup
-
-        property string title: ""
-        property string description: ""
-
-        visible: false
-        width: 220
-        height: popupText.height + 16
-        radius: 16
-        color: Theme.surfaceContainerHighest
-        border.width: 0
-        z: 1000
-        opacity: 0
-
-        Text {
-            id: popupText
-
-            anchors.centerIn: parent
-            width: 200
-            textFormat: Text.StyledText
-            text: eventPopup.title + " -> " + eventPopup.description
-            font.pixelSize: 11
-            font.family: "CaskaydiaCove NF"
-            font.weight: Font.Medium
-            color: Theme.onSurface
-            wrapMode: Text.WordWrap
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 150
-                easing.type: Easing.OutCubic
-            }
-        }
+        Component.onCompleted: calendar.setToday()
     }
 
     Rectangle {
         id: calendarCard
 
-        width: calendarContent.width + 32
+        width: calendarContent.width + 40
         height: calendarContent.height + 32
         radius: 20
         color: Theme.surfaceContainer
@@ -87,101 +37,98 @@ Item {
             anchors.centerIn: parent
             spacing: 16
 
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 16
-
-                Rectangle {
-                    width: 40
-                    height: 40
-                    radius: 20
-                    color: prevMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
-                    border.width: 0
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "<"
-                        font.pixelSize: 20
-                        font.family: "CaskaydiaCove NF"
-                        font.weight: Font.Light
-                        color: prevMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        id: prevMouse
-
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            calendar.previousMonth();
-                        }
-                    }
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                }
+            Item {
+                width: 280
+                height: 40
 
                 Text {
-                    width: 180
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
                     text: calendar.monthName.charAt(0).toUpperCase() + calendar.monthName.slice(1) + " " + calendar.year
                     font.pixelSize: 14
                     font.family: "CaskaydiaCove NF"
                     font.weight: Font.Medium
                     color: Theme.onSurface
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.verticalCenter: parent.verticalCenter
                 }
 
-                Rectangle {
-                    width: 40
-                    height: 40
-                    radius: 20
-                    color: nextMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
-                    border.width: 0
+                Row {
                     anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    spacing: 6
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: ">"
-                        font.pixelSize: 20
-                        font.family: "CaskaydiaCove NF"
-                        font.weight: Font.Light
-                        color: nextMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+                    Rectangle {
+                        id: prevBtn
 
+                        width: 40
+                        height: 40
+                        radius: 20
+                        color: prevMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
+                                easing.type: Easing.OutCubic
                             }
                         }
-                    }
 
-                    MouseArea {
-                        id: nextMouse
+                        Text {
+                            anchors.centerIn: parent
+                            text: "<"
+                            font.pixelSize: 20
+                            font.family: "CaskaydiaCove NF"
+                            font.weight: Font.Light
+                            color: prevMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 200
+                                }
+                            }
+                        }
 
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            calendar.nextMonth();
+                        MouseArea {
+                            id: prevMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            enabled: !eventSheet.visible
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: calendar.previousMonth()
                         }
                     }
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                            easing.type: Easing.OutCubic
+                    Rectangle {
+                        id: nextBtn
+
+                        width: 40
+                        height: 40
+                        radius: 20
+                        color: nextMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: ">"
+                            font.pixelSize: 20
+                            font.family: "CaskaydiaCove NF"
+                            font.weight: Font.Light
+                            color: nextMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 200
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: nextMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            enabled: !eventSheet.visible
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: calendar.nextMonth()
                         }
                     }
                 }
@@ -209,11 +156,10 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: dayHeaderItem.modelData
-                            font.pixelSize: 9
+                            font.pixelSize: 12
                             font.family: "CaskaydiaCove NF"
                             font.weight: Font.Medium
                             color: Theme.onSurfaceVariant
-                            opacity: 0.6
                         }
                     }
                 }
@@ -223,25 +169,25 @@ Item {
                 id: daysGrid
 
                 property var cachedModel: []
+                property int activeIndex: -1
 
                 function updateModel() {
-                    var days = calendar.getMonthDays(calendar.month);
-                    var firstDay = calendar.getFirstDayOfMonth(calendar.month);
-                    var result = [];
-                    for (var i = 0; i < firstDay; i++) {
+                    const days = calendar.getMonthDays(calendar.month);
+                    const firstDay = calendar.getFirstDayOfMonth(calendar.month);
+                    const result = [];
+                    for (let i = 0; i < firstDay; i++)
                         result.push({
-                            "day": 0,
-                            "isToday": false,
-                            "isSaturday": false,
-                            "hasEvent": false
+                            day: 0,
+                            isToday: false,
+                            isSaturday: false,
+                            hasEvent: false
                         });
-                    }
-                    for (var j = 0; j < days.length; j++) {
-                        var dayData = days[j];
-                        var event = root.getEventForDate(calendar.month, dayData.day);
-                        dayData.hasEvent = event !== null;
-                        dayData.eventData = event;
-                        result.push(dayData);
+                    for (let j = 0; j < days.length; j++) {
+                        const d = days[j];
+                        const event = eventsDb.get(calendar.month, d.day);
+                        d.hasEvent = event !== null;
+                        d.eventData = event;
+                        result.push(d);
                     }
                     daysGrid.cachedModel = result;
                 }
@@ -251,24 +197,14 @@ Item {
                 columns: 7
                 columnSpacing: 3
                 rowSpacing: 3
-                Component.onCompleted: {
-                    daysGrid.updateModel();
-                }
+
+                Component.onCompleted: daysGrid.updateModel()
 
                 Connections {
+                    target: calendar
                     function onMonthChanged() {
                         daysGrid.updateModel();
                     }
-
-                    target: calendar
-                }
-
-                Connections {
-                    function onDataLoaded() {
-                        daysGrid.updateModel();
-                    }
-
-                    target: eventsAdapter
                 }
 
                 Repeater {
@@ -280,28 +216,42 @@ Item {
                         required property var modelData
                         required property int index
 
+                        opacity: (eventSheet.visible && dayRect.index === daysGrid.activeIndex) ? 0 : 1
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
+                            }
+                        }
                         width: 38
                         height: 38
                         radius: dayMouse.containsMouse ? 19 : 10
                         color: {
                             if (dayRect.modelData.day === 0)
                                 return "transparent";
-
                             if (dayRect.modelData.isToday)
                                 return Theme.primaryColor;
-
                             if (dayMouse.containsMouse)
                                 return Theme.secondaryColor;
-
                             if (dayRect.modelData.hasEvent)
                                 return Theme.tertiaryColor;
-
                             if (dayRect.modelData.isSaturday)
                                 return Theme.errorContainer;
-
                             return Theme.surfaceContainerHigh;
                         }
-                        border.width: 0
+
+                        Behavior on radius {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+                        }
 
                         Rectangle {
                             width: 4
@@ -324,19 +274,14 @@ Item {
                             color: {
                                 if (dayRect.modelData.isToday)
                                     return Theme.onPrimaryContainer;
-
                                 if (dayMouse.containsMouse)
                                     return Theme.onSecondaryContainer;
-
                                 if (dayRect.modelData.hasEvent)
                                     return Theme.onTertiaryContainer;
-
                                 if (dayRect.modelData.isSaturday)
                                     return Theme.onErrorContainer;
-
                                 return Theme.onSurface;
                             }
-
                             Behavior on color {
                                 ColorAnimation {
                                     duration: 200
@@ -346,97 +291,148 @@ Item {
 
                         MouseArea {
                             id: dayMouse
-
                             anchors.fill: parent
-                            enabled: dayRect.modelData.day !== 0
+                            enabled: dayRect.modelData.day !== 0 && !eventSheet.visible
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 calendar.setDate(calendar.year, calendar.month, dayRect.modelData.day);
+                                daysGrid.activeIndex = dayRect.index;
+                                const pos = dayMouse.mapToItem(calendarCard, 0, 0);
+                                eventSheet.openFor(calendar.month, dayRect.modelData.day, pos.x + dayMouse.width / 2, pos.y + dayMouse.height / 2);
                             }
                             onEntered: {
-                                if (dayRect.modelData.hasEvent && dayRect.modelData.eventData) {
-                                    eventPopup.title = dayRect.modelData.eventData.title || "Event";
-                                    eventPopup.description = dayRect.modelData.eventData.description || "";
-                                    var pos = dayMouse.mapToItem(root, 0, 0);
-                                    eventPopup.x = pos.x + (dayMouse.width - eventPopup.width) / 2;
-                                    eventPopup.y = pos.y - eventPopup.height - 8;
-                                    if (eventPopup.x < 0)
-                                        eventPopup.x = 8;
-
-                                    if (eventPopup.x + eventPopup.width > root.width)
-                                        eventPopup.x = root.width - eventPopup.width - 8;
-
-                                    if (eventPopup.y < 0)
-                                        eventPopup.y = pos.y + dayMouse.height + 8;
-
-                                    eventPopup.visible = true;
-                                    eventPopup.opacity = 1;
-                                }
+                                if (!dayRect.modelData.hasEvent || !dayRect.modelData.eventData)
+                                    return;
+                                eventPopup.title = dayRect.modelData.eventData.title || "Event";
+                                eventPopup.description = dayRect.modelData.eventData.description || "";
+                                const pos = dayMouse.mapToItem(root, 0, 0);
+                                eventPopup.x = Math.min(Math.max(pos.x + (dayMouse.width - eventPopup.width) / 2, 8), root.width - eventPopup.width - 8);
+                                eventPopup.y = pos.y - eventPopup.height - 8 < 0 ? pos.y + dayMouse.height + 8 : pos.y - eventPopup.height - 8;
+                                eventPopup.visible = true;
+                                eventPopup.opacity = 1;
                             }
                             onExited: {
                                 eventPopup.visible = false;
                                 eventPopup.opacity = 0;
                             }
                         }
-
-                        Behavior on radius {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                                easing.type: Easing.OutCubic
-                            }
-                        }
                     }
                 }
             }
 
-            Rectangle {
-                width: 90
+            Item {
+                width: 280
                 height: 36
-                radius: 18
-                color: todayMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
-                border.width: 0
-                anchors.horizontalCenter: parent.horizontalCenter
 
-                Text {
-                    anchors.centerIn: parent
-                    text: "Today"
-                    font.pixelSize: 11
-                    font.family: "CaskaydiaCove NF"
-                    font.weight: Font.Normal
-                    color: todayMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
-
+                Rectangle {
+                    width: 90
+                    height: 36
+                    radius: 18
+                    anchors.right: parent.right
+                    color: todayMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
                     Behavior on color {
                         ColorAnimation {
                             duration: 200
+                            easing.type: Easing.OutCubic
                         }
                     }
-                }
 
-                MouseArea {
-                    id: todayMouse
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Today"
+                        font.pixelSize: 11
+                        font.family: "CaskaydiaCove NF"
+                        font.weight: Font.Normal
+                        color: todayMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+                    }
 
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        calendar.setToday();
+                    MouseArea {
+                        id: todayMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        enabled: !eventSheet.visible
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: calendar.setToday()
                     }
                 }
+            }
+        }
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
+        Rectangle {
+            id: scrim
+
+            anchors.fill: parent
+            radius: calendarCard.radius
+            color: Theme.surfaceContainer
+            opacity: eventSheet.visible ? 0.6 : 0
+            visible: opacity > 0
+            z: 10
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 220
+                    easing.type: Easing.InOutCubic
                 }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: parent.visible
+            }
+        }
+
+        EventSheet {
+            id: eventSheet
+
+            eventsDb: eventsDb
+            monthName: calendar.monthName.charAt(0).toUpperCase() + calendar.monthName.slice(1)
+            anchors.centerIn: parent
+            width: calendarCard.width - 32
+            z: 11
+
+            onDone: daysGrid.updateModel()
+            onClosing: daysGrid.activeIndex = -1
+            onCloseRequested: {}
+        }
+    }
+
+    Rectangle {
+        id: eventPopup
+
+        property string title: ""
+        property string description: ""
+
+        visible: false
+        width: 220
+        height: popupText.height + 16
+        radius: 16
+        color: Theme.surfaceContainerHighest
+        z: 1000
+        opacity: 0
+
+        Text {
+            id: popupText
+            anchors.centerIn: parent
+            width: 200
+            textFormat: Text.StyledText
+            text: eventPopup.title + " → " + eventPopup.description
+            font.pixelSize: 11
+            font.family: "CaskaydiaCove NF"
+            font.weight: Font.Medium
+            color: Theme.onSurface
+            wrapMode: Text.WordWrap
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutCubic
             }
         }
     }

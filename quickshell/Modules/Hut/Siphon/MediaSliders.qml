@@ -2,13 +2,13 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Widgets
 import qs.Services.Theme
-import qs.Services.Shapes
+import qs.Services.Sliders
 import qs.utils
 
 Item {
     id: root
     implicitWidth: 320
-    implicitHeight: 200
+    implicitHeight: 220
 
     component ColorBehavior: ColorAnimation {
         duration: 200
@@ -20,7 +20,7 @@ Item {
             top: parent.top
             bottom: parent.bottom
         }
-        width: 120
+        width: 112
         radius: 20
         color: Theme.surfaceContainer
         border {
@@ -34,12 +34,12 @@ Item {
             right: parent.right
             top: parent.top
             bottom: parent.bottom
-            margins: 6
+            margins: 7
         }
-        spacing: 4
+        spacing: 6
 
         MediaSlider {
-            width: 52
+            width: 46
             height: parent.height
             value: Math.round(OsdConfig.sinkVolume)
             muted: OsdConfig.sinkMuted
@@ -52,7 +52,7 @@ Item {
 
         MediaSlider {
             id: brightSlider
-            width: 52
+            width: 46
             height: parent.height
             value: brightnessVal
             animate: ready
@@ -116,7 +116,7 @@ Item {
         anchors {
             left: parent.left
             right: parent.right
-            rightMargin: 120 + 12
+            rightMargin: 116 + 12
             top: parent.top
             bottom: parent.bottom
             bottomMargin: 54
@@ -166,14 +166,28 @@ Item {
                     color: Theme.onSurfaceVariant
                 }
 
-                SineWaveSlider {
+                M3Slider {
+                    id: gammaSlider
                     width: parent.width - 22
                     height: parent.height
-                    value: CommunicationConfig.gamma
+                    property real smoothVal: CommunicationConfig.gamma
+                    value: smoothVal
+                    Behavior on smoothVal {
+                        NumberAnimation {
+                            duration: 80
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Connections {
+                        target: CommunicationConfig
+                        function onGammaChanged() {
+                            gammaSlider.smoothVal = CommunicationConfig.gamma;
+                        }
+                    }
                     minVal: CommunicationConfig.gammaMin
                     maxVal: CommunicationConfig.gammaMax
                     accentFill: Theme.primaryColor
-                    trackFill: Theme.primaryContainer
+                    trackFill: Theme.surfaceBright
                     onScrub: d => d > 0 ? CommunicationConfig.increaseGamma() : CommunicationConfig.decreaseGamma()
                 }
             }
@@ -193,14 +207,28 @@ Item {
                     color: Theme.onSurfaceVariant
                 }
 
-                SineWaveSlider {
+                M3Slider {
+                    id: tempSlider
                     width: parent.width - 22
                     height: parent.height
-                    value: CommunicationConfig.temperature
+                    property real smoothVal: CommunicationConfig.temperature
+                    value: smoothVal
+                    Behavior on smoothVal {
+                        NumberAnimation {
+                            duration: 80
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Connections {
+                        target: CommunicationConfig
+                        function onTemperatureChanged() {
+                            tempSlider.smoothVal = CommunicationConfig.temperature;
+                        }
+                    }
                     minVal: CommunicationConfig.tempMin
                     maxVal: CommunicationConfig.tempMax
                     accentFill: Theme.primaryColor
-                    trackFill: Theme.primaryContainer
+                    trackFill: Theme.surfaceBright
                     onScrub: d => d > 0 ? CommunicationConfig.increaseTemperature() : CommunicationConfig.decreaseTemperature()
                 }
             }
@@ -220,8 +248,8 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            border.width: 2
-            radius: 15
+            border.width: 1
+            radius: 14
             border.color: Theme.outlineVariant
             color: parent.active ? parent.activeColor : parent.inactiveColor
             Behavior on color {
@@ -265,10 +293,8 @@ Item {
 
         ClippingRectangle {
             id: track
-            anchors.centerIn: parent
-            width: 45
-            height: ms.height
-            radius: 20
+            anchors.fill: parent
+            radius: 14
             color: Theme.surfaceContainer
             border {
                 width: 1

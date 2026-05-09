@@ -7,8 +7,6 @@ import qs.Services.Paths
 
 Item {
     id: root
-    implicitWidth: 200
-    implicitHeight: 60
 
     property string _uptime: ""
     property bool _ready: false
@@ -43,146 +41,98 @@ Item {
         anchors.fill: parent
         radius: 20
         color: Theme.surfaceContainer
-        border {
-            color: Theme.outlineVariant
-            width: 1
-        }
+        border.color: Theme.outlineVariant
+        border.width: 1
 
-        Row {
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-                leftMargin: 14
-                rightMargin: 14
+        Item {
+            id: pfpItem
+            width: 80
+            height: 80
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 8
+            anchors.bottomMargin: 8
+
+            ShapeCanvas {
+                anchors.fill: parent
+                roundedPolygon: GetMShapes.get(18)
+                color: Theme.primaryColor
+                imageSource: "file://" + PathService.home + "/.cache/safalQuick/pfp.jpeg"
+                borderWidth: 2
+                borderColor: Theme.primaryColor
             }
-            spacing: 20
 
             Item {
-                id: pfpItem
-                width: 72
-                height: 72
-                anchors.verticalCenter: parent.verticalCenter
+                id: bubble
+                width: bubbleRect.width + 24
+                height: bubbleRect.height + 16
+                anchors.left: pfpItem.right
+                anchors.leftMargin: -12
+                anchors.bottom: pfpItem.top
+                anchors.bottomMargin: -40
+                z: 10
 
-                ShapeCanvas {
-                    anchors.fill: parent
-                    roundedPolygon: GetMShapes.get(18)
-                    color: Theme.primaryColor
-                    imageSource: "file://" + PathService.home + "/.cache/safalQuick/pfp.jpeg"
-                    borderWidth: 2
-                    borderColor: Theme.primaryColor
+                Rectangle {
+                    id: bubbleRect
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    width: bubbleText.implicitWidth + 20
+                    height: bubbleText.implicitHeight + 12
+                    radius: 10
+                    color: Theme.surfaceContainerHigh
+                    border.color: Theme.outlineVariant
+                    border.width: 1
+
+                    Text {
+                        id: bubbleText
+                        anchors.centerIn: parent
+                        text: "ryu"
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                        color: Theme.onSurface
+                    }
                 }
 
-                HoverHandler {
-                    id: pfpHover
-                }
-
-                Item {
-                    id: bubble
-                    width: bubbleRect.width + 24
-                    height: bubbleRect.height + 16
-                    x: pfpItem.width - 4
-                    y: -height + 25
-                    z: 10
-
-                    opacity: pfpHover.hovered ? 1 : 0
-                    scale: pfpHover.hovered ? 1 : 0.7
-                    transformOrigin: Item.BottomLeft
-
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: 180
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                    Behavior on scale {
-                        NumberAnimation {
-                            duration: 180
-                            easing.type: Easing.OutBack
-                        }
-                    }
-
-                    Rectangle {
-                        id: bubbleRect
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        width: bubbleText.implicitWidth + 20
-                        height: bubbleText.implicitHeight + 12
-                        radius: 10
-                        color: Theme.surfaceContainerHigh
-                        border {
-                            color: Theme.outlineVariant
-                            width: 1
-                        }
-
-                        Text {
-                            id: bubbleText
-                            anchors.centerIn: parent
-                            text: "proper use of free will.."
-                            font {
-                                family: "CaskaydiaCove NF"
-                                pixelSize: 11
-                                weight: Font.Medium
-                            }
-                            color: Theme.onSurface
-                        }
-                    }
-
-                    Rectangle {
-                        width: 7
-                        height: 7
-                        radius: 4
-                        color: Theme.surfaceContainerHigh
-                        border {
-                            color: Theme.outlineVariant
-                            width: 1
-                        }
-                        x: 4
-                        y: parent.height - 16
-                    }
-
-                    Rectangle {
-                        width: 5
-                        height: 5
-                        radius: 3
-                        color: Theme.surfaceContainerHigh
-                        border {
-                            color: Theme.outlineVariant
-                            width: 1
-                        }
-                        x: 0
-                        y: parent.height - 8
-                    }
+                Rectangle {
+                    width: 7
+                    height: 7
+                    radius: 4
+                    color: Theme.surfaceContainerHigh
+                    border.color: Theme.outlineVariant
+                    border.width: 1
+                    x: 10
+                    y: parent.height - 12
                 }
             }
+        }
 
-            Column {
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 2
+        Column {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 8
+            anchors.rightMargin: 18
+            spacing: 2
 
-                Text {
-                    text: "uptime"
-                    font {
-                        family: "CaskaydiaCove NF"
-                        pixelSize: 11
-                        weight: Font.Medium
-                    }
-                    color: Theme.onSurfaceVariant
-                    opacity: 0.7
-                }
+            Text {
+                anchors.right: parent.right
+                text: "uptime"
+                font.family: "CaskaydiaCove NF"
+                font.pixelSize: 11
+                font.weight: Font.Medium
+                color: Theme.onSurfaceVariant
+                opacity: 0.7
+            }
 
-                Text {
-                    text: root._uptime !== "" ? root._uptime : "—"
-                    font {
-                        family: "CaskaydiaCove NF"
-                        pixelSize: 18
-                        weight: Font.Medium
-                    }
-                    color: Theme.onSurface
-                    elide: Text.ElideRight
-                }
+            Text {
+                anchors.right: parent.right
+                text: root._uptime !== "" ? root._uptime : "—"
+                font.family: "CaskaydiaCove NF"
+                font.pixelSize: 18
+                font.weight: Font.Medium
+                color: Theme.onSurface
+                elide: Text.ElideRight
             }
         }
     }
