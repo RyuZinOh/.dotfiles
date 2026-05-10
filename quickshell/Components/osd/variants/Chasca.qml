@@ -9,8 +9,8 @@ Item {
 
     property real normalizedValue: 0
 
-    property string spriteCache: PathService.home + "/.cache/safalQuick/nightsoul/Chasca"
-
+    property url spriteCache: Qt.resolvedUrl("../../../Assets/nightsoul/Chasca")
+    property string shaderPath: PathService.home + "/.cache/safalQuick/shaders/flame"
     Component.onCompleted: {
         // console.log("Chasca variant created");
     }
@@ -40,8 +40,8 @@ Item {
             running: true
         }
 
-        vertexShader: root.spriteCache + "/flame.vert.qsb"
-        fragmentShader: root.spriteCache + "/flame.frag.qsb"
+        vertexShader: root.shaderPath + "/flame.vert.qsb"
+        fragmentShader: root.shaderPath + "/flame.frag.qsb"
     }
 
     Image {

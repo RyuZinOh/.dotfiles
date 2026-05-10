@@ -63,13 +63,16 @@ for THUMB in "$THUMBS_DIR"/*.{jpg,JPG,jpeg,JPEG}; do
 done
 
 ##echo -e "${MAGENTA} All operations completed successfully!${RESET}"
+send_notify() {
+  command -v notify-send &>/dev/null && notify-send "$@" 2>/dev/null || true
+}
 
 if [ $NEW_THUMBS -eq 0 ] && [ $DELETED_ORPHANS -eq 0 ]; then
-  notify-send -a "Wallski" " No Changes" "No new thumbnails generated. Everything is up to date!" -u normal
+  send_notify -a "Wallski" " No Changes" "No new thumbnails generated. Everything is up to date!" -u normal
 elif [ $NEW_THUMBS -gt 0 ] && [ $DELETED_ORPHANS -eq 0 ]; then
-  notify-send -a "Wallski" " Thumbnails Generated" "$NEW_THUMBS new thumbnails created successfully!" -u normal
+  send_notify -a "Wallski" " Thumbnails Generated" "$NEW_THUMBS new thumbnails created successfully!" -u normal
 elif [ $NEW_THUMBS -eq 0 ] && [ $DELETED_ORPHANS -gt 0 ]; then
-  notify-send -a "Wallski" " Cleanup Complete" "$DELETED_ORPHANS orphan thumbnails deleted!" -u normal
+  send_notify -a "Wallski" " Cleanup Complete" "$DELETED_ORPHANS orphan thumbnails deleted!" -u normal
 else
-  notify-send -a "Wallski" " Process Complete" "$NEW_THUMBS new, $DELETED_ORPHANS deleted" -u normal
+  send_notify -a "Wallski" " Process Complete" "$NEW_THUMBS new, $DELETED_ORPHANS deleted" -u normal
 fi

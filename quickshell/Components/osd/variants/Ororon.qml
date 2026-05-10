@@ -8,7 +8,8 @@ Item {
     height: 300
 
     property real normalizedValue: 0
-    property string spriteCache: PathService.home + "/.cache/safalQuick/nightsoul/Ororon"
+    property url spriteCache: Qt.resolvedUrl("../../../Assets/nightsoul/Ororon")
+    property string shaderPath: PathService.home + "/.cache/safalQuick/shaders/flame"
     Component.onCompleted: {
         console.log("Ororon variant created");
     }
@@ -45,8 +46,8 @@ Item {
                     running: true
                 }
 
-                vertexShader: root.spriteCache + "/flame.vert.qsb"
-                fragmentShader: root.spriteCache + "/flame.frag.qsb"
+                vertexShader: root.shaderPath + "/flame.vert.qsb"
+                fragmentShader: root.shaderPath + "/flame.frag.qsb"
             }
 
             Image {

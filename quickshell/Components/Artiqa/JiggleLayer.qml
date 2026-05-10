@@ -6,7 +6,7 @@ import qs.Services.Paths
 Item {
     id: root
 
-    property string shaderPath: PathService.home + "/.cache/safalQuick/nightsoul/bounce/"
+    property string shaderPath: PathService.home + "/.cache/safalQuick/shaders/jiggle/"
     property var captureSource: null
     property bool ready: false
 

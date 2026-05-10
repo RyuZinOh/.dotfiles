@@ -9,7 +9,8 @@ Item {
     y: -120
 
     property real normalizedValue: 0
-    property string spriteCache: PathService.home + "/.cache/safalQuick/nightsoul/Skirk"
+    property url spriteCache: Qt.resolvedUrl("../../../Assets/nightsoul/Skirk")
+    property string shaderPath: PathService.home + "/.cache/safalQuick/shaders/barfill"
     readonly property int zBarBg: 1
     readonly property int zBarFillOutline: 2
     readonly property int zBarFill: 3
@@ -48,8 +49,8 @@ Item {
             running: true
         }
 
-        vertexShader: root.spriteCache + "/barfill.vert.qsb"
-        fragmentShader: root.spriteCache + "/barfill.frag.qsb"
+        vertexShader: root.shaderPath + "/barfill.vert.qsb"
+        fragmentShader: root.shaderPath + "/barfill.frag.qsb"
     }
 
     Image {

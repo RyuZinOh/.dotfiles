@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 import qs.Services.Theme
-import qs.Services.Paths
 import qs.utils
 import "./variants/"
 
@@ -12,7 +11,6 @@ Item {
     height: 600
     visible: OsdConfig.isVisible
 
-    property string spriteCache: PathService.home + "/.cache/safalQuick/nightsoul/" + OsdConfig.currentCharacterName
     readonly property int segmentCount: 15
     property real normalizedValue: 0
     readonly property int filledSegments: Math.floor(normalizedValue * segmentCount)
@@ -57,7 +55,6 @@ Item {
         root.normalizedValue = Math.max(0, Math.min(1, OsdConfig.currentValue / 100));
         // console.log("OSD loaded. Character:", OsdConfig.character, "Name:", OsdConfig.currentCharacterName);
         // console.log("Activating variant loader...");
-        variantLoader.active = true;
     }
 
     Item {
@@ -155,58 +152,41 @@ Item {
         anchors.top: ringContainer.bottom
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-
-        property int currentCharacter: OsdConfig.character
+        active: OsdConfig.isVisible
 
         sourceComponent: {
-            switch (currentCharacter) {
+            switch (OsdConfig.character) {
             case OsdConfig.Character.Chasca:
                 return chascaComponent;
             case OsdConfig.Character.Skirk:
                 return skirkComponent;
-            case OsdConfig.Character.Ororon:
-                return ororonComponent;
             default:
                 return ororonComponent;
             }
         }
 
-        onCurrentCharacterChanged: {
-            // console.log("Loader: Character changed to index", currentCharacter);
-        }
-
         onLoaded: {
-            if (item) {
-                // console.log("Variant loaded:", OsdConfig.currentCharacterName);
-                item.normalizedValue = Qt.binding(() => root.normalizedValue);
-            }
+            item.normalizedValue = Qt.binding(() => root.normalizedValue);
         }
 
         onStatusChanged: {
-            if (status === Loader.Error) {
+            if (status === Loader.Error)
                 console.error("Loader error for character:", OsdConfig.currentCharacterName);
-            }
         }
     }
 
     Component {
         id: chascaComponent
-        Chasca {
-            normalizedValue: root.normalizedValue
-        }
+        Chasca {}
     }
 
     Component {
         id: skirkComponent
-        Skirk {
-            normalizedValue: root.normalizedValue
-        }
+        Skirk {}
     }
 
     Component {
         id: ororonComponent
-        Ororon {
-            normalizedValue: root.normalizedValue
-        }
+        Ororon {}
     }
 }

@@ -54,24 +54,6 @@ def main():
     pkgs = ["warsa", "ryu-kraken", "cleave", "clipsh"]
     print(f"installing packages: {' '.join(pkgs)}")
     run([aur, "-S"] + pkgs)
-
-    # clone cache 
-    cache_dest = os.path.join(HOME, ".cache", "safalquick")
-    if os.path.exists(cache_dest):
-        ans = (
-            input("cache already exists at ~/.cache/safalquick, replace? [y/N]: ")
-            .strip()
-            .lower()
-        )
-        if ans == "y":
-            shutil.rmtree(cache_dest)
-            run(["git", "clone", "https://codeberg.org/safalski/cache", cache_dest])
-        else:
-            print("skipping cache repo")
-    else:
-        print("cloning cache repo...")
-        run(["git", "clone", "https://codeberg.org/safalski/cache", cache_dest])
-
     # clone dotfiles into temp
     tmp = os.path.join(HOME, "_ryutmp_dotfiles")
     if os.path.exists(tmp):
@@ -96,7 +78,25 @@ def main():
     # remove temp clone
     shutil.rmtree(tmp)
     print("removed temp clone")
-
+    # generate thumbnails
+    bam = os.path.join(HOME, ".config", "quickshell", "Scripts", "bam.sh")
+    if os.path.exists(bam):
+        print("generating thumbnails...")
+        os.chmod(bam, 0o755)
+        run(["bash", bam])
+    else:
+        print(f"warning: bam.sh not found at {bam}, skipping thumbnail generation")
+    # compile shaders
+    compileshader = os.path.join(
+        HOME, ".config", "quickshell", "Scripts", "compileshader.py"
+    )
+    if os.path.exists(compileshader):
+        print("compiling shaders...")
+        run([sys.executable, compileshader])
+    else:
+        print(
+            f"warning: compileshader.py not found at {compileshader}, skipping shader compilation"
+        )
     # download github pfp
     pfp_dir = os.path.join(HOME, "pfp")
     pfp_path = os.path.join(pfp_dir, "ryuzinoh.png")
@@ -123,7 +123,7 @@ def main():
     print("  hypr        ->  ~/.config/hypr")
     print("  pictures    ->  ~/Pictures")
     print("  pfp         ->  ~/pfp/ryuzinoh.png")
-    print("  cache       ->  ~/.cache/safalquick")
+    print("  shaders     ->  ~/.cache/safalQuick/shaders")
 
 
 def _download_pfp(path):
@@ -138,4 +138,4 @@ def _download_pfp(path):
 
 if __name__ == "__main__":
     main()
-    
+
