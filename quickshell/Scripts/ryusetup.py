@@ -135,7 +135,7 @@ def main():
     shutil.rmtree(tmp)
     print("removed temp files")
 
-    bam = os.path.join(HOME, ".config", "ryu-shell", "quickshell", "Scripts", "bam.sh")
+    bam = os.path.join(HOME, ".config", "quickshell", "ryu-shell", "Scripts", "bam.sh")
     if os.path.exists(bam):
         print("generating thumbnails...")
         os.chmod(bam, 0o755)
