@@ -5,8 +5,10 @@ import shutil
 import subprocess
 import sys
 import urllib.request
+import zipfile
 
 HOME = os.path.expanduser("~")
+REPO_ZIP = "https://github.com/RyuZinOh/.dotfiles/archive/refs/heads/main.zip"
 
 
 def run(cmd, cwd=None):
@@ -25,6 +27,18 @@ def get_aur_helper():
     sys.exit(1)
 
 
+def check_deps():
+    missing = []
+    for tool in ["magick", "matugen"]:
+        if shutil.which(tool) is None:
+            missing.append(tool)
+    if missing:
+        print(f"missing required tools: {', '.join(missing)}")
+        print("install them first and then try...")
+        sys.exit(1)
+    print("dependencies ok")
+
+
 def safe_copy(src, dst, label):
     if os.path.exists(dst):
         ans = (
@@ -38,11 +52,49 @@ def safe_copy(src, dst, label):
     shutil.copytree(src, dst)
 
 
-def check_deps():
-    if shutil.which("git") is None:
-        print("missing required tool: git")
-        print("install git first and then try...")
-        sys.exit(1)
+def download_dotfiles():
+    tmp_dir = os.path.join(HOME, "_ryutmp_dotfiles")
+    zip_path = tmp_dir + ".zip"
+
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+
+    print("downloading dotfiles...")
+    try:
+        downloaded = 0
+        req = urllib.request.Request(REPO_ZIP, headers={"User-Agent": "ryusetup"})
+        with urllib.request.urlopen(req) as resp, open(zip_path, "wb") as f:
+            while True:
+                chunk = resp.read(8192)
+                if not chunk:
+                    break
+                f.write(chunk)
+                downloaded += len(chunk)
+                print(f"\r  downloaded {downloaded // 1024} KB", end="", flush=True)
+        print()
+    except KeyboardInterrupt:
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+        print("\naborted, cleaned up partial zip")
+        sys.exit(0)
+
+    print("extracting zip...")
+    with zipfile.ZipFile(zip_path, "r") as z:
+        names = z.namelist()
+        for i, name in enumerate(names):
+            z.extract(name, tmp_dir)
+            pct = (i + 1) * 100 // len(names)
+            bar = "#" * (pct // 5) + "-" * (20 - pct // 5)
+            print(
+                f"\r  [{bar}] {pct}% ({i + 1}/{len(names)} files)", end="", flush=True
+            )
+    print()
+    os.remove(zip_path)
+
+    entries = os.listdir(tmp_dir)
+    if len(entries) == 1 and os.path.isdir(os.path.join(tmp_dir, entries[0])):
+        return os.path.join(tmp_dir, entries[0]), tmp_dir
+    return tmp_dir, tmp_dir
 
 
 def main():
@@ -54,30 +106,25 @@ def main():
     pkgs = ["warsa", "ryu-kraken", "cleave", "clipsh"]
     print(f"installing packages: {' '.join(pkgs)}")
     run([aur, "-S"] + pkgs)
-    # clone dotfiles into temp
-    tmp = os.path.join(HOME, "_ryutmp_dotfiles")
-    if os.path.exists(tmp):
-        shutil.rmtree(tmp)
-    print("cloning dotfiles...")
-    run(["git", "clone", "https://github.com/RyuZinOh/.dotfiles", tmp])
 
-    # copy each config dir
+    src, tmp = download_dotfiles()
+
     safe_copy(
-        os.path.join(tmp, "quickshell"),
+        os.path.join(src, "quickshell"),
         os.path.join(HOME, ".config", "quickshell"),
         "quickshell",
     )
     safe_copy(
-        os.path.join(tmp, "matugen"),
+        os.path.join(src, "matugen"),
         os.path.join(HOME, ".config", "matugen"),
         "matugen",
     )
-    safe_copy(os.path.join(tmp, "hypr"), os.path.join(HOME, ".config", "hypr"), "hypr")
-    safe_copy(os.path.join(tmp, "Pictures"), os.path.join(HOME, "Pictures"), "pictures")
+    safe_copy(os.path.join(src, "hypr"), os.path.join(HOME, ".config", "hypr"), "hypr")
+    safe_copy(os.path.join(src, "Pictures"), os.path.join(HOME, "Pictures"), "pictures")
 
-    # remove temp clone
     shutil.rmtree(tmp)
-    print("removed temp clone")
+    print("removed temp files")
+
     # generate thumbnails
     bam = os.path.join(HOME, ".config", "quickshell", "Scripts", "bam.sh")
     if os.path.exists(bam):
@@ -86,17 +133,19 @@ def main():
         run(["bash", bam])
     else:
         print(f"warning: bam.sh not found at {bam}, skipping thumbnail generation")
-    # compile shaders
-    compileshader = os.path.join(
-        HOME, ".config", "quickshell", "Scripts", "compileshader.py"
-    )
-    if os.path.exists(compileshader):
-        print("compiling shaders...")
-        run([sys.executable, compileshader])
-    else:
-        print(
-            f"warning: compileshader.py not found at {compileshader}, skipping shader compilation"
-        )
+
+    # # compile shaders
+    # compileshader = os.path.join(
+    #     HOME, ".config", "quickshell", "Scripts", "compileshaders.py"
+    # )
+    # if os.path.exists(compileshader):
+    #     print("compiling shaders...")
+    #     run([sys.executable, compileshader])
+    # else:
+    #     print(
+    #         f"warning: compileshaders.py not found at {compileshader}, skipping shader compilation"
+    #     )
+
     # download github pfp
     pfp_dir = os.path.join(HOME, "pfp")
     pfp_path = os.path.join(pfp_dir, "ryuzinoh.png")
@@ -123,7 +172,7 @@ def main():
     print("  hypr        ->  ~/.config/hypr")
     print("  pictures    ->  ~/Pictures")
     print("  pfp         ->  ~/pfp/ryuzinoh.png")
-    print("  shaders     ->  ~/.cache/safalQuick/shaders")
+    # print("  shaders     ->  ~/.cache/safalQuick/shaders")
 
 
 def _download_pfp(path):
@@ -138,4 +187,3 @@ def _download_pfp(path):
 
 if __name__ == "__main__":
     main()
-

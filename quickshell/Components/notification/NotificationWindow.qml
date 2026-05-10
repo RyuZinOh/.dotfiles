@@ -209,6 +209,8 @@ Item {
             anchors.fill: parent
             radius: 12
             color: Theme.surfaceContainer
+            // border.width: 2
+            // border.color: Theme.outlineColor
 
             transform: Scale {
                 id: cardScale
