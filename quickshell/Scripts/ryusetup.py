@@ -126,7 +126,7 @@ def main():
     print("removed temp files")
 
     # generate thumbnails
-    bam = os.path.join(HOME, ".config", "quickshell", "Scripts", "bam.sh")
+    bam = os.path.join(HOME, ".config", "ryu-shell", "quickshell", "Scripts", "bam.sh")
     if os.path.exists(bam):
         print("generating thumbnails...")
         os.chmod(bam, 0o755)
@@ -167,7 +167,7 @@ def main():
 
     print("\ndone")
     print(f"  AUR helper  ->  {aur}")
-    print("  quickshell  ->  ~/.config/quickshell")
+    print("  quickshell  ->  ~/.config/ryu-shell/quickshell")
     print("  matugen     ->  ~/.config/matugen")
     print("  hypr        ->  ~/.config/hypr")
     print("  pictures    ->  ~/Pictures")

@@ -160,8 +160,10 @@ Item {
                 return chascaComponent;
             case OsdConfig.Character.Skirk:
                 return skirkComponent;
-            default:
+            case OsdConfig.Character.Ororon:
                 return ororonComponent;
+            default:
+                return chascaComponent;
             }
         }
 
