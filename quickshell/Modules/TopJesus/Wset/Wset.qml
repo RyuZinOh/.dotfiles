@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell
 import Quickshell.Io
 import qs.Services.Theme
 import qs.utils
@@ -15,7 +14,13 @@ Item {
         })
 
     function callIpc(method, arg) {
-        Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", method, arg]);
+        if (method === "setMode")
+            WallpaperConfig.displayMode = arg;
+        else if (method === "setTransition")
+            WallpaperConfig.transitionType = arg;
+        else if (method === "setPanning")
+            WallpaperConfig.enablePanning = (arg === "true" || arg === "1");
+        WallpaperConfig.saveConfig();
     }
 
     Connections {

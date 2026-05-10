@@ -6,8 +6,20 @@ import qs.utils
 Item {
     id: root
 
-    Pimp {
-        id: pimp
+    function toggle(service, isActive) {
+        if (service === "dancer") {
+            DancerConfig.isActive = !isActive;
+            StateManager.set("dancer", !isActive);
+            isActive ? DancerConfig.hideDancer() : DancerConfig.showDancer();
+        } else if (service === "omnitrix") {
+            OmnitrixConfig.isActive = !isActive;
+            StateManager.set("omnitrix", !isActive);
+            isActive ? OmnitrixConfig.hideOmnitrix() : OmnitrixConfig.showOmnitrix();
+        } else if (service === "artiqa") {
+            ArtiqaConfig.isActive = !isActive;
+            StateManager.set("artiqa", !isActive);
+            isActive ? ArtiqaConfig.hideArtiqa() : ArtiqaConfig.showArtiqa();
+        }
     }
 
     Row {
@@ -75,7 +87,7 @@ Item {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: pimp.call(btn.modelData.service, btn.modelData.active ? "deactivate" : "activate")
+                    onClicked: root.toggle(btn.modelData.service, btn.modelData.active)
                 }
 
                 Behavior on radius {
@@ -101,6 +113,7 @@ Item {
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 200
+                        easing.type: Easing.OutCubic
                     }
                 }
             }

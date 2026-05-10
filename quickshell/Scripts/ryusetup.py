@@ -39,6 +39,11 @@ def check_deps():
     print("dependencies ok")
 
 
+def is_installed(pkg):
+    result = subprocess.run(["pacman", "-Q", pkg], capture_output=True)
+    return result.returncode == 0
+
+
 def safe_copy(src, dst, label):
     if os.path.exists(dst):
         ans = (
@@ -103,15 +108,20 @@ def main():
 
     print("updating system...")
     run([aur, "-Syu"])
+
     pkgs = ["warsa", "ryu-kraken", "cleave", "clipsh"]
-    print(f"installing packages: {' '.join(pkgs)}")
-    run([aur, "-S"] + pkgs)
+    missing_pkgs = [p for p in pkgs if not is_installed(p)]
+    if missing_pkgs:
+        print(f"installing packages: {' '.join(missing_pkgs)}")
+        run([aur, "-S"] + missing_pkgs)
+    else:
+        print("all packages already installed, skipping")
 
     src, tmp = download_dotfiles()
 
     safe_copy(
         os.path.join(src, "quickshell"),
-        os.path.join(HOME, ".config", "quickshell"),
+        os.path.join(HOME, ".config", "ryu-shell", "quickshell"),
         "quickshell",
     )
     safe_copy(
@@ -125,7 +135,6 @@ def main():
     shutil.rmtree(tmp)
     print("removed temp files")
 
-    # generate thumbnails
     bam = os.path.join(HOME, ".config", "ryu-shell", "quickshell", "Scripts", "bam.sh")
     if os.path.exists(bam):
         print("generating thumbnails...")
@@ -134,19 +143,6 @@ def main():
     else:
         print(f"warning: bam.sh not found at {bam}, skipping thumbnail generation")
 
-    # # compile shaders
-    # compileshader = os.path.join(
-    #     HOME, ".config", "quickshell", "Scripts", "compileshaders.py"
-    # )
-    # if os.path.exists(compileshader):
-    #     print("compiling shaders...")
-    #     run([sys.executable, compileshader])
-    # else:
-    #     print(
-    #         f"warning: compileshaders.py not found at {compileshader}, skipping shader compilation"
-    #     )
-
-    # download github pfp
     pfp_dir = os.path.join(HOME, "pfp")
     pfp_path = os.path.join(pfp_dir, "ryuzinoh.png")
     if os.path.exists(pfp_path):
@@ -172,7 +168,6 @@ def main():
     print("  hypr        ->  ~/.config/hypr")
     print("  pictures    ->  ~/Pictures")
     print("  pfp         ->  ~/pfp/ryuzinoh.png")
-    # print("  shaders     ->  ~/.cache/safalQuick/shaders")
 
 
 def _download_pfp(path):

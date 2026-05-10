@@ -14,7 +14,6 @@ import qs.Components.osd
 import qs.Modules.Hut
 import qs.Modules.Toolski
 import qs.Modules.TopJesus
-import qs.Modules.TopJesus.Callgorl
 import qs.utils
 
 Scope {
@@ -207,20 +206,23 @@ Scope {
                     Artiqa {
                         id: artiqaRef
 
-                        property var pimp
-
                         anchors.fill: parent
                         active: false
                         focus: active
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
-                                pimp.call("artiqa", "deactivate");
+                                ArtiqaConfig.isActive = false;
+                                StateManager.set("artiqa", false);
+                                ArtiqaConfig.hideArtiqa();
                                 event.accepted = true;
                             }
                         }
                         onActiveChanged: {
-                            if (!active && ArtiqaConfig.isActive)
-                                pimp.call("artiqa", "deactivate");
+                            if (!active && ArtiqaConfig.isActive) {
+                                ArtiqaConfig.isActive = false;
+                                StateManager.set("artiqa", false);
+                                ArtiqaConfig.hideArtiqa();
+                            }
                         }
 
                         Connections {
@@ -234,10 +236,7 @@ Scope {
 
                             target: ArtiqaConfig
                         }
-
-                        pimp: Pimp {}
                     }
-
                     //osd
                     Osd {
                         id: osdWindow

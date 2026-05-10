@@ -40,7 +40,8 @@ Item {
         Theme.thumbPath = root.thumbsPath + fn;
         Theme.saveTheme();
         Theme.generateColors();
-        Quickshell.execDetached(["quickshell", "ipc", "call", "wallpaper", "setWallpaper", fp]);
+        WallpaperConfig.currentWallpaper = fp;
+        WallpaperConfig.saveConfig();
         Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p ${PathService.home}/.cache/safalQuick/ && cp "${fp}" ${PathService.home}/.cache/safalQuick/bg.jpg`]);
         Quickshell.execDetached(["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", fn.replace(/\.[^/.]+$/, "").replace(/_/g, " ")]);
         root.wallpaperChanged(fp);
@@ -78,7 +79,7 @@ Item {
     Process {
         id: bamProcess
 
-        command: ["/bin/bash", PathService.home + "/.config/quickshell/Scripts/bam.sh"]
+        command: ["/bin/bash", PathService.home + "/.config/quickshell/ryu-shell/Scripts/bam.sh"]
         running: false
         onExited: {
             root.isRefreshing = false;
