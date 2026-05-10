@@ -121,7 +121,7 @@ def main():
 
     safe_copy(
         os.path.join(src, "quickshell"),
-        os.path.join(HOME, ".config", "ryu-shell", "quickshell"),
+        os.path.join(HOME, ".config", "quickshell", "ryu-shell"),
         "quickshell",
     )
     safe_copy(
