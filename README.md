@@ -1,4 +1,8 @@
-Download through -> [rice-cooker](https://github.com/amarsbar/rice-cooker)
+minimal install script: 
+```bash
+curl -fsSL https://raw.githubusercontent.com/RyuZinOh/.dotfiles/main/quickshell/Scripts/ryusetup.py -o ryusetup.py && python3 ryusetup.py
+```
+- Download through -> [rice-cooker](https://github.com/amarsbar/rice-cooker)
 
 ## previews
 ![](previews/hut.png)
