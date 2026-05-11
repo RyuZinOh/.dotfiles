@@ -1,0 +1,13 @@
+hl.config({
+	dwindle = {
+		preserve_split = true,
+	},
+	master = {
+		new_status = "master",
+	},
+	scrolling = {
+		fullscreen_on_one_column = true,
+		column_width = 0.5,
+		follow_focus = true,
+	},
+})
