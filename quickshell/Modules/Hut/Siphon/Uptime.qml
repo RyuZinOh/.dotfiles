@@ -56,10 +56,10 @@ Item {
             ShapeCanvas {
                 anchors.fill: parent
                 roundedPolygon: GetMShapes.get(18)
-                color: Theme.primaryColor
+                color: "transparent"
                 imageSource: "file://" + PathService.home + "/.cache/safalQuick/pfp.jpeg"
                 borderWidth: 2
-                borderColor: Theme.primaryColor
+                borderColor: Theme.primaryContainer
             }
 
             Item {

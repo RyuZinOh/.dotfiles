@@ -176,7 +176,7 @@ Item {
                 radius: 10
                 color: Theme.surfaceContainer
                 border.width: titleInput.activeFocus ? 2 : 1
-                border.color: titleInput.activeFocus ? Theme.primaryColor : Theme.outlineVariant
+                border.color: titleInput.activeFocus ? Theme.outlineColor : Theme.outlineVariant
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 150
@@ -216,7 +216,7 @@ Item {
                 radius: 10
                 color: Theme.surfaceContainer
                 border.width: descInput.activeFocus ? 2 : 1
-                border.color: descInput.activeFocus ? Theme.primaryColor : Theme.outlineVariant
+                border.color: descInput.activeFocus ? Theme.outlineColor : Theme.outlineVariant
                 Behavior on border.color {
                     ColorAnimation {
                         duration: 150
@@ -266,7 +266,9 @@ Item {
                     width: 70
                     height: 34
                     radius: 17
-                    color: saveMouse.containsMouse ? Theme.primaryColor : Theme.primaryContainer
+                    color: saveMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerLow
+                    border.width: 1
+                    border.color: Theme.outlineVariant
                     Behavior on color {
                         ColorAnimation {
                             duration: 150
@@ -279,7 +281,7 @@ Item {
                         font.pixelSize: 12
                         font.family: "CaskaydiaCove NF"
                         font.weight: Font.Medium
-                        color: Theme.onPrimaryContainer
+                        color: saveMouse.containsMouse ? Theme.onPrimaryContainer : Theme.onSurface
                     }
 
                     MouseArea {

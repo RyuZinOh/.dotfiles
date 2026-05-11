@@ -62,7 +62,7 @@ Item {
                         width: 40
                         height: 40
                         radius: 20
-                        color: prevMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
+                        color: prevMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
@@ -100,7 +100,7 @@ Item {
                         width: 40
                         height: 40
                         radius: 20
-                        color: nextMouse.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHigh
+                        color: nextMouse.containsMouse ? Theme.primaryContainer : Theme.surfaceContainerHigh
                         Behavior on color {
                             ColorAnimation {
                                 duration: 200
@@ -230,11 +230,11 @@ Item {
                             if (dayRect.modelData.day === 0)
                                 return "transparent";
                             if (dayRect.modelData.isToday)
-                                return Theme.primaryColor;
+                                return Theme.primaryContainer;
                             if (dayMouse.containsMouse)
-                                return Theme.secondaryColor;
+                                return Theme.secondaryContainer;
                             if (dayRect.modelData.hasEvent)
-                                return Theme.tertiaryColor;
+                                return Theme.tertiaryContainer;
                             if (dayRect.modelData.isSaturday)
                                 return Theme.errorContainer;
                             return Theme.surfaceContainerHigh;
@@ -251,18 +251,6 @@ Item {
                                 duration: 200
                                 easing.type: Easing.OutCubic
                             }
-                        }
-
-                        Rectangle {
-                            width: 4
-                            height: 4
-                            radius: 2
-                            color: Theme.primaryColor
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 3
-                            visible: dayRect.modelData.hasEvent && !dayRect.modelData.isToday
-                            opacity: 0.8
                         }
 
                         Text {

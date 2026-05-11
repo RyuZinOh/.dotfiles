@@ -43,9 +43,9 @@ Item {
             height: parent.height
             value: Math.round(OsdConfig.sinkVolume)
             muted: OsdConfig.sinkMuted
-            accentFill: Theme.inversePrimary
+            accentFill: "transparent"
             accentOnFill: Theme.onPrimaryContainer
-            trackFill: Theme.primaryColor
+            trackFill: Theme.primaryContainer
             icons: ["\uf026", "\uf027", "\uf027", "\uf028"]
             onScrub: d => OsdConfig.adjustVolume(d > 0 ? "2%+" : "2%-")
         }
@@ -56,9 +56,9 @@ Item {
             height: parent.height
             value: brightnessVal
             animate: ready
-            accentFill: "red"
+            accentFill: "transparent"
             accentOnFill: Theme.onPrimaryContainer
-            trackFill: Theme.primaryColor
+            trackFill: Theme.primaryContainer
             icons: ["", "\udb80\udcde", "\udb80\udcdd", "\udb80\udce0"]
             onScrub: d => {
                 brightnessVal = Math.max(0, Math.min(100, brightnessVal + d));
@@ -93,7 +93,7 @@ Item {
 
         IconButton {
             active: !OsdConfig.sinkMuted
-            activeColor: Theme.primaryColor
+            activeColor: Theme.primaryContainer
             inactiveColor: Theme.errorContainer
             activeIconColor: Theme.onPrimaryContainer
             inactiveIconColor: Theme.onErrorContainer
@@ -103,7 +103,7 @@ Item {
 
         IconButton {
             active: CommunicationConfig.hyprsunsetActive
-            activeColor: Theme.primaryColor
+            activeColor: Theme.primaryContainer
             inactiveColor: Theme.surfaceContainer
             activeIconColor: Theme.onPrimaryContainer
             inactiveIconColor: Theme.onSurfaceVariant
@@ -186,7 +186,7 @@ Item {
                     }
                     minVal: CommunicationConfig.gammaMin
                     maxVal: CommunicationConfig.gammaMax
-                    accentFill: Theme.primaryColor
+                    accentFill: Theme.primaryContainer
                     trackFill: Theme.surfaceBright
                     onScrub: d => d > 0 ? CommunicationConfig.increaseGamma() : CommunicationConfig.decreaseGamma()
                 }
@@ -227,7 +227,7 @@ Item {
                     }
                     minVal: CommunicationConfig.tempMin
                     maxVal: CommunicationConfig.tempMax
-                    accentFill: Theme.primaryColor
+                    accentFill: Theme.primaryContainer
                     trackFill: Theme.surfaceBright
                     onScrub: d => d > 0 ? CommunicationConfig.increaseTemperature() : CommunicationConfig.decreaseTemperature()
                 }

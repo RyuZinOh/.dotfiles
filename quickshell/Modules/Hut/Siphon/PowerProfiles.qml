@@ -36,7 +36,7 @@ Item {
             y: (root.btnH - root.pillH) / 2
             x: 4 + root.activeIdx * root.btnW + (root.btnW - pill.width) / 2
             radius: 13
-            color: Theme.primaryColor
+            color: Theme.primaryContainer
             border.width: 0
 
             Behavior on x {
