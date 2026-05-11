@@ -1,7 +1,7 @@
 import QtQuick
-import Kraken
 import qs.Services.Theme
 import qs.Services.Paths
+import qs.utils
 
 /*
 read-> https://safallama.com.np/posts/quests/
@@ -15,7 +15,7 @@ Item {
     property var war: ({})
     property bool active: false
     signal warLoaded
-    Kraken {
+    JsonConfig {
         id: warReader
         filePath: root.warFile
 

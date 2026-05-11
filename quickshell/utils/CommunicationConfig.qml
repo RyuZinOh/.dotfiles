@@ -2,7 +2,6 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.Services.Paths
-import Kraken
 
 Singleton {
     id: root
@@ -64,7 +63,7 @@ Singleton {
         saveConfig();
     }
 
-    Kraken {
+    JsonConfig {
         id: configKraken
         filePath: root.configPath
         onDataLoaded: {

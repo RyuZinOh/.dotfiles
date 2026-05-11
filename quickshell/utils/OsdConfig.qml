@@ -5,7 +5,6 @@ import Quickshell
 import qs.Services.Paths
 import Quickshell.Io
 import Quickshell.Services.Pipewire
-import Kraken
 
 Singleton {
     id: root
@@ -124,7 +123,7 @@ Singleton {
         onTriggered: root.pipewireReady = true
     }
 
-    Kraken {
+    JsonConfig {
         id: configKraken
         filePath: root.configPath
         onDataLoaded: {

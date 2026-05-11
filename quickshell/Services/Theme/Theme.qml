@@ -2,8 +2,8 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Kraken
 import qs.Services.Paths
+import qs.utils
 
 Singleton {
     id: root
@@ -189,7 +189,7 @@ Singleton {
         root.shadowColor = root._get("shadow", "#000000");
     }
 
-    Kraken {
+    JsonConfig {
         id: themeKraken
         filePath: root.themePath
 
