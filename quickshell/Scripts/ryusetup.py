@@ -109,7 +109,7 @@ def main():
     print("updating system...")
     run([aur, "-Syu"])
 
-    pkgs = ["warsa", "ryu-kraken", "cleave", "clipsh"]
+    pkgs = ["warsa", "cleave", "clipsh"]
     missing_pkgs = [p for p in pkgs if not is_installed(p)]
     if missing_pkgs:
         print(f"installing packages: {' '.join(missing_pkgs)}")

@@ -1,5 +1,5 @@
 import QtQuick
-import Kraken
+import qs.Services.Kraken
 import qs.Services.Theme
 import qs.Services.Paths
 

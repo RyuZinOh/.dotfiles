@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.Services.Paths
-import Kraken
+import qs.Services.Kraken
 
 Singleton {
     id: root
@@ -68,14 +68,12 @@ Singleton {
         id: configKraken
         filePath: root.configPath
         onDataLoaded: {
-            if (loaded && isObject) {
-                if (has("temperature"))
-                    root.temperature = get("temperature", 4000);
-                if (has("gamma"))
-                    root.gamma = get("gamma", 80);
-                if (has("hyprsunsetActive"))
-                    root.hyprsunsetActive = get("hyprsunsetActive", false);
-            }
+            if (has("temperature"))
+                root.temperature = get("temperature", 4000);
+            if (has("gamma"))
+                root.gamma = get("gamma", 80);
+            if (has("hyprsunsetActive"))
+                root.hyprsunsetActive = get("hyprsunsetActive", false);
         }
         onLoadFailed: error => {
             console.warn("communication config failed:", error);

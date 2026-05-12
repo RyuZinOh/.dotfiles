@@ -3,9 +3,9 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.Services.Paths
+import qs.Services.Kraken
 import Quickshell.Io
 import Quickshell.Services.Pipewire
-import Kraken
 
 Singleton {
     id: root
@@ -128,7 +128,7 @@ Singleton {
         id: configKraken
         filePath: root.configPath
         onDataLoaded: {
-            if (isObject && has("character"))
+            if (has("character"))
                 root.character = get("character", 0);
             root.loaded = true;
         }

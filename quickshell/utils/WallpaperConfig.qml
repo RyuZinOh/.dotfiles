@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import qs.Services.Paths
-import Kraken
+import qs.Services.Kraken
 
 Singleton {
     id: root
@@ -27,19 +27,17 @@ Singleton {
         id: configKraken
         filePath: root.configPath
         onDataLoaded: {
-            if (loaded && isObject) {
-                if (has("wallpaper")) {
-                    const saved = get("wallpaper", "");
-                    root.currentWallpaper = saved ? PathService.home + "/Pictures/" + saved : "";
-                }
-                if (has("displayMode"))
-                    root.displayMode = get("displayMode", "wallpaper");
-                if (has("transitionType"))
-                    root.transitionType = get("transitionType", "bubble");
-                if (has("enablePanning"))
-                    root.enablePanning = get("enablePanning", true);
-                root.loaded = true;
+            if (configKraken.has("wallpaper")) {
+                const saved = configKraken.get("wallpaper", "");
+                root.currentWallpaper = saved ? PathService.home + "/Pictures/" + saved : "";
             }
+            if (configKraken.has("displayMode"))
+                root.displayMode = configKraken.get("displayMode", "wallpaper");
+            if (configKraken.has("transitionType"))
+                root.transitionType = configKraken.get("transitionType", "bubble");
+            if (configKraken.has("enablePanning"))
+                root.enablePanning = configKraken.get("enablePanning", true);
+            root.loaded = true;
         }
         onLoadFailed: error => {
             console.warn("wallpaper config failed:", error);

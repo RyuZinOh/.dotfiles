@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Kraken
+import qs.Services.Kraken
 import qs.Services.Paths
 
 Singleton {
@@ -126,8 +126,6 @@ Singleton {
     FileView {
         id: jsonFile
         path: root.colorsPath
-        watchChanges: true
-        onFileChanged: reload()
         onLoaded: {
             try {
                 const data = JSON.parse(jsonFile.text());
@@ -137,6 +135,14 @@ Singleton {
                 root._c = {};
                 root._cChanged();
             }
+        }
+    }
+
+    Process {
+        id: matugenProcess
+        onRunningChanged: {
+            if (!running)
+                jsonFile.reload();
         }
     }
 
@@ -194,12 +200,10 @@ Singleton {
         filePath: root.themePath
 
         onDataLoaded: {
-            if (themeKraken.loaded && themeKraken.isObject) {
-                root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
-                const saved = themeKraken.get("thumbPath", "");
-                root.thumbPath = saved ? PathService.home + '/thumbs/' + saved : "";
-                root.isDarkMode = themeKraken.get("isDarkMode", true);
-            }
+            root.currentSchemeType = themeKraken.get("schemeType", "scheme-fruit-salad");
+            const saved = themeKraken.get("thumbPath", "");
+            root.thumbPath = saved ? PathService.home + '/thumbs/' + saved : "";
+            root.isDarkMode = themeKraken.get("isDarkMode", true);
         }
 
         onLoadFailed: error => {
@@ -217,7 +221,8 @@ Singleton {
         if (!root.thumbPath)
             return;
         const mode = root.isDarkMode ? "dark" : "light";
-        Quickshell.execDetached(["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${root.currentSchemeType}" image "${root.thumbPath}"`]);
+        matugenProcess.command = ["/bin/sh", "-c", `matugen --source-color-index 0 -m "${mode}" -t "${root.currentSchemeType}" image "${root.thumbPath}"`];
+        matugenProcess.running = true;
     }
 
     function saveTheme() {
