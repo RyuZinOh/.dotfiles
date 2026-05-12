@@ -3,7 +3,9 @@ import json
 import sys
 from pathlib import Path
 
-APPEARANCE = Path.home() / "toughNot/notes/.obsidian/appearance.json"
+APPEARANCE = (
+    Path.home() / "toughNot/notes/.obsidian/appearance.json"
+)  # or wherever obsidian is located
 
 if len(sys.argv) != 2 or sys.argv[1] not in ("dark", "light"):
     sys.exit(1)

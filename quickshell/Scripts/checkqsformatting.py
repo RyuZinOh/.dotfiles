@@ -5,7 +5,7 @@ from pathlib import Path
 
 QMLFORMAT = "qmlformat"
 
-ROOT = Path.home() / ".dotfiles/quickshell"
+ROOT = Path.home() / ".config/quickshell/ryu-shell"
 
 
 def check():

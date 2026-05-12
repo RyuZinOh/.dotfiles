@@ -1,5 +1,3 @@
-import sys
-
 DEV = "/dev/input/event4"
 
 with open(DEV, "rb") as f:

@@ -5,7 +5,9 @@ import subprocess
 import sys
 
 HOME = os.path.expanduser("~")
-SHADER_SRC = os.path.join(HOME, ".config", "quickshell", "Assets", "Shaders")
+SHADER_SRC = os.path.join(
+    HOME, ".config", "quickshell", "ryu-shell", "Assets", "Shaders"
+)
 SHADER_OUT = os.path.join(HOME, ".cache", "safalQuick", "shaders")
 
 QSB_CANDIDATES = [
