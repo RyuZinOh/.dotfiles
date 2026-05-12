@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 //I dont want to use qs for importing in modules for some weird reasons, well
 import "./Callgorl/"
-import "./CleaveViz/"
 import "./ControlRoom/"
 import "./MAL/"
 import "./Powerski/"
@@ -10,6 +9,7 @@ import QtQuick
 import qs.Components.topjesus
 import qs.Services.Shapes
 import qs.Services.Theme
+import qs.utils
 
 Item {
     id: root
@@ -408,11 +408,14 @@ Item {
         }
     }
 
-    CleaveViz {
+    Loader {
         anchors.top: popout.bottom
         anchors.topMargin: -4
         anchors.horizontalCenter: parent.horizontalCenter
-        targetWidth: 1375
+        active: CleaveConfig.isActive
+        asynchronous: true
+        source: "CleaveViz/CleaveViz.qml"
+        onLoaded: item.targetWidth = 1375
     }
 
     PopoutShape {

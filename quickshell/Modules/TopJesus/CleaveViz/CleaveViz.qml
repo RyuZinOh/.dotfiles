@@ -27,6 +27,9 @@ Item {
         }
     }
 
+    Component.onCompleted: if (CleaveConfig.isActive)
+        cleave.startCapture()
+
     Connections {
         function onActivated() {
             cleave.startCapture();

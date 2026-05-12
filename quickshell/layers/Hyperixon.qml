@@ -5,7 +5,6 @@ import Quickshell.Wayland
 // import qs.Components.Poketwo
 // import qs.Modules.Ash
 import qs.Components.Artiqa
-import qs.Components.Clipsy
 import qs.Components.Dancer
 import qs.Components.Omnitrix
 import qs.Components.Wow
@@ -108,7 +107,7 @@ Scope {
                             target: ClipsyConfig
                         }
 
-                        sourceComponent: Clipsy {}
+                        source: "../Components/Clipsy/Clipsy.qml"
                     }
 
                     //notification [Also we can implement our own layershell overlay for this one but nah...]
