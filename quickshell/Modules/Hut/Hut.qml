@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell.Widgets
 import qs.Services.Theme
-import "./Warsa/"
 import "./Areuok/"
 import "./Siphon/"
 
@@ -160,9 +159,7 @@ Item {
                             anchors.horizontalCenter: parent.horizontalCenter
                             active: root.isHovered
                             asynchronous: true
-                            sourceComponent: Component {
-                                Warsa {}
-                            }
+                            source: "Warsa/Warsa.qml"
                         }
                         Loader {
                             anchors.horizontalCenter: parent.horizontalCenter

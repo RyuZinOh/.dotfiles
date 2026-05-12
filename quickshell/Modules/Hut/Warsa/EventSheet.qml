@@ -5,7 +5,7 @@ import qs.Services.Theme
 Item {
     id: root
 
-    property EventsDB eventsDb
+    property var eventsDb
     property int targetMonth: 0
     property int targetDay: 0
     property bool isEditing: false

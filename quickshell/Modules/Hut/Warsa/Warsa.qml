@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 import Warsa
 import QtQuick
 import qs.Services.Theme
+import "." as LocalWarsa
 
 Item {
     id: root
@@ -12,7 +13,7 @@ Item {
     implicitWidth: calendarCard.width
     implicitHeight: calendarCard.height
 
-    EventsDB {
+    LocalWarsa.EventsDB {
         id: eventsDb
         Component.onCompleted: eventsDb.init()
     }
@@ -375,7 +376,7 @@ Item {
             }
         }
 
-        EventSheet {
+        LocalWarsa.EventSheet {
             id: eventSheet
 
             eventsDb: eventsDb
