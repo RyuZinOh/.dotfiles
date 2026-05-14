@@ -12,10 +12,6 @@ return {
       require "configs.lspconfig"
     end,
   },
-  {
-    "mfussenegger/nvim-jdtls",
-    ft = "java",
-  },
   -- test new blink
   -- { import = "nvchad.blink.lazyspec" },
 

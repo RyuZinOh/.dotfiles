@@ -1,4 +1,3 @@
-pragma ComponentBehavior: Bound
 pragma Singleton
 import QtQuick
 import Quickshell
@@ -13,10 +12,12 @@ Singleton {
     property bool enablePanning: true
     readonly property int bubbleDuration: transitionType === "bubble" ? 1000 : 0
     readonly property string configPath: PathService.home + "/.cache/safalQuick/wallpaper-config.json"
+    readonly property string defaultWallpaper: Qt.resolvedUrl("../Assets/defaults/default_wallpaper.jpeg").toString()
     property bool loaded: false
 
     function saveConfig() {
-        configKraken.set("wallpaper", root.currentWallpaper.split("/").pop());
+        const isDefault = root.currentWallpaper === root.defaultWallpaper;
+        configKraken.set("wallpaper", isDefault ? "" : root.currentWallpaper.split("/").pop());
         configKraken.set("displayMode", root.displayMode);
         configKraken.set("transitionType", root.transitionType);
         configKraken.set("enablePanning", root.enablePanning);
@@ -27,10 +28,8 @@ Singleton {
         id: configKraken
         filePath: root.configPath
         onDataLoaded: {
-            if (configKraken.has("wallpaper")) {
-                const saved = configKraken.get("wallpaper", "");
-                root.currentWallpaper = saved ? PathService.home + "/Pictures/" + saved : "";
-            }
+            const saved = configKraken.get("wallpaper", "");
+            root.currentWallpaper = saved ? PathService.home + "/Pictures/" + saved : root.defaultWallpaper;
             if (configKraken.has("displayMode"))
                 root.displayMode = configKraken.get("displayMode", "wallpaper");
             if (configKraken.has("transitionType"))
@@ -41,7 +40,8 @@ Singleton {
         }
         onLoadFailed: error => {
             console.warn("wallpaper config failed:", error);
-            root.saveConfig();
+            root.currentWallpaper = root.defaultWallpaper;
+            root.loaded = true;
         }
     }
 }

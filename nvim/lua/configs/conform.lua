@@ -4,12 +4,9 @@ local options = {
     rust = { "rustfmt" },
     c = { "clang-format" },
     cpp = { "clang-format" },
-    java = { "google-java-format" },
+    -- java = { "google-java-format" },
     python = { "ruff_format", "ruff_organize_imports" },
-    css = { "prettier" },
     qml = { "qmlformat" },
-    yml = { "prettier" },
-    bash = { "shfmt" },
     -- html = { "prettier" },
   },
 
