@@ -56,7 +56,7 @@ Item {
             "id": 5,
             "icon": "\udb81\udce0",
             "xOff": 200,
-            "w": 320,
+            "w": 330,
             "h": 110
         }
     ]
@@ -175,10 +175,10 @@ Item {
                 anchors.rightMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
 
-                // BongoCat {
-                // size: 64
-                // anchors.verticalCenter: parent.verticalCenter
-                // }
+                BongoCat {
+                    size: 44
+                    anchors.verticalCenter: parent.verticalCenter
+                }
                 Rectangle {
                     width: 28
                     height: 28

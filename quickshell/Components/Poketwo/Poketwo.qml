@@ -11,6 +11,7 @@ Item {
     property var submittedWords: []
     property int wordIdCounter: 0
     property real wordStartTime: 0
+    property real wordEndTime: 0
 
     property bool countdownDone: false
     property int countdownValue: 3
@@ -40,18 +41,28 @@ Item {
         }
     }
 
+    Timer {
+        id: inactivityTimer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            root.currentInput = "";
+            root.wordStartTime = 0;
+            root.wordEndTime = 0;
+        }
+    }
+
     Item {
         anchors.centerIn: parent
         visible: !root.countdownDone
 
-        // 3 2 1 big text
         Text {
             id: countdownLabel
             anchors.centerIn: parent
             visible: root.countdownText !== "STARTCATCHING"
             text: root.countdownText
             font.family: "CaskaydiaCove NF"
-            font.pixelSize: 140
+            font.pixelSize: 180
             font.bold: true
             color: "white"
             style: Text.Outline
@@ -65,9 +76,9 @@ Item {
                     NumberAnimation {
                         target: countdownLabel
                         property: "scale"
-                        from: 1.8
+                        from: 2.2
                         to: 1.0
-                        duration: 400
+                        duration: 500
                         easing.type: Easing.OutBack
                     }
                     NumberAnimation {
@@ -75,17 +86,16 @@ Item {
                         property: "opacity"
                         from: 0
                         to: 1
-                        duration: 250
+                        duration: 300
                         easing.type: Easing.OutQuad
                     }
                 }
             }
         }
 
-        // STARTCATCHING as sprites
         Row {
             anchors.centerIn: parent
-            spacing: -8
+            spacing: -6
             visible: root.countdownText === "STARTCATCHING"
 
             Repeater {
@@ -95,39 +105,39 @@ Item {
                     id: scLetter
                     required property string modelData
                     required property int index
-                    width: 64
-                    height: 64
+                    width: 80
+                    height: 80
                     opacity: 0
-                    scale: 0.3
-                    y: -20
+                    scale: 0.2
+                    y: -30
 
                     Component.onCompleted: scAnim.start()
 
                     SequentialAnimation {
                         id: scAnim
                         PauseAnimation {
-                            duration: scLetter.index * 60
+                            duration: scLetter.index * 50
                         }
                         ParallelAnimation {
                             NumberAnimation {
                                 target: scLetter
                                 property: "opacity"
                                 to: 1
-                                duration: 200
+                                duration: 250
                                 easing.type: Easing.OutQuad
                             }
                             NumberAnimation {
                                 target: scLetter
                                 property: "scale"
                                 to: 1
-                                duration: 250
+                                duration: 350
                                 easing.type: Easing.OutBack
                             }
                             NumberAnimation {
                                 target: scLetter
                                 property: "y"
                                 to: 0
-                                duration: 200
+                                duration: 250
                                 easing.type: Easing.OutQuad
                             }
                         }
@@ -148,40 +158,50 @@ Item {
     Process {
         id: keyboardMonitor
         running: PoketwoConfig.isActive && root.countdownDone
-        command: ["python3", Qt.resolvedUrl("../../Scripts/poketwo_monitor.py").toString().replace("file://", "")]
+        command: ["cat", "/tmp/poketwo-pipe"]
 
         stdout: SplitParser {
             onRead: data => {
                 var ch = data.toString().trim();
 
                 if (ch === "ENTER") {
-                    idleTimer.stop();
+                    inactivityTimer.stop();
                     if (root.currentInput.length > 0) {
-                        var letters = root.currentInput.split("").filter(c => /[A-Z]/.test(c));
+                        var letters = root.currentInput.split("").filter(c => /[A-Z ]/.test(c));
                         if (letters.length > 0) {
-                            var elapsed = (Date.now() - root.wordStartTime) / 60000;
-                            var wpm = elapsed > 0 ? Math.round((letters.length / 5) / elapsed) : 0;
+                            var elapsed = (root.wordEndTime - root.wordStartTime) / 60000;
+                            var wpm = elapsed > 0 ? Math.round((root.currentInput.length / 5) / elapsed) : 0;
                             var newWord = {
                                 letters: letters,
                                 id: root.wordIdCounter++,
                                 wpm: wpm
                             };
                             root.submittedWords = [newWord];
-                            wordCleanupTimer.addWord(newWord.id);
+                            timerComp.createObject(root, {
+                                wordId: newWord.id
+                            }).start();
                         }
                         root.currentInput = "";
                         root.wordStartTime = 0;
+                        root.wordEndTime = 0;
                     }
                 } else if (ch === "BACKSPACE") {
-                    if (root.currentInput.length > 0)
+                    if (root.currentInput.length > 0) {
                         root.currentInput = root.currentInput.slice(0, -1);
+                        inactivityTimer.restart();
+                    }
                 } else if (ch === "SPACE") {
-                    // ignore space
-                } else if (ch.length === 1 && root.currentInput.length < 16) {
+                    if (root.currentInput.length > 0 && root.currentInput.length < 32) {
+                        root.currentInput += " ";
+                        root.wordEndTime = Date.now();
+                        inactivityTimer.restart();
+                    }
+                } else if (ch.length === 1 && root.currentInput.length < 32) {
                     if (root.currentInput.length === 0)
                         root.wordStartTime = Date.now();
                     root.currentInput += ch;
-                    idleTimer.restart();
+                    root.wordEndTime = Date.now();
+                    inactivityTimer.restart();
                 }
             }
         }
@@ -189,33 +209,9 @@ Item {
         stderr: SplitParser {
             onRead: data => {
                 var err = data.toString().trim();
-                if (err.includes("Permission denied"))
-                    console.log("[Poketwo] permission denied — run: sudo usermod -a -G input $USER");
-                else if (err)
+                if (err)
                     console.log("[Poketwo]", err);
             }
-        }
-    }
-
-    Timer {
-        id: idleTimer
-        interval: 3000
-        repeat: false
-        onTriggered: {
-            root.currentInput = "";
-            root.wordStartTime = 0;
-        }
-    }
-
-    QtObject {
-        id: wordCleanupTimer
-        function addWord(wid) {
-            timerComp.createObject(root, {
-                wordId: wid
-            }).start();
-        }
-        function removeWord(wid) {
-            root.submittedWords = root.submittedWords.filter(w => w.id !== wid);
         }
     }
 
@@ -223,10 +219,10 @@ Item {
         id: timerComp
         Timer {
             property int wordId: -1
-            interval: 3000
+            interval: 4000
             repeat: false
             onTriggered: {
-                wordCleanupTimer.removeWord(wordId);
+                root.submittedWords = root.submittedWords.filter(w => w.id !== wordId);
                 destroy();
             }
         }
@@ -235,8 +231,8 @@ Item {
     Column {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 24
-        spacing: 10
+        anchors.topMargin: 32
+        spacing: 16
         visible: root.countdownDone
 
         Repeater {
@@ -246,9 +242,10 @@ Item {
                 id: wordEntry
                 required property var modelData
                 anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
-                spacing: 2
+                spacing: 10
                 opacity: 0
-                scale: 0.7
+                scale: 0.5
+                y: 30
 
                 Component.onCompleted: entranceAnim.start()
 
@@ -258,46 +255,79 @@ Item {
                         target: wordEntry
                         property: "opacity"
                         to: 1
-                        duration: 250
+                        duration: 350
                         easing.type: Easing.OutQuad
                     }
                     NumberAnimation {
                         target: wordEntry
                         property: "scale"
                         to: 1
-                        duration: 300
+                        duration: 450
                         easing.type: Easing.OutBack
+                    }
+                    NumberAnimation {
+                        target: wordEntry
+                        property: "y"
+                        to: 0
+                        duration: 400
+                        easing.type: Easing.OutQuad
                     }
                 }
 
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: -6
+                    spacing: -4
 
                     Repeater {
-                        model: (wordEntry.modelData.wpm.toString() + " WPM").split("").filter(c => c !== " ")
+                        model: wordEntry.modelData.wpm.toString().split("")
 
                         Item {
+                            id: wpmDigit
                             required property string modelData
                             required property int index
-                            width: 56
-                            height: 56
+                            width: 52
+                            height: 72
+                            opacity: 0
+                            scale: 0.3
+                            y: -16
 
-                            Image {
-                                anchors.fill: parent
-                                visible: /[A-Z]/.test(modelData)
-                                source: /[A-Z]/.test(modelData) ? root.assetPath + modelData + ".png" : ""
-                                fillMode: Image.PreserveAspectFit
-                                smooth: true
-                                cache: true
+                            Component.onCompleted: wpmEntrance.start()
+
+                            SequentialAnimation {
+                                id: wpmEntrance
+                                PauseAnimation {
+                                    duration: wpmDigit.index * 40
+                                }
+                                ParallelAnimation {
+                                    NumberAnimation {
+                                        target: wpmDigit
+                                        property: "opacity"
+                                        to: 1
+                                        duration: 220
+                                        easing.type: Easing.OutQuad
+                                    }
+                                    NumberAnimation {
+                                        target: wpmDigit
+                                        property: "scale"
+                                        to: 1
+                                        duration: 300
+                                        easing.type: Easing.OutBack
+                                    }
+                                    NumberAnimation {
+                                        target: wpmDigit
+                                        property: "y"
+                                        to: 0
+                                        duration: 220
+                                        easing.type: Easing.OutQuad
+                                    }
+                                }
                             }
 
                             Text {
                                 anchors.centerIn: parent
-                                visible: /[0-9]/.test(modelData)
-                                text: modelData
+                                text: wpmDigit.modelData
                                 font.family: "CaskaydiaCove NF"
-                                font.pixelSize: 40
+                                font.pixelSize: 52
                                 font.bold: true
                                 color: {
                                     var w = wordEntry.modelData.wpm;
@@ -312,11 +342,23 @@ Item {
                             }
                         }
                     }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: " WPM"
+                        font.family: "CaskaydiaCove NF"
+                        font.pixelSize: 36
+                        font.bold: true
+                        color: "white"
+                        opacity: 0.55
+                        style: Text.Outline
+                        styleColor: "#000000"
+                    }
                 }
 
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: -8
+                    spacing: -6
 
                     Repeater {
                         model: wordEntry.modelData.letters
@@ -325,39 +367,39 @@ Item {
                             id: letterItem
                             required property string modelData
                             required property int index
-                            width: 72
-                            height: 72
+                            width: modelData === " " ? 40 : 92
+                            height: 92
                             opacity: 0
-                            scale: 0.4
-                            y: -10
+                            scale: 0.3
+                            y: -20
 
                             Component.onCompleted: letterEntrance.start()
 
                             SequentialAnimation {
                                 id: letterEntrance
                                 PauseAnimation {
-                                    duration: letterItem.index * 60
+                                    duration: letterItem.index * 50
                                 }
                                 ParallelAnimation {
                                     NumberAnimation {
                                         target: letterItem
                                         property: "opacity"
                                         to: 1
-                                        duration: 200
+                                        duration: 220
                                         easing.type: Easing.OutQuad
                                     }
                                     NumberAnimation {
                                         target: letterItem
                                         property: "scale"
                                         to: 1
-                                        duration: 200
+                                        duration: 300
                                         easing.type: Easing.OutBack
                                     }
                                     NumberAnimation {
                                         target: letterItem
                                         property: "y"
                                         to: 0
-                                        duration: 200
+                                        duration: 220
                                         easing.type: Easing.OutQuad
                                     }
                                 }

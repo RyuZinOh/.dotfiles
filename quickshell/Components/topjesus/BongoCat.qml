@@ -14,47 +14,31 @@ Item {
     property bool rightHandActive: false
     property int keypressCount: 0
 
+    property bool lastWasLeft: false
     Process {
         id: keyboardMonitor
         running: true
-        /*
-         python can read binary data in small chunks without buffering
-        */
-        command: ["python3", Qt.resolvedUrl("../../Scripts/keyboard_monitor.py").toString().replace("file://", "")]
+        command: ["cat", "/tmp/bongo-pipe"]
         stdout: SplitParser {
             onRead: data => {
+                // console.log("[BongoCat] got:", data.toString().trim());
                 root.handleKeyPress();
             }
         }
-
         stderr: SplitParser {
-            onRead: data => {
-                var err = data.toString().trim();
-                if (err && err.includes("Permission denied")) {
-                    console.log("[BongoCat] permission denied");
-                    console.log("[BongoCat] run: sudo usermod -a -G input $USER");
-                } else if (err) {
-                    console.log("[BongoCat]", err);
-                }
-            }
+            onRead: data => console.log("[BongoCat] err:", data.toString().trim())
         }
-
-        // onExited: (code, status) => {
-        //     if (code !== 0) {
-        //         console.log("[BongoCat] Monitor stopped:", code);
-        //     }
-        // }
     }
-
     function handleKeyPress() {
         keypressCount++;
-
-        if (Math.random() > 0.5) {
+        if (!lastWasLeft) {
             leftHandActive = true;
             leftHandTimer.restart();
+            lastWasLeft = true;
         } else {
             rightHandActive = true;
             rightHandTimer.restart();
+            lastWasLeft = false;
         }
     }
 
@@ -108,9 +92,8 @@ Item {
         //     font.pixelSize: 8
         // }
     }
-
-    Component.onCompleted: {
-        console.log("[BongoCat] initiated.");
-        console.log("[BongoCat] begin fingering...");
-    }
+    // Component.onCompleted: {
+    // console.log("[BongoCat] initiated.");
+    // console.log("[BongoCat] begin fingering...");
+    // }
 }

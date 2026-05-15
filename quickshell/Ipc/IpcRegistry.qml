@@ -23,7 +23,9 @@ Item {
     ArtiqaIpc {
         id: artiqaIpc
     }
-    // PoketwoIpc {id: poketwoIpc}
+    PoketwoIpc {
+        id: poketwoIpc
+    }
 
     CleaveIpc {
         id: cleaveIpc

@@ -146,12 +146,13 @@ Item {
                     if (WallpaperConfig.loaded) {
                         setInitialWallpaper();
                     } else {
-                        const connection = WallpaperConfig.loadedChanged.connect(() => {
+                        const onLoadedChanged = () => {
                             if (WallpaperConfig.loaded) {
                                 setInitialWallpaper();
-                                connection.disconnect();
+                                WallpaperConfig.loadedChanged.disconnect(onLoadedChanged);
                             }
-                        });
+                        };
+                        WallpaperConfig.loadedChanged.connect(onLoadedChanged);
                     }
 
                     WallpaperConfig.currentWallpaperChanged.connect(() => {

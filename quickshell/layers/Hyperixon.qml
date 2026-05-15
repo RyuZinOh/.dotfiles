@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
-// import qs.Components.Poketwo
+import qs.Components.Poketwo
 // import qs.Modules.Ash
 import qs.Components.Artiqa
 import qs.Components.Dancer
@@ -70,13 +70,12 @@ Scope {
                     //clipsy clipboard
                     //poketwo -game
                     // poketwo overlay
-                    // Loader {
-                    //     id: poketwoRef
-                    //     anchors.fill: parent
-                    //     active: PoketwoConfig.isActive
-                    //     sourceComponent: Poketwo {}
-
-                    id: hyperixonContent
+                    Loader {
+                        id: hyperixonContent
+                        anchors.fill: parent
+                        active: PoketwoConfig.isActive
+                        sourceComponent: Poketwo {}
+                    }
 
                     anchors.fill: parent
 
@@ -140,15 +139,15 @@ Scope {
                         sourceComponent: Wow {}
                     }
 
-                    //     Connections {
-                    //         target: PoketwoConfig
-                    //         function onShowPoketwo() {
-                    //             poketwoRef.active = true;
-                    //         }
-                    //         function onHidePoketwo() {
-                    //             poketwoRef.active = false;
-                    //         }
-                    //     }
+                    Connections {
+                        target: PoketwoConfig
+                        function onShowPoketwo() {
+                            poketwoRef.active = true;
+                        }
+                        function onHidePoketwo() {
+                            poketwoRef.active = false;
+                        }
+                    }
                     // }
                     //hut
                     Hut {

@@ -85,7 +85,10 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         if (!parent.isActive) {
-                            Hyprland.dispatch("workspace " + parent.modelData);
+                            let ws = Hyprland.workspaces.values.find(w => w.id === parent.modelData);
+                            if (ws){
+                                ws.activate();
+                            }
                         }
                     }
                     onEntered: parent.isHovered = true

@@ -10,23 +10,31 @@ Item {
         function toggle(): string {
             if (PoketwoConfig.isActive) {
                 PoketwoConfig.isActive = false;
+                StateManager.set("poketwo", false);
                 PoketwoConfig.hidePoketwo();
             } else {
                 PoketwoConfig.isActive = true;
+                StateManager.set("poketwo", true);
                 PoketwoConfig.showPoketwo();
             }
             return "poketwo toggled";
         }
 
         function activate(): string {
-            PoketwoConfig.isActive = true;
-            PoketwoConfig.showPoketwo();
+            if (!PoketwoConfig.isActive) {
+                PoketwoConfig.isActive = true;
+                StateManager.set("poketwo", true);
+                PoketwoConfig.showPoketwo();
+            }
             return "poketwo shown";
         }
 
         function deactivate(): string {
-            PoketwoConfig.isActive = false;
-            PoketwoConfig.hidePoketwo();
+            if (PoketwoConfig.isActive) {
+                PoketwoConfig.isActive = false;
+                StateManager.set("poketwo", false);
+                PoketwoConfig.hidePoketwo();
+            }
             return "poketwo hidden";
         }
     }

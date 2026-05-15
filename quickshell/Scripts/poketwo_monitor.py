@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
+import os
 import struct
 import sys
 
+# create a systemd service for this or just start runnning this to make our poketwo  work
+PIPE = "/tmp/poketwo-pipe"
 DEV = "/dev/input/event4"
 
 KEY_MAP = {
@@ -45,8 +49,12 @@ KEY_MAP = {
     57: "SPACE",
 }
 
+if not os.path.exists(PIPE):
+    os.mkfifo(PIPE)
+    os.chmod(PIPE, 0o666)
+
 try:
-    with open(DEV, "rb") as fd:
+    with open(DEV, "rb") as fd, open(PIPE, "w") as pipe:
         while True:
             data = fd.read(24)
             if len(data) < 24:
@@ -55,8 +63,8 @@ try:
             if type_ == 1 and value == 1:
                 ch = KEY_MAP.get(code)
                 if ch:
-                    sys.stdout.write(ch + "\n")
-                    sys.stdout.flush()
+                    pipe.write(ch + "\n")
+                    pipe.flush()
 except PermissionError:
     sys.stderr.write("Permission denied\n")
     sys.stderr.flush()
