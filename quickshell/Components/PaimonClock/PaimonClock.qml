@@ -18,32 +18,16 @@ Item {
     width: root.dataLoaded ? clockDial.implicitWidth * clockDial.scale : 0
     height: root.dataLoaded ? clockDial.implicitHeight * clockDial.scale : 0
 
-    NumberAnimation {
-        id: xAnim
-        target: root
-        property: "x"
-        duration: 800
-        easing.type: Easing.InOutQuad
-    }
-    NumberAnimation {
-        id: yAnim
-        target: root
-        property: "y"
-        duration: 800
-        easing.type: Easing.InOutQuad
-    }
-
-    Connections {
-        target: PaimonClockConfig
-        function onClockXChanged() {
-            root.x = root.x;
-            xAnim.to = PaimonClockConfig.clockX;
-            xAnim.start();
+    Behavior on x {
+        NumberAnimation {
+            duration: 800
+            easing.type: Easing.InOutQuad
         }
-        function onClockYChanged() {
-            root.y = root.y;
-            yAnim.to = PaimonClockConfig.clockY;
-            yAnim.start();
+    }
+    Behavior on y {
+        NumberAnimation {
+            duration: 800
+            easing.type: Easing.InOutQuad
         }
     }
 

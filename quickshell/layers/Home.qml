@@ -13,6 +13,7 @@ Scope {
         model: Quickshell.screens
 
         WlrLayershell {
+            id: homeLayer
             // PanelWindow {
             //     anchors.top: true
             //     implicitWidth: 0
@@ -20,8 +21,10 @@ Scope {
             //     exclusiveZone: 40
             //     visible: true
             // }
-
-            id: homeLayer
+            Component.onCompleted: {
+                PaimonClockConfig.screenWidth = homeLayer.screen.width;
+                PaimonClockConfig.screenHeight = homeLayer.screen.height;
+            }
 
             required property var modelData
 
@@ -52,13 +55,7 @@ Scope {
             Loader {
                 id: paimonClockLoader
                 active: PaimonClockConfig.isActive
-                sourceComponent: Component {
-                    PaimonClock {}
-                }
-                onLoaded: {
-                    PaimonClockConfig.screenWidth = homeLayer.screen.width;
-                    PaimonClockConfig.screenHeight = homeLayer.screen.height;
-                }
+                sourceComponent: PaimonClock {}
             }
             //touchpad gestured right click contextmenu [Just like Windows]
             ContextMenu {}
