@@ -48,6 +48,9 @@ Singleton {
     }
 
     function randomizePosition() {
+        if (!root.isActive) {
+            return;
+        }
         // clamp to screen bounds so clock never spawns partially off-screen
         root.clockX = Math.floor(Math.random() * Math.max(0, root.screenWidth - root.clockWidth));
         root.clockY = Math.floor(Math.random() * Math.max(0, root.screenHeight * 0.5 - root.clockHeight));
