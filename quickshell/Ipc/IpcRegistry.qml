@@ -41,6 +41,9 @@ Item {
     WallpaperIpc {
         id: wallpaperIpc
     }
+    PaimonClockIpc {
+        id: paimonClockIpc
+    }
 
     OsdIpc {
         id: osdIpc

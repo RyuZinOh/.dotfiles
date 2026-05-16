@@ -8,8 +8,8 @@ import qs.Services.Paths
 Singleton {
     id: root
 
-    readonly property string themePath: PathService.home + "/.cache/safalQuick/theme.json"
-    readonly property string colorsPath: PathService.home + "/.cache/safalQuick/colors.json"
+    readonly property string themePath: PathService.state + "/theme.json"
+    readonly property string colorsPath: PathService.state + "/colors.json"
     readonly property string defaultWallpaper: PathService.home + "/.config/quickshell/ryu-shell/Assets/defaults/default_wallpaper.jpeg"
 
     property bool isDarkMode: true

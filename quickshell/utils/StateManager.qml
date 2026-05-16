@@ -8,7 +8,7 @@ import qs.Services.Kraken
 Singleton {
     id: root
 
-    readonly property string statePath: PathService.home + "/.cache/safalQuick/ipcstate.json"
+    readonly property string statePath: PathService.state + "/ipcstate.json"
     property bool loaded: false
     signal statesChanged
 

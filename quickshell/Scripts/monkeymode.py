@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-THEME_JSON = Path.home() / ".cache/safalQuick/monkeytype.json"
+THEME_JSON = Path.home() / ".local" / "state" / "safalQuick" / "monkeytype.json"
 
 BROWSERS = [
     ["helium-browser", "--new-tab", "{url}"],

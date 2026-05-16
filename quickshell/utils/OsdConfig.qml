@@ -34,7 +34,7 @@ Singleton {
     readonly property int maxLimit: 100
     readonly property var characterNames: ["Ororon", "Skirk", "Chasca"]
     readonly property string currentCharacterName: root.characterNames[root.character] || "Ororon"
-    readonly property string configPath: PathService.home + "/.cache/safalQuick/osd.json"
+    readonly property string configPath: PathService.state + "/osd.json"
     property bool loaded: false
 
     signal brightnessRead(int value)

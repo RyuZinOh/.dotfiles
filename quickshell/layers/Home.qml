@@ -4,6 +4,8 @@ import Quickshell.Wayland
 import qs.Components.ContextMenu
 import qs.Components.Wallski
 import qs.Services
+import qs.Components.PaimonClock
+import qs.utils
 
 Scope {
     // background layer [wallpaper]
@@ -47,6 +49,17 @@ Scope {
                 anchors.fill: parent
             }
 
+            Loader {
+                id: paimonClockLoader
+                active: PaimonClockConfig.isActive
+                sourceComponent: Component {
+                    PaimonClock {}
+                }
+                onLoaded: {
+                    PaimonClockConfig.screenWidth = homeLayer.screen.width;
+                    PaimonClockConfig.screenHeight = homeLayer.screen.height;
+                }
+            }
             //touchpad gestured right click contextmenu [Just like Windows]
             ContextMenu {}
 

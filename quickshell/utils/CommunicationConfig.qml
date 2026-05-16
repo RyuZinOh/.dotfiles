@@ -17,7 +17,7 @@ Singleton {
     readonly property int tempMax: 6500
     readonly property int gammaMin: 10
     readonly property int gammaMax: 100
-    readonly property string configPath: PathService.home + "/.cache/safalQuick/communication-config.json"
+    readonly property string configPath: PathService.state + "/communication-config.json"
 
     signal hyprsunsetToggled(bool active)
 

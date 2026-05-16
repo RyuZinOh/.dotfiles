@@ -143,8 +143,6 @@ Scope {
                             Wow {}
                         }
                     }
-
-                    // }
                     //hut
                     Hut {
                         id: hutRef

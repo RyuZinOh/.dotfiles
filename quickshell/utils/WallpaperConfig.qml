@@ -11,7 +11,7 @@ Singleton {
     property string transitionType: "bubble"
     property bool enablePanning: true
     readonly property int bubbleDuration: transitionType === "bubble" ? 1000 : 0
-    readonly property string configPath: PathService.home + "/.cache/safalQuick/wallpaper-config.json"
+    readonly property string configPath: PathService.state + "/wallpaper-config.json"
     readonly property string defaultWallpaper: Qt.resolvedUrl("../Assets/defaults/default_wallpaper.jpeg").toString()
     property bool loaded: false
 

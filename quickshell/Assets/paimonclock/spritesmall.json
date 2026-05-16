@@ -1,0 +1,105 @@
+{
+  "sprites": {
+    "UI_Clock_Circle.png": {
+      "x": 194.34975460082092,
+      "y": 194.2438886121093,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 99
+    },
+    "UI_Clock_Dial_NoTag.png": {
+      "x": 0,
+      "y": 0,
+      "scale": 0.4,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 113
+    },
+    "UI_Clock_HourHand.png": {
+      "x": 190.1150108328518,
+      "y": 144.32800529616134,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 116
+    },
+    "UI_ClockIcon_Dusk.png": {
+      "x": 311.8812895520598,
+      "y": 187.13721382624544,
+      "scale": 0.4,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 121
+    },
+    "UI_ClockIcon_Morning.png": {
+      "x": 51.58378545471112,
+      "y": 182.51512625612332,
+      "scale": 0.4,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 126
+    },
+    "UI_ClockIcon_Night.png": {
+      "x": 180.50355685179056,
+      "y": 309.3298132812154,
+      "scale": 0.4,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 124
+    },
+    "UI_ClockIcon_Noon.png": {
+      "x": 179.62513931921922,
+      "y": 52.37634370962826,
+      "scale": 0.4,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 118
+    },
+    "UI_Clock_MinuteHand.png": {
+      "x": 194.81012012526458,
+      "y": 209.3969975749382,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 116
+    },
+    "UI_Img_Horoscope03.png": {
+      "x": 151.97310918401502,
+      "y": 128.39730794723403,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 109
+    },
+    "UI_Img_Horoscope04.png": {
+      "x": 127.83710956071218,
+      "y": 156.71717651705836,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 110
+    },
+    "UI_Img_Horoscope05.png": {
+      "x": 220.25737950355347,
+      "y": 225.1942831117184,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 111
+    },
+    "UI_Img_Horoscope06.png": {
+      "x": 187.98889922928606,
+      "y": 187.0747844393042,
+      "scale": 0.3,
+      "rotation": 0,
+      "visible": true,
+      "zIndex": 101
+    }
+  },
+  "horoscope": {
+    "x": 124.45002448875334,
+    "y": 125.85402613776864,
+    "size": 159.4725552479834
+  }
+}

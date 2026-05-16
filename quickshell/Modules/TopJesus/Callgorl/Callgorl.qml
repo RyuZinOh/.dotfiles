@@ -23,6 +23,8 @@ Item {
             PoketwoConfig.isActive = !isActive;
             StateManager.set("poketwo", !isActive);
             isActive ? PoketwoConfig.hidePoketwo() : PoketwoConfig.showPoketwo();
+        } else if (service === "paimonclock") {
+            isActive ? PaimonClockConfig.hide() : PaimonClockConfig.show();
         }
     }
 
@@ -38,8 +40,9 @@ Item {
     property real w1: btnNormal
     property real w2: btnNormal
     property real w3: btnNormal
+    property real w4: btnNormal
 
-    readonly property real totalWidth: w0 + w1 + w2 + w3 + groupSpacing * 3
+    readonly property real totalWidth: w0 + w1 + w2 + w3 + w4 + groupSpacing * 4
 
     Item {
         anchors.centerIn: parent
@@ -79,6 +82,14 @@ Item {
                     "activeBorder": Theme.tertiaryColor,
                     "activeText": Theme.onTertiaryContainer,
                     "service": "poketwo"
+                },
+                {
+                    "icon": "\ue641",
+                    "active": PaimonClockConfig.isActive,
+                    "activeColor": Theme.primaryContainer,
+                    "activeBorder": Theme.primaryColor,
+                    "activeText": Theme.onPrimaryContainer,
+                    "service": "paimonclock"
                 }
             ]
 
@@ -89,8 +100,8 @@ Item {
                 required property int index
 
                 readonly property bool isActive: modelData.active
-                readonly property bool leftActive: index > 0 && [DancerConfig.isActive, OmnitrixConfig.isActive, ArtiqaConfig.isActive, PoketwoConfig.isActive][index - 1]
-                readonly property bool rightActive: index < 3 && [DancerConfig.isActive, OmnitrixConfig.isActive, ArtiqaConfig.isActive, PoketwoConfig.isActive][index + 1]
+                readonly property bool leftActive: index > 0 && [DancerConfig.isActive, OmnitrixConfig.isActive, ArtiqaConfig.isActive, PoketwoConfig.isActive, PaimonClockConfig.isActive][index - 1]
+                readonly property bool rightActive: index < 4 && [DancerConfig.isActive, OmnitrixConfig.isActive, ArtiqaConfig.isActive, PoketwoConfig.isActive, PaimonClockConfig.isActive][index + 1]
                 readonly property bool isCompressed: !isActive && (leftActive || rightActive)
 
                 readonly property real targetWidth: isActive ? root.btnExpanded : isCompressed ? root.btnCompressed : root.btnNormal
@@ -115,6 +126,8 @@ Item {
                         root.w2 = animWidth;
                     else if (index === 3)
                         root.w3 = animWidth;
+                    else if (index === 4)
+                        root.w4 = animWidth;
                 }
 
                 readonly property real naturalX: {
@@ -124,11 +137,13 @@ Item {
                         return root.w0 + root.groupSpacing;
                     if (index === 2)
                         return root.w0 + root.w1 + root.groupSpacing * 2;
-                    return root.w0 + root.w1 + root.w2 + root.groupSpacing * 3;
+                    if (index === 3)
+                        return root.w0 + root.w1 + root.w2 + root.groupSpacing * 3;
+                    return root.w0 + root.w1 + root.w2 + root.w3 + root.groupSpacing * 4;
                 }
 
                 readonly property real inactiveLeftR: index === 0 ? root.outerRadius : root.innerRadius
-                readonly property real inactiveRightR: index === 3 ? root.outerRadius : root.innerRadius
+                readonly property real inactiveRightR: index === 4 ? root.outerRadius : root.innerRadius
 
                 x: naturalX
                 y: 0

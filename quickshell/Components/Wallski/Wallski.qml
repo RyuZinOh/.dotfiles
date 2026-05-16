@@ -45,6 +45,7 @@ Item {
         Quickshell.execDetached(["/usr/bin/sh", "-c", `mkdir -p ${PathService.home}/.cache/safalQuick/ && cp "${fp}" ${PathService.home}/.cache/safalQuick/bg.jpg`]);
         Quickshell.execDetached(["/usr/bin/notify-send", "--app-name=Wallski", "✓ Wallpaper Applied", fn.replace(/\.[^/.]+$/, "").replace(/_/g, " ")]);
         root.wallpaperChanged(fp);
+        PaimonClockConfig.randomizePosition();
     }
     function applyFilter(query) {
         filteredModel.clear();
