@@ -11,69 +11,58 @@ Item {
         id: dancerLoader
         active: root.active
 
-        sourceComponent: AnimatedImage {
-            id: dancer
-            width: 150
-            height: 150
-            source: root.gifSource
-            playing: true
-            cache: true
+        sourceComponent: Component {
+            AnimatedImage {
+                id: dancer
+                width: 150
+                height: 150
+                source: root.gifSource
+                playing: true
+                cache: false
 
-            property real velocityX: 5
-            property real velocityY: 5
-            //laptop screens arent perfect
-            readonly property real maxX: root.width + 30
-            readonly property real maxY: root.height + 30
-            readonly property real minX: -30
-            readonly property real minY: -30
-            readonly property real maxBoundX: maxX - width
-            readonly property real maxBoundY: maxY - height
+                property real velocityX: 5
+                property real velocityY: 5
+                property real physX: 0
+                property real physY: 0
+                //laptop screens arent perfect
+                readonly property real maxBoundX: root.width - width + 30
+                readonly property real maxBoundY: root.height - height + 30
 
-            x: Math.random() * maxBoundX
-            y: Math.random() * maxBoundY
-
-            Behavior on x {
-                SmoothedAnimation {
-                    velocity: 1000
-                    duration: 16
+                Component.onCompleted: {
+                    physX = Math.random() * maxBoundX;
+                    physY = Math.random() * maxBoundY;
+                    x = physX;
+                    y = physY;
                 }
-            }
 
-            Behavior on y {
-                SmoothedAnimation {
-                    velocity: 1000
-                    duration: 16
-                }
-            }
+                FrameAnimation {
+                    running: true
+                    onTriggered: {
+                        dancer.physX += dancer.velocityX;
+                        dancer.physY += dancer.velocityY;
 
-            Timer {
-                interval: 16
-                running: true
-                repeat: true
-                triggeredOnStart: false
+                        if (dancer.physX <= -30) {
+                            dancer.physX = -30;
+                            dancer.velocityX = Math.abs(dancer.velocityX) * 1.1;
+                        } else if (dancer.physX >= dancer.maxBoundX) {
+                            dancer.physX = dancer.maxBoundX;
+                            dancer.velocityX = -Math.abs(dancer.velocityX) * 1.1;
+                        }
 
-                onTriggered: {
-                    var newX = dancer.x + dancer.velocityX;
-                    var newY = dancer.y + dancer.velocityY;
+                        if (dancer.physY <= -30) {
+                            dancer.physY = -30;
+                            dancer.velocityY = Math.abs(dancer.velocityY) * 1.1;
+                        } else if (dancer.physY >= dancer.maxBoundY) {
+                            dancer.physY = dancer.maxBoundY;
+                            dancer.velocityY = -Math.abs(dancer.velocityY) * 1.1;
+                        }
 
-                    if (newX <= dancer.minX) {
-                        dancer.velocityX = -dancer.velocityX;
-                        newX = dancer.minX;
-                    } else if (newX >= dancer.maxBoundX) {
-                        dancer.velocityX = -dancer.velocityX;
-                        newX = dancer.maxBoundX;
+                        dancer.velocityX = Math.max(-15, Math.min(15, dancer.velocityX));
+                        dancer.velocityY = Math.max(-15, Math.min(15, dancer.velocityY));
+
+                        dancer.x += (dancer.physX - dancer.x) * 0.2;
+                        dancer.y += (dancer.physY - dancer.y) * 0.2;
                     }
-
-                    if (newY <= dancer.minY) {
-                        dancer.velocityY = -dancer.velocityY;
-                        newY = dancer.minY;
-                    } else if (newY >= dancer.maxBoundY) {
-                        dancer.velocityY = -dancer.velocityY;
-                        newY = dancer.maxBoundY;
-                    }
-
-                    dancer.x = newX;
-                    dancer.y = newY;
                 }
             }
         }

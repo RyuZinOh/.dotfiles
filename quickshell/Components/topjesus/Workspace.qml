@@ -86,7 +86,7 @@ Item {
                     onClicked: {
                         if (!parent.isActive) {
                             let ws = Hyprland.workspaces.values.find(w => w.id === parent.modelData);
-                            if (ws){
+                            if (ws) {
                                 ws.activate();
                             }
                         }

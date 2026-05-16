@@ -12,7 +12,7 @@ Item {
     visible: OsdConfig.isVisible
 
     readonly property int segmentCount: 15
-    property real normalizedValue: 0
+    property real normalizedValue: Math.max(0, Math.min(1, OsdConfig.currentValue / 100))
     readonly property int filledSegments: Math.floor(normalizedValue * segmentCount)
     readonly property real partialFill: (normalizedValue * segmentCount) - filledSegments
 

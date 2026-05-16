@@ -12,6 +12,7 @@ Item {
     property int wordIdCounter: 0
     property real wordStartTime: 0
     property real wordEndTime: 0
+    property var activeTimers: []
 
     property bool countdownDone: false
     property int countdownValue: 3
@@ -19,6 +20,14 @@ Item {
 
     Component.onCompleted: {
         countdownTimer.start();
+    }
+
+    Component.onDestruction: {
+        for (var i = 0; i < root.activeTimers.length; i++) {
+            if (root.activeTimers[i])
+                root.activeTimers[i].destroy();
+        }
+        root.activeTimers = [];
     }
 
     Timer {
@@ -177,9 +186,11 @@ Item {
                                 wpm: wpm
                             };
                             root.submittedWords = [newWord];
-                            timerComp.createObject(root, {
+                            var t = timerComp.createObject(root, {
                                 wordId: newWord.id
-                            }).start();
+                            });
+                            root.activeTimers.push(t);
+                            t.start();
                         }
                         root.currentInput = "";
                         root.wordStartTime = 0;
@@ -223,6 +234,7 @@ Item {
             repeat: false
             onTriggered: {
                 root.submittedWords = root.submittedWords.filter(w => w.id !== wordId);
+                root.activeTimers = root.activeTimers.filter(t => t !== this);
                 destroy();
             }
         }

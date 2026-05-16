@@ -1,3 +1,4 @@
+// has formatting issue
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Io

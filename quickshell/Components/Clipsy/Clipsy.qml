@@ -47,7 +47,7 @@ Item {
         searchInput.forceActiveFocus();
         openAnim.start();
     }
-    Component.onDestruction: console.log("[Clipsy] destroyed")
+    // Component.onDestruction: console.log("[Clipsy] destroyed")
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Escape) {
             ClipsyConfig.dismiss();

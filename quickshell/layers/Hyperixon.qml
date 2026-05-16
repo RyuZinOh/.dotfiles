@@ -67,14 +67,16 @@ Scope {
                     //     anchors.horizontalCenter: parent.horizontalCenter
                     //     anchors.top: parent.top
                     // }
-                    //clipsy clipboard
                     //poketwo -game
-                    // poketwo overlay
+                    // poketwo overlay — fixed: Component wrapper, redundant Connections removed,
+                    // active binding on isActive handles load/unload cleanly
                     Loader {
-                        id: hyperixonContent
+                        id: poketwoLoader
                         anchors.fill: parent
                         active: PoketwoConfig.isActive
-                        sourceComponent: Poketwo {}
+                        sourceComponent: Component {
+                            Poketwo {}
+                        }
                     }
 
                     anchors.fill: parent
@@ -88,6 +90,7 @@ Scope {
                         parentScreen: hyperixonLayer.screen
                     }
 
+                    //clipsy clipboard
                     Loader {
                         id: clipsyLoader
 
@@ -136,18 +139,11 @@ Scope {
                         anchors.centerIn: parent
                         active: WowConfig.isActive
 
-                        sourceComponent: Wow {}
+                        sourceComponent: Component {
+                            Wow {}
+                        }
                     }
 
-                    Connections {
-                        target: PoketwoConfig
-                        function onShowPoketwo() {
-                            poketwoRef.active = true;
-                        }
-                        function onHidePoketwo() {
-                            poketwoRef.active = false;
-                        }
-                    }
                     // }
                     //hut
                     Hut {
@@ -183,21 +179,8 @@ Scope {
                     //bouncing dancer
                     BouncingDancer {
                         id: bouncingDancer
-
                         anchors.fill: parent
-                        active: false
-
-                        Connections {
-                            function onShowDancer() {
-                                bouncingDancer.active = true;
-                            }
-
-                            function onHideDancer() {
-                                bouncingDancer.active = false;
-                            }
-
-                            target: DancerConfig
-                        }
+                        active: DancerConfig.isActive
                     }
 
                     //artiqa drawing utility
@@ -236,14 +219,16 @@ Scope {
                         }
                     }
                     //osd
-                    Osd {
+                    Loader {
                         id: osdWindow
 
-                        anchors {
-                            right: parent.right
-                            top: parent.top
-                            rightMargin: 20
-                            topMargin: 20
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.rightMargin: 20
+                        anchors.topMargin: 20
+                        active: OsdConfig.isVisible
+                        sourceComponent: Component {
+                            Osd {}
                         }
                     }
                 }

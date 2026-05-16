@@ -175,9 +175,15 @@ Item {
                 anchors.rightMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
 
-                BongoCat {
-                    size: 44
+                Loader {
+                    id: bongoCatLoader
+                    active: root.isPinned || root.isHovered
                     anchors.verticalCenter: parent.verticalCenter
+                    sourceComponent: Component {
+                        BongoCat {
+                            size: 44
+                        }
+                    }
                 }
                 Rectangle {
                     width: 28
