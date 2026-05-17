@@ -17,6 +17,7 @@ local exec_binds = {
 	},
 	{ mainMod .. " + G", "flatpak run org.ppsspp.PPSSPP" },
 	{ mainMod .. " + E", "virt-manager" },
+	{ mainMod .. " + T", "~/.config/hypr/scripts/toggle-touchpad.sh toggle" },
 	{ mainMod .. " + O", "flatpak run md.obsidian.Obsidian" },
 	{ mainMod .. " + Return", terminal },
 	{ mainMod .. " + X", browser },

@@ -19,8 +19,8 @@ local window_rules = {
 		name = "waydroid_portrait",
 		match = { class = "Waydroid" },
 		float = true,
-		size = "540 1080",
-		move = "1380 0",
+		size = "540 1050",
+		move = "1280 10",
 	},
 }
 
