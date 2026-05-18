@@ -27,7 +27,7 @@ local exec_binds = {
 	{ mainMod .. " + L", "loginctl lock-session" },
 	{ mainMod .. " + R", "~/.config/hypr/scripts/toggle-recordwf.sh" },
 	{ mainMod .. " + SHIFT + R", "~/.config/hypr/scripts/region-record.sh" },
-	{ mainMod .. " + SHIFT + A", "adwnki" },
+	{ mainMod .. " + A", "android-studio" },
 	{ mainMod .. " + SHIFT + G", "gimp" },
 	{ mainMod .. " + SHIFT + period", "godot --display-driver wayland" },
 
