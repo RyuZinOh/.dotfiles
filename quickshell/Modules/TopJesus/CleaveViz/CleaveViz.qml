@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 import Cleave
 import QtQuick
 import qs.Services.Theme
-import qs.utils
+import qs.Configuration.Cleave
 
 Item {
     id: root

@@ -4,17 +4,19 @@ import "./Callgorl/"
 import "./ControlRoom/"
 import "./MAL/"
 import "./Powerski/"
+import "./Tunes/"
 import "./Wset/"
 import QtQuick
 import qs.Components.topjesus
 import qs.Services.Shapes
 import qs.Services.Theme
-import qs.utils
+import qs.Configuration.Cleave
 
 Item {
     id: root
 
     required property var parentScreen
+    readonly property real interactiveHeight: popout.height + nestedPopout.height
     property bool isHovered: false
     property bool isPinned: false
     property int activePopout: 0
@@ -48,14 +50,14 @@ Item {
         {
             "id": 4,
             "icon": "\uee82",
-            "xOff": 225,
+            "xOff": 125,
             "w": 320,
             "h": 110
         },
         {
             "id": 5,
             "icon": "\udb81\udce0",
-            "xOff": 200,
+            "xOff": 100,
             "w": 450,
             "h": 110
         }
@@ -66,8 +68,8 @@ Item {
         closeTimer.restart();
     }
 
-    implicitWidth: 1440
-    implicitHeight: popout.height + nestedPopout.height
+    implicitWidth: 1800
+    implicitHeight: popout.height + nestedPopout.height + cleaveLoader.height
     width: implicitWidth
     height: implicitHeight
     onActivePopoutChanged: {
@@ -149,7 +151,7 @@ Item {
 
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        width: 1440
+        width: 1800
         height: (root.isHovered || root.isPinned) ? 40 : 0
         alignment: 0
         clip: true
@@ -174,6 +176,37 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 15
                 anchors.verticalCenter: parent.verticalCenter
+                Loader {
+                    id: tunerLoader
+                    anchors.verticalCenter: parent.verticalCenter
+                    active: root.isPinned
+
+                    sourceComponent: Component {
+                        Tuner {
+                            id: tuner
+
+                            Component.onCompleted: {
+                                if (tuner.isPlaying) {
+                                    CleaveConfig.activate();
+                                }
+                            }
+
+                            onPlayingChanged: {
+                                if (tuner.isPlaying) {
+                                    CleaveConfig.activate();
+                                } else {
+                                    CleaveConfig.deactivate();
+                                }
+                            }
+                        }
+                    }
+
+                    onActiveChanged: {
+                        if (!active) {
+                            CleaveConfig.deactivate();
+                        }
+                    }
+                }
 
                 Loader {
                     id: bongoCatLoader
@@ -415,13 +448,15 @@ Item {
     }
 
     Loader {
+        id: cleaveLoader
         anchors.top: popout.bottom
         anchors.topMargin: -4
         anchors.horizontalCenter: parent.horizontalCenter
-        active: CleaveConfig.isActive
+        active: CleaveConfig.isActive && root.isPinned
         asynchronous: true
         source: "CleaveViz/CleaveViz.qml"
-        onLoaded: item.targetWidth = 1375
+        height: active ? 40 : 0
+        onLoaded: item.targetWidth = 1700
     }
 
     PopoutShape {

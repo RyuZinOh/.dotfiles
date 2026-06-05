@@ -28,10 +28,6 @@ Item {
     PoketwoIpc {
         id: poketwoIpc
     }
-
-    CleaveIpc {
-        id: cleaveIpc
-    }
     DancerIpc {
         id: dancerIpc
     }
