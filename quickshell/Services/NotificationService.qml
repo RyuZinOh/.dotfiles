@@ -43,6 +43,9 @@ QtObject {
 
     function dismiss(id) {
         root.dismissNotification(id);
+        if (count > 0) {
+            count--;
+        }
     }
 
     server: NotificationServer {
