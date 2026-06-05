@@ -7,7 +7,9 @@ Item {
     //     id: poketwoIpc
     // }
     id: root
-
+    ScreenshotIpc {
+        id: screenshotIpc
+    }
     LockIpc {
         id: lockIpc
     }

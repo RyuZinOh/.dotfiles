@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "barWidth": 512,
+    "barHeight": 660
+  },
+  "positions": {
+    "meta": {
+      "barWidth": 512,
+      "barHeight": 660
+    },
+    "positions": {
+      "UI_NyxStateBar_Mavuika_Scale03.png": {
+        "x": 119,
+        "y": 398,
+        "r": -10
+      },
+      "UI_NyxStateBar_Mavuika_Scale02.png": {
+        "x": 100,
+        "y": 327,
+        "r": -7
+      },
+      "UI_NyxStateBar_Mavuika_Scale01.png": {
+        "x": 119,
+        "y": 255,
+        "r": -6
+      },
+      "UI_NyxStateBar_Mavuika_Scale00.png": {
+        "x": 107,
+        "y": 164,
+        "r": -7
+      },
+      "UI_NyxStateBar_Mavuika_Scale04.png": {
+        "x": 153,
+        "y": 460,
+        "r": -10
+      },
+      "UI_NyxStateBar_Mavuika_Scale06.png": {
+        "x": 207,
+        "y": 519,
+        "r": -5
+      },
+      "UI_NyxStateBar_Mavuika_Scale05.png": {
+        "x": 173,
+        "y": 489,
+        "r": -5
+      },
+      "UI_NyxStateBar_Mavuika_Scale07.png": {
+        "x": 258,
+        "y": 553,
+        "r": -5
+      },
+      "UI_NyxStateBar_Mavuika_Scale08.png": {
+        "x": 313,
+        "y": 558,
+        "r": -5
+      },
+      "UI_NyxStateBar_Mavuika_Scale09.png": {
+        "x": 360,
+        "y": 616,
+        "r": -5
+      }
+    },
+    "UI_NyxStateBar_Mavuika_Scale01.png": {
+      "x": 118,
+      "y": 247,
+      "r": -6
+    },
+    "UI_NyxStateBar_Mavuika_Scale03.png": {
+      "x": 121,
+      "y": 395,
+      "r": -5
+    },
+    "UI_NyxStateBar_Mavuika_Scale02.png": {
+      "x": 103,
+      "y": 324,
+      "r": -5
+    },
+    "UI_NyxStateBar_Mavuika_Scale00.png": {
+      "x": 110,
+      "y": 159,
+      "r": -8
+    },
+    "UI_NyxStateBar_Mavuika_Scale04.png": {
+      "x": 160,
+      "y": 459,
+      "r": -5
+    },
+    "UI_NyxStateBar_Mavuika_Scale06.png": {
+      "x": 206,
+      "y": 521,
+      "r": -5
+    },
+    "UI_NyxStateBar_Mavuika_Scale05.png": {
+      "x": 171,
+      "y": 492,
+      "r": -5
+    },
+    "UI_NyxStateBar_Mavuika_Scale08.png": {
+      "x": 318,
+      "y": 564,
+      "r": -3
+    },
+    "UI_NyxStateBar_Mavuika_Scale07.png": {
+      "x": 255,
+      "y": 556,
+      "r": -2
+    },
+    "UI_NyxStateBar_Mavuika_Scale09.png": {
+      "x": 360,
+      "y": 618,
+      "r": 0
+    }
+  }
+}

@@ -7,17 +7,16 @@ local mainMod = "SUPER"
 local exec_binds = {
 	{
 		mainMod .. " + PRINT",
-		'grim -g "$(slurp)" - | wl-copy && notify-send "Region Copied!"',
+		qs .. " ipc call screenshot captureRegion",
 		{ locked = true },
 	},
 	{
 		"PRINT",
-		'grim - | wl-copy && notify-send "Fullscreen Copied to Clipboard!"',
+		qs .. " ipc call screenshot capture",
 		{ locked = true },
 	},
 	{ mainMod .. " + G", "flatpak run org.ppsspp.PPSSPP" },
 	{ mainMod .. " + E", "virt-manager" },
-	{ mainMod .. " + T", "~/.config/hypr/scripts/toggle-touchpad.sh toggle" },
 	{ mainMod .. " + O", "flatpak run md.obsidian.Obsidian" },
 	{ mainMod .. " + Return", terminal },
 	{ mainMod .. " + X", browser },
@@ -25,8 +24,6 @@ local exec_binds = {
 	{ mainMod .. " + B", "blender" },
 	{ mainMod .. " + W", "waydroid" },
 	{ mainMod .. " + L", "loginctl lock-session" },
-	{ mainMod .. " + R", "~/.config/hypr/scripts/toggle-recordwf.sh" },
-	{ mainMod .. " + SHIFT + R", "~/.config/hypr/scripts/region-record.sh" },
 	{ mainMod .. " + A", "android-studio" },
 	{ mainMod .. " + SHIFT + G", "gimp" },
 	{ mainMod .. " + SHIFT + period", "godot --display-driver wayland" },
@@ -39,11 +36,18 @@ local exec_binds = {
 	{ "ALT + B", "bruno --ozone-platform=wayland" },
 	{ "ALT + P", "pokemmo-launcher" },
 
-	{ "XF86AudioRaiseVolume", qs .. " ipc call osd volume 5%+", { locked = true, repeating = true } },
-	{ "XF86AudioLowerVolume", qs .. " ipc call osd volume 5%-", { locked = true, repeating = true } },
+	{ "CTRL + ALT + W", "libreoffice --writer" },
+	{ "CTRL + ALT + E", "libreoffice --calc" },
+	{ "CTRL + ALT + I", "libreoffice --impress" },
+	{ "CTRL + ALT + D", "libreoffice --draw" },
+	{ "CTRL + ALT + M", "libreoffice --math" },
+	{ "CTRL + ALT + B", "libreoffice --base" },
+
+	{ "XF86AudioRaiseVolume", qs .. " ipc call osd volume 1%+", { locked = true, repeating = true } },
+	{ "XF86AudioLowerVolume", qs .. " ipc call osd volume 1%-", { locked = true, repeating = true } },
 	{ "XF86AudioMute", qs .. " ipc call osd mute", { locked = true, repeating = true } },
-	{ "XF86MonBrightnessUp", qs .. " ipc call osd brightness 5%+", { locked = true, repeating = true } },
-	{ "XF86MonBrightnessDown", qs .. " ipc call osd brightness 5%-", { locked = true, repeating = true } },
+	{ "XF86MonBrightnessUp", qs .. " ipc call osd brightness 1%+", { locked = true, repeating = true } },
+	{ "XF86MonBrightnessDown", qs .. " ipc call osd brightness 1%-", { locked = true, repeating = true } },
 	{ "XF86AudioNext", "playerctl next", { locked = true } },
 	{ "XF86AudioPause", "playerctl play-pause", { locked = true } },
 	{ "XF86AudioPlay", "playerctl play-pause", { locked = true } },
@@ -76,3 +80,32 @@ for i = 1, 10 do
 	hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
 	hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
+
+-- touchpad toggle
+local touchpad_state = true
+
+hl.bind(mainMod .. " + T", function()
+	touchpad_state = not touchpad_state
+	hl.device({ name = vars.touchpad, enabled = touchpad_state })
+	hl.notification.create({
+		text = touchpad_state and "Touchpad Enabled" or "Touchpad Disabled",
+		duration = 3000,
+		icon = "ok",
+	})
+end)
+
+-- recording
+local recording = false
+local audio_source = vars.audio_monitor
+local output_dir = os.getenv("HOME") .. "/Videos"
+
+hl.bind(mainMod .. " + R", function()
+	if recording then
+		hl.exec_cmd("pkill -INT -x wl-screenrec")
+		recording = false
+	else
+		local output = output_dir .. "/recording_" .. os.date("%Y%m%d_%H%M%S") .. ".mp4"
+		hl.exec_cmd("wl-screenrec --audio --audio-device " .. audio_source .. " -f " .. output)
+		recording = true
+	end
+end)

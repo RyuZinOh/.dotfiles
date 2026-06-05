@@ -18,6 +18,7 @@ Singleton {
             "com.pokemmo.PokeMMO": "pokemmo-launcher",
             "Waydroid": "waydroid",
             "code": "visual-studio-code",
+            "soffice": "libreoffice-startcenter",
             "helium": "helium-browser"
         })
     readonly property var model: ToplevelManager.toplevels

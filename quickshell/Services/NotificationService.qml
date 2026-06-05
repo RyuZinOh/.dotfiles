@@ -9,6 +9,7 @@ QtObject {
     property var queue: []
     property bool processing: false
     property NotificationServer server
+    property int count: 0
 
     signal notificationReady(var n)
     signal dismissNotification(int id)
@@ -22,6 +23,7 @@ QtObject {
             "image": (typeof n.image === "string" && n.image !== "") ? n.image : ((typeof n.appIcon === "string") ? n.appIcon : ""),
             "appIcon": ""
         });
+        count++;
         if (!processing)
             processNext();
     }

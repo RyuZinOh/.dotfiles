@@ -37,8 +37,8 @@
 # find "$CONFIG_DIR" -maxdepth 1 -type d -name "btop*" -exec rm -rf {} +
 # find "$CONFIG_DIR" -maxdepth 1 -type d -name "gtk*" -exec rm -rf {} +
 # find "$CONFIG_DIR" -maxdepth 1 -type d -name "pulse*" -exec rm -rf {} +
-# rm -f "$HOME_DIR/.zcompdump-archlinux-5.9"
-# rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.zwc"
+# rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.1"
+# rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.1.zwc"
 # rm -rf "$HOME_DIR/.pki"
 # rm -f "$HOME_DIR/.zsh_history"
 # rm -f "$HOME_DIR/.bash_history"

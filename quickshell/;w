@@ -31,7 +31,7 @@ Singleton {
         Chasca
     }
 
-    property int character: OsdConfig.Character.Mavuika
+    property int character: OsdConfig.Character.Ororon
     readonly property int maxLimit: 100
     readonly property var characterNames: ["Mavuika", "Ororon", "Skirk", "Chasca"]
     readonly property string currentCharacterName: root.characterNames[root.character] || "Mavuika"

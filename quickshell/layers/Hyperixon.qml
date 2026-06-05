@@ -5,11 +5,9 @@ import Quickshell.Wayland
 import qs.Components.Poketwo
 // import qs.Modules.Ash
 import qs.Components.Artiqa
+import qs.Components.osd
 import qs.Components.Dancer
 import qs.Components.Omnitrix
-import qs.Components.Wow
-import qs.Components.notification
-import qs.Components.osd
 import qs.Modules.Hut
 import qs.Modules.Toolski
 import qs.Modules.TopJesus
@@ -112,18 +110,6 @@ Scope {
                         source: "../Components/Clipsy/Clipsy.qml"
                     }
 
-                    //notification [Also we can implement our own layershell overlay for this one but nah...]
-                    NotificationWindow {
-                        id: notifWindow
-
-                        anchors {
-                            right: parent.right
-                            top: parent.top
-                            rightMargin: 4
-                            topMargin: 4
-                        }
-                    }
-
                     //toolski
                     Toolski {
                         id: toolskiRef
@@ -132,17 +118,6 @@ Scope {
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    //overview -wow
-                    Loader {
-                        id: wowRef
-
-                        anchors.centerIn: parent
-                        active: WowConfig.isActive
-
-                        sourceComponent: Component {
-                            Wow {}
-                        }
-                    }
                     //hut
                     Hut {
                         id: hutRef
@@ -256,18 +231,8 @@ Scope {
                         height: (topJesusRef.isHovered || topJesusRef.isPinned) ? topJesusRef.height : 1
                     }
                     /*
-                    notification area -> dynamically
-                    sized based on actual content height
-                    grows as more cards are added
-                    */
-
-                    Region {
-                        x: notifWindow.x
-                        y: notifWindow.y
-                        width: notifWindow.visible ? notifWindow.width + 4 : 1
-                        height: notifWindow.visible ? notifWindow.height + 4 : 1
-                    }
-
+                     * omnitrix
+                   */
                     Region {
                         x: (hyperixonLayer.width / 2) - 300 // 600/2 = 300 (width of omnitrix)
                         y: (hyperixonLayer.height / 2) - 300 // 600/2 = 300 (height of omnitrix)
@@ -322,14 +287,6 @@ Scope {
                         y: 0
                         width: artiqaRef.active ? hyperixonLayer.width : 1
                         height: artiqaRef.active ? hyperixonLayer.height : 1
-                    }
-
-                    //wow
-                    Region {
-                        x: (hyperixonLayer.width / 2) - (wowRef.width / 2)
-                        y: (hyperixonLayer.height / 2) - (wowRef.height / 2)
-                        width: WowConfig.isActive ? wowRef.width : 1
-                        height: WowConfig.isActive ? wowRef.height : 1
                     }
 
                     //Clipsy

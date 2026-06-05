@@ -11,6 +11,7 @@ ShellRoot {
         IpcRegistry {}
         Hyperixon {}  //  top
         Home {} // background
+        Oppression {}
 
         LazyLoader {
             id: sessionLockLoader
