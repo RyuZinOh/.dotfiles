@@ -37,6 +37,8 @@
 # find "$CONFIG_DIR" -maxdepth 1 -type d -name "btop*" -exec rm -rf {} +
 # find "$CONFIG_DIR" -maxdepth 1 -type d -name "gtk*" -exec rm -rf {} +
 # find "$CONFIG_DIR" -maxdepth 1 -type d -name "pulse*" -exec rm -rf {} +
+# rm -rf "$HOME_DIR/.local/share/Trash/files/"*
+# rm -rf "$HOME_DIR/.local/share/Trash/info/"*
 # rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.1"
 # rm -f "$HOME_DIR/.zcompdump-archlinux-5.9.1.zwc"
 # rm -rf "$HOME_DIR/.pki"
@@ -46,3 +48,4 @@
 # rm -f "$HOME_DIR/.wget-hsts"
 # rm -f "$HOME_DIR/.config/mimeapps.list"
 # find /tmp -mindepth 1 -user "$USER" -exec rm -rf {} + 2>/dev/null
+# journalctl --vacuum-time=1s
