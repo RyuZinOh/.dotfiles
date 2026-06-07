@@ -26,7 +26,16 @@ Item {
             }
         }
     }
-
+    Loader {
+        id: lassoCaptureLoader
+        anchors.fill: parent
+        active: ScreenshotConfig.isLassoing
+        sourceComponent: Component {
+            LassoCapture {
+                screen: root.screen
+            }
+        }
+    }
     Loader {
         anchors.fill: parent
         active: ScreenshotConfig.isPreviewing

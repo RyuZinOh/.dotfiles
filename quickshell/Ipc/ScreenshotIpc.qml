@@ -16,4 +16,8 @@ IpcHandler {
         ScreenshotConfig.isSelectingRegion = true;
         return "selecting region";
     }
+    function captureLasso(): string {
+        ScreenshotConfig.isLassoing = true;
+        return "lassoing";
+    }
 }

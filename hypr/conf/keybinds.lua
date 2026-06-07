@@ -15,6 +15,11 @@ local exec_binds = {
 		qs .. " ipc call screenshot capture",
 		{ locked = true },
 	},
+	{
+		" ALT + PRINT",
+		qs .. " ipc call screenshot captureLasso",
+		{ locked = true },
+	},
 	{ mainMod .. " + G", "flatpak run org.ppsspp.PPSSPP" },
 	{ mainMod .. " + E", "virt-manager" },
 	{ mainMod .. " + O", "flatpak run md.obsidian.Obsidian" },

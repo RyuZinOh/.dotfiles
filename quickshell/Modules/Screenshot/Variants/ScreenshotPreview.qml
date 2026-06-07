@@ -27,12 +27,17 @@ Item {
 
     function executeAction(type) {
         root.activeAction = type;
+
+        const isLasso = ScreenshotConfig.previewPath.includes("lasso");
+        const format = isLasso ? "png" : "jpeg";
+        const mimeType = isLasso ? "image/png" : "image/jpeg";
+
         if (type === "copy") {
-            actionProc.exec(["sh", "-c", "magick " + ScreenshotConfig.previewPath + " jpeg:- | wl-copy -t image/jpeg && rm " + ScreenshotConfig.previewPath]);
+            actionProc.exec(["sh", "-c", `magick ${ScreenshotConfig.previewPath} ${format}:- | wl-copy -t ${mimeType} && rm ${ScreenshotConfig.previewPath}`]);
         } else if (type === "save") {
             const ts = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
-            const dest = "/home/safalski/photos/screenshot_" + ts + ".jpg";
-            actionProc.exec(["sh", "-c", "magick " + ScreenshotConfig.previewPath + " " + dest + " && rm " + ScreenshotConfig.previewPath]);
+            const dest = `/home/safalski/photos/screenshot_${ts}.${isLasso ? "png" : "jpg"}`;
+            actionProc.exec(["sh", "-c", `magick ${ScreenshotConfig.previewPath} ${dest} && rm ${ScreenshotConfig.previewPath}`]);
         }
     }
 
