@@ -3,7 +3,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import qs.Components.Poketwo
-// import qs.Modules.Ash
 import qs.Components.Artiqa
 import qs.Components.osd
 import qs.Components.Dancer
@@ -23,19 +22,6 @@ Scope {
             required property var modelData
 
             WlrLayershell {
-                // Region {
-                //     x: (hyperixonLayer.width / 2) - (ashRef.implicitWidth / 2)
-                //     y: 10
-                //     width: ashRef.implicitWidth
-                //     height: ashRef.implicitHeight
-                // }
-                // Region {
-                //     x: (hyperixonLayer.width / 2) - 720
-                //     y: 0
-                //     width: 1440
-                //     height: topJesusRef.maskHeight
-                // }
-
                 id: hyperixonLayer
 
                 //jan 1-2026 => at the new year I noticed a shit
@@ -59,12 +45,6 @@ Scope {
 
                 //content container
                 Item {
-                    //UnderDevelopment
-                    // Ash {
-                    //     id: ashRef
-                    //     anchors.horizontalCenter: parent.horizontalCenter
-                    //     anchors.top: parent.top
-                    // }
                     //poketwo -game
                     // poketwo overlay — fixed: Component wrapper, redundant Connections removed,
                     // active binding on isActive handles load/unload cleanly

@@ -101,6 +101,12 @@ vim.lsp.config("qmlls", {
   root_dir = vim.fs.root(0, { "*.qmlproject", ".git", "qmldir" }),
 })
 
+vim.lsp.config("gopls", {
+  cmd = { "gopls" },
+  filetypes = { "go" },
+  root_dir = vim.fs.root(0, { "go.mod", ".git" }),
+})
+vim.lsp.enable "gopls"
 vim.lsp.enable "rust_analyzer"
 vim.lsp.enable "clangd"
 -- vim.lsp.enable "jdtls"
