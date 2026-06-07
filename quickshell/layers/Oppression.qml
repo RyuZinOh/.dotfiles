@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.utils
 import qs.Components.Wow
-import qs.Components.Screenshot
+import qs.Modules.Screenshot
 import qs.Configuration.Screenshot
 import qs.Components.notification
 import qs.Services
@@ -18,8 +18,7 @@ Scope {
             property bool isPrimary: screenScope.modelData === Quickshell.screens[0]
             property int activeNotifs: 0
             Loader {
-                // active: WowConfig.isActive || screenScope.activeNotifs > 0
-                active: WowConfig.isActive || screenScope.activeNotifs > 0 || ScreenshotConfig.isSelectingRegion || ScreenshotConfig.isCapturing || ScreenshotConfig.isPreviewing || NotificationService.count > 0
+                active: WowConfig.isActive || screenScope.activeNotifs > 0 || ScreenshotConfig.isActive || NotificationService.count > 0
 
                 sourceComponent: Component {
                     WlrLayershell {
@@ -40,8 +39,8 @@ Scope {
                         }
                         mask: Region {
                             Region {
-                                width: (WowConfig.isActive || ScreenshotConfig.isSelectingRegion || ScreenshotConfig.isPreviewing) ? oLay.width : 0
-                                height: (WowConfig.isActive || ScreenshotConfig.isSelectingRegion || ScreenshotConfig.isPreviewing) ? oLay.height : 0
+                                width: (WowConfig.isActive || ScreenshotConfig.isActive) ? oLay.width : 0
+                                height: (WowConfig.isActive || ScreenshotConfig.isActive) ? oLay.height : 0
                             }
                             Region {
                                 x: notifWindow.x
@@ -59,25 +58,11 @@ Scope {
                         }
                         Loader {
                             anchors.fill: parent
-                            active: ScreenshotConfig.isSelectingRegion && screenScope.isPrimary
-                            sourceComponent: Component {
-                                RegionSelector {}
-                            }
-                        }
-                        Loader {
-                            anchors.fill: parent
-                            active: ScreenshotConfig.isCapturing && screenScope.isPrimary
+                            active: ScreenshotConfig.isActive && screenScope.isPrimary
                             sourceComponent: Component {
                                 Screenshot {
                                     screen: screenScope.modelData
                                 }
-                            }
-                        }
-                        Loader {
-                            anchors.fill: parent
-                            active: ScreenshotConfig.isPreviewing && screenScope.isPrimary
-                            sourceComponent: Component {
-                                ScreenshotPreview {}
                             }
                         }
                         NotificationWindow {

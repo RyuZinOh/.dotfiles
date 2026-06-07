@@ -5,12 +5,14 @@ import Quickshell
 
 Singleton {
     id: root
-    property bool isCapturing: false
+
     property bool isSelectingRegion: false
+    property bool isCapturing: false
     property bool isPreviewing: false
-    property bool silent: false
     property string previewPath: ""
     property rect selectedRegion: Qt.rect(0, 0, 0, 0)
+
+    readonly property bool isActive: isSelectingRegion || isCapturing || isPreviewing
 
     signal captureReady(string path)
 

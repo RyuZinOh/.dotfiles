@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
+
 import QtQuick
-import Quickshell
+import Quickshell.Io
 import qs.Services.Theme
 import qs.Configuration.Screenshot
 
@@ -9,8 +10,31 @@ Item {
     anchors.fill: parent
     focus: true
 
+    property string activeAction: ""
+
     Component.onCompleted: root.forceActiveFocus()
     Keys.onEscapePressed: ScreenshotConfig.dismissPreview()
+
+    // qmllint disable signal-handler-parameters
+    Process {
+        id: actionProc
+        onExited: {
+            root.activeAction = "";
+            ScreenshotConfig.dismissPreview();
+        }
+    }
+    // qmllint enable signal-handler-parameters
+
+    function executeAction(type) {
+        root.activeAction = type;
+        if (type === "copy") {
+            actionProc.exec(["sh", "-c", "magick " + ScreenshotConfig.previewPath + " jpeg:- | wl-copy -t image/jpeg && rm " + ScreenshotConfig.previewPath]);
+        } else if (type === "save") {
+            const ts = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
+            const dest = "/home/safalski/photos/screenshot_" + ts + ".jpg";
+            actionProc.exec(["sh", "-c", "magick " + ScreenshotConfig.previewPath + " " + dest + " && rm " + ScreenshotConfig.previewPath]);
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -24,23 +48,20 @@ Item {
     }
 
     Item {
-        id: celestialSystem
+        id: card
         anchors.centerIn: parent
 
         property real padding: 24
-        property real maxImgW: root.width * 0.8 - padding * 2
-        property real maxImgH: root.height * 0.7 - padding * 2
-
+        property real maxImgW: root.width * 0.8 - card.padding * 2
+        property real maxImgH: root.height * 0.7 - card.padding * 2
         property real rawImgW: previewImage.implicitWidth > 0 ? previewImage.implicitWidth : 424
         property real rawImgH: previewImage.implicitHeight > 0 ? previewImage.implicitHeight : 280
+        property real scaleFactor: Math.min(1.0, card.maxImgW / card.rawImgW, card.maxImgH / card.rawImgH)
 
-        property real scaleFactor: Math.min(1.0, maxImgW / rawImgW, maxImgH / rawImgH)
-
-        width: rawImgW * scaleFactor + padding * 2
-        height: rawImgH * scaleFactor + padding * 2 + 72
+        width: card.rawImgW * card.scaleFactor + card.padding * 2
+        height: card.rawImgH * card.scaleFactor + card.padding * 2 + 72
 
         Rectangle {
-            id: moonCard
             width: parent.width
             height: parent.height - 72
             anchors.top: parent.top
@@ -55,7 +76,7 @@ Item {
                 id: previewImage
                 source: "file://" + ScreenshotConfig.previewPath
                 anchors.fill: parent
-                anchors.margins: celestialSystem.padding
+                anchors.margins: card.padding
                 fillMode: Image.PreserveAspectFit
                 cache: false
                 smooth: true
@@ -64,7 +85,6 @@ Item {
         }
 
         Row {
-            id: satelliteRow
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 32
@@ -74,35 +94,28 @@ Item {
                     {
                         icon: "\uf0c5",
                         isPrimary: false,
-                        action: function () {
-                            const tmp = "/tmp/qs_copy_tmp.png";
-                            Quickshell.execDetached(["sh", "-c", "magick " + ScreenshotConfig.previewPath + " " + tmp + " && wl-copy -t image/png < " + tmp + " ; rm " + tmp + " " + ScreenshotConfig.previewPath]);
-                            ScreenshotConfig.dismissPreview();
-                        }
+                        actionType: "copy"
                     },
                     {
                         icon: "\uea78",
                         isPrimary: true,
-                        action: function () {
-                            const ts = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
-                            const dest = "/home/safalski/photos/screenshot_" + ts + ".png";
-                            Quickshell.execDetached(["sh", "-c", "magick " + ScreenshotConfig.previewPath + " " + dest + " && rm " + ScreenshotConfig.previewPath]);
-                            ScreenshotConfig.dismissPreview();
-                        }
+                        actionType: "save"
                     }
                 ]
 
                 delegate: Item {
+                    id: delegateItem
                     width: 52
                     height: 52
 
                     required property var modelData
 
                     Rectangle {
+                        id: btnRect
                         anchors.fill: parent
                         radius: 26
-                        color: modelData.isPrimary ? (btn.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHighest) : (btn.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
-                        border.color: modelData.isPrimary ? "transparent" : (btn.containsMouse ? Theme.outlineColor : Theme.outlineVariant)
+                        color: delegateItem.modelData.isPrimary ? (btn.containsMouse ? Theme.primaryColor : Theme.surfaceContainerHighest) : (btn.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainerLow)
+                        border.color: delegateItem.modelData.isPrimary ? "transparent" : (btn.containsMouse ? Theme.outlineColor : Theme.outlineVariant)
                         border.width: 1
                         scale: btn.containsMouse ? 1.08 : 1.0
 
@@ -125,14 +138,29 @@ Item {
                         }
 
                         Text {
+                            id: btnIcon
                             anchors.centerIn: parent
-                            text: modelData.icon
+                            text: delegateItem.modelData.icon
                             font.pixelSize: 18
-                            color: (modelData.isPrimary && btn.containsMouse) ? Theme.onPrimary : Theme.textColor
+                            color: (delegateItem.modelData.isPrimary && btn.containsMouse) ? Theme.onPrimary : Theme.textColor
 
                             Behavior on color {
                                 ColorAnimation {
                                     duration: 300
+                                }
+                            }
+
+                            transform: Rotation {
+                                origin.x: btnIcon.width / 2
+                                origin.y: btnIcon.height / 2
+                                angle: 0
+                                NumberAnimation on angle {
+                                    from: 0
+                                    to: 360
+                                    duration: 700
+                                    loops: Animation.Infinite
+                                    running: actionProc.running && root.activeAction === delegateItem.modelData.actionType
+                                    easing.type: Easing.Linear
                                 }
                             }
                         }
@@ -142,7 +170,7 @@ Item {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: modelData.action()
+                            onClicked: root.executeAction(delegateItem.modelData.actionType)
                         }
                     }
                 }

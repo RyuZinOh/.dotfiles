@@ -1,6 +1,8 @@
 pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Shapes
+import Quickshell.Wayland
 import qs.Services.Theme
 import qs.Configuration.Screenshot
 
@@ -10,14 +12,17 @@ Item {
     focus: true
     opacity: 0
 
+    required property var screen
+
     Component.onCompleted: {
         root.forceActiveFocus();
         entryAnim.start();
+        screencopy.captureFrame();
     }
+
     Keys.onEscapePressed: ScreenshotConfig.dismiss()
 
     property bool hasDragged: false
-    property bool isHidingForCapture: false
 
     property real ropeDroop: root.hasDragged ? 40 : 140
     Behavior on ropeDroop {
@@ -72,6 +77,20 @@ Item {
         easing.type: Easing.OutCubic
     }
 
+    ScreencopyView {
+        id: screencopy
+        captureSource: root.screen
+        live: false
+        anchors.fill: parent
+    }
+
+    ShaderEffectSource {
+        id: cropSource
+        sourceItem: screencopy
+        live: true
+        opacity: 0
+    }
+
     component Overlay: Rectangle {
         color: Theme.backgroundColor
         opacity: 0.85
@@ -88,7 +107,6 @@ Item {
 
     Item {
         anchors.fill: parent
-        visible: !root.isHidingForCapture
 
         Overlay {
             x: 0
@@ -250,20 +268,24 @@ Item {
                 return;
             }
 
-            root.isHidingForCapture = true;
-            captureDelay.captureRect = Qt.rect(x, y, w, h);
-            captureDelay.start();
-        }
-    }
+            cropSource.sourceRect = Qt.rect(x, y, w, h);
+            cropSource.width = w;
+            cropSource.height = h;
 
-    Timer {
-        id: captureDelay
-        interval: 100
-        property var captureRect
-        onTriggered: {
-            ScreenshotConfig.selectedRegion = captureRect;
-            ScreenshotConfig.isSelectingRegion = false;
-            ScreenshotConfig.isCapturing = true;
+            cropSource.grabToImage(result => {
+                if (!result) {
+                    ScreenshotConfig.dismiss();
+                    return;
+                }
+
+                const bmpPath = "/tmp/qs_screenshot_region_" + Date.now() + ".bmp";
+                result.saveToFile(bmpPath);
+
+                ScreenshotConfig.previewPath = bmpPath;
+                ScreenshotConfig.isPreviewing = true;
+                ScreenshotConfig.captureReady(bmpPath);
+                ScreenshotConfig.dismiss();
+            });
         }
     }
 }
