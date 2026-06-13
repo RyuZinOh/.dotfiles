@@ -11,6 +11,7 @@ import qs.Modules.Hut
 import qs.Modules.Toolski
 import qs.Modules.TopJesus
 import qs.utils
+import qs.Configuration.Chernobyl
 
 Scope {
     Variants {
@@ -88,6 +89,28 @@ Scope {
                         }
 
                         source: "../Components/Clipsy/Clipsy.qml"
+                    }
+
+                    //app launcher
+                    Loader {
+                        id: chernobylLoader
+
+                        anchors.fill: parent
+                        active: false
+
+                        Connections {
+                            function onShowChernobyl() {
+                                chernobylLoader.active = true;
+                            }
+
+                            function onHideChernobyl() {
+                                chernobylLoader.active = false;
+                            }
+
+                            target: ChernobylConfig
+                        }
+
+                        source: "../Components/Chernobyl/Chernobyl.qml"
                     }
 
                     //toolski
@@ -276,6 +299,14 @@ Scope {
                         y: (hyperixonLayer.height / 2) - (ClipsyConfig.panelHeight / 2)
                         width: ClipsyConfig.isActive ? 500 : 1
                         height: ClipsyConfig.isActive ? ClipsyConfig.panelHeight : 1
+                    }
+
+                    // Chernobyl
+                    Region {
+                        x: (hyperixonLayer.width / 2) - 250
+                        y: (hyperixonLayer.height / 2) - (ChernobylConfig.panelHeight / 2)
+                        width: ChernobylConfig.isActive ? 500 : 1
+                        height: ChernobylConfig.isActive ? ChernobylConfig.panelHeight : 1
                     }
                 }
             }

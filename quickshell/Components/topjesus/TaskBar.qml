@@ -8,10 +8,10 @@ import qs.Services.Toplevels
 Item {
     id: root
 
-    property bool barOpen: false
+    // property bool barOpen: false
 
-    signal windowHovered(var wayland, real xPos)
-    signal windowUnhovered
+    // signal windowHovered(var wayland, real xPos)
+    // signal windowUnhovered
 
     visible: Toplevels.model.values.length > 0
     implicitWidth: pill.width

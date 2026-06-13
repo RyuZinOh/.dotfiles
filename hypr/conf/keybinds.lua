@@ -20,9 +20,9 @@ local exec_binds = {
 		qs .. " ipc call screenshot captureLasso",
 		{ locked = true },
 	},
-	{ mainMod .. " + G", "flatpak run org.ppsspp.PPSSPP" },
+	{ mainMod .. " + G", "env SDL_VIDEODRIVER=wayland PPSSPPSDL" },
 	{ mainMod .. " + E", "virt-manager" },
-	{ mainMod .. " + O", "flatpak run md.obsidian.Obsidian" },
+	{ mainMod .. " + O", "obsidian" },
 	{ mainMod .. " + Return", terminal },
 	{ mainMod .. " + X", browser },
 	{ mainMod .. " + K", "krita" },
@@ -35,10 +35,12 @@ local exec_binds = {
 
 	{ mainMod .. " + N", qs .. " ipc call communication toggle" },
 	{ mainMod .. " + period", qs .. " ipc call clipsy activate" },
+	{ mainMod .. " + comma", qs .. " ipc call chernobyl activate" },
 	{ "ALT + W", qs .. " ipc call artiqa toggle" },
 	{ "ALT + Q", "qtcreator" },
 	{ "ALT + R", "hyprland-run" },
-	{ "ALT + B", "bruno --ozone-platform=wayland" },
+	-- { "ALT + B", "bruno --ozone-platform=wayland" },
+	{ "ALT + B", "bruno" },
 	{ "ALT + P", "pokemmo-launcher" },
 
 	{ "CTRL + ALT + W", "libreoffice --writer" },
@@ -94,23 +96,30 @@ hl.bind(mainMod .. " + T", function()
 	hl.device({ name = vars.touchpad, enabled = touchpad_state })
 	hl.notification.create({
 		text = touchpad_state and "Touchpad Enabled" or "Touchpad Disabled",
-		duration = 3000,
+		timeout = 3000,
 		icon = "ok",
 	})
 end)
 
 -- recording
-local recording = false
 local audio_source = vars.audio_monitor
 local output_dir = os.getenv("HOME") .. "/Videos"
 
+local function is_recording()
+	local handle = io.popen("pgrep -x wl-screenrec")
+	if handle == nil then
+		return false
+	end
+	local result = handle:read("*a")
+	handle:close()
+	return result ~= nil and result ~= ""
+end
+
 hl.bind(mainMod .. " + R", function()
-	if recording then
+	if is_recording() then
 		hl.exec_cmd("pkill -INT -x wl-screenrec")
-		recording = false
 	else
 		local output = output_dir .. "/recording_" .. os.date("%Y%m%d_%H%M%S") .. ".mp4"
 		hl.exec_cmd("wl-screenrec --audio --audio-device " .. audio_source .. " -f " .. output)
-		recording = true
 	end
 end)

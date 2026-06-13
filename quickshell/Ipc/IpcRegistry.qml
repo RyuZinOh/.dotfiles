@@ -14,6 +14,9 @@ Item {
         id: lockIpc
     }
 
+    ChernobylIpc {
+        id: chernobylIpc
+    }
     ClipsyIpc {
         id: clipsyIpc
     }

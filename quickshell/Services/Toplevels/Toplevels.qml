@@ -8,19 +8,6 @@ import Quickshell.Wayland
 Singleton {
     id: root
 
-    property var iconOverrides: ({
-            "org.godotengine.ProjectManager": "godot",
-            "codium": "vscodium",
-            "obsidian": "md.obsidian.Obsidian",
-            "Postman": "postman",
-            "org.qt-project.qtcreator": "QtProject-qtcreator",
-            "org.kde.krita": "krita",
-            "com.pokemmo.PokeMMO": "pokemmo-launcher",
-            "Waydroid": "waydroid",
-            "code": "visual-studio-code",
-            "soffice": "libreoffice-startcenter",
-            "helium": "helium-browser"
-        })
     readonly property var model: ToplevelManager.toplevels
     readonly property var enriched: {
         return ToplevelManager.toplevels.values.map(tl => {
@@ -36,9 +23,31 @@ Singleton {
     function iconCandidates(appId) {
         const id = appId ?? "";
         const last = id.split(".").pop();
-        const all = [root.iconOverrides[id] ?? "", id, last, last.toLowerCase()];
+        const lowerId = id.toLowerCase();
+        const lowerLast = last.toLowerCase();
+
+        let desktopIcon = "";
+
+        if (id !== "") {
+            const entries = [...DesktopEntries.applications.values];
+
+            const match = entries.find(e => {
+                if (!e.id)
+                    return false;
+                const eid = e.id.toLowerCase();
+
+                return eid === lowerId || eid === lowerId + ".desktop" || eid === lowerLast + ".desktop" || (e.name && e.name.toLowerCase() === lowerLast);
+            });
+
+            if (match && match.icon) {
+                desktopIcon = match.icon;
+            }
+        }
+
+        const all = [desktopIcon, id, last, lowerLast];
+
         return all.filter((v, i, a) => {
-            return v.length > 0 && a.indexOf(v) === i;
+            return typeof v === "string" && v.trim().length > 0 && a.indexOf(v) === i;
         });
     }
 

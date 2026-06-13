@@ -21,6 +21,7 @@ output_path = "~/.local/state/safalQuick/monkeytype.json"
 [templates.hyprland]
 input_path  = "~/.config/matugen/templates/colors.lua"
 output_path = "~/.config/hypr/conf/colors.lua"
+post_hook = 'hyprctl reload'
 
 [templates.obsidian]
 input_path  = "~/.config/matugen/templates/obsidian.css"

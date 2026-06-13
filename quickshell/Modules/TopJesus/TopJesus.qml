@@ -263,16 +263,29 @@ Item {
                     }
                 }
 
-                Battery {
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                TaskBar {
-                    id: taskBar
+                Loader {
+                    id: batteryLoader
 
                     anchors.verticalCenter: parent.verticalCenter
+                    active: root.isHovered || root.isPinned
+                    // asynchronous: false
+
+                    sourceComponent: Component {
+                        Battery {}
+                    }
                 }
 
+                Loader {
+                    id: taskBarLoader
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    active: root.isHovered || root.isPinned
+                    // asynchronous: true
+
+                    sourceComponent: Component {
+                        TaskBar {}
+                    }
+                }
                 Item {
                     height: 28
                     width: iconRow.width

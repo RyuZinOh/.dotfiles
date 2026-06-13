@@ -6,6 +6,7 @@ hl.config({
 		shadow = {
 			enabled = false,
 		},
+		dim_inactive = false,
 		blur = {
 			enabled = false,
 		},
