@@ -1,5 +1,4 @@
 pragma ComponentBehavior: Bound
-import Qt.labs.folderlistmodel
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
@@ -16,40 +15,21 @@ Item {
     property real usedMemoryPerc: 0
     property bool componentActive: true
 
+    readonly property var memTotalRegex: /MemTotal:\s+(\d+)/
+    readonly property var memAvailRegex: /MemAvailable:\s+(\d+)/
+    readonly property var cpuRegex: /^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/
+
     Component.onDestruction: {
         root.componentActive = false;
         updateTimer.running = false;
     }
 
-    FolderListModel {
-        id: folderListModel
-        folder: "file:///sys/class/hwmon"
-    }
-
     FileView {
-        id: hwmon
-        property int index: 0
-        property bool done: false
-        property string fileName: "name"
-        path: folderListModel.status === FolderListModel.Ready ? `file:///sys/class/hwmon/hwmon${Math.min(hwmon.index, folderListModel.count - 1)}/${hwmon.fileName}` : ""
+        id: hwmonReader
+        path: "file:///sys/class/hwmon/hwmon5/temp1_input"
         onLoaded: {
-            if (!root.componentActive)
-                return;
-            if (!hwmon.done) {
-                if (hwmon.text().includes("coretemp"))
-                    Qt.callLater(() => {
-                        if (!root.componentActive)
-                            return;
-                        hwmon.done = true;
-                        hwmon.fileName = "temp1_input";
-                    });
-                else if (hwmon.index < folderListModel.count - 1)
-                    Qt.callLater(() => {
-                        if (root.componentActive)
-                            ++hwmon.index;
-                    });
-            } else {
-                root.cpuTemp = Number(hwmon.text()) / 1000;
+            if (root.componentActive) {
+                root.cpuTemp = (parseInt(hwmonReader.text().trim(), 10) || 0) / 1000;
             }
         }
     }
@@ -60,14 +40,31 @@ Item {
         onLoaded: {
             if (!root.componentActive)
                 return;
-            const t = procStat.text().split(' ').slice(2, 9).map(Number);
-            const idle = t[3] + t[4];
-            const total = t.reduce((a, c) => a + c, 0);
-            const di = idle - root.lastCpuIdle;
-            const dt = total - root.lastCpuTotal;
-            root.cpuPerc = root.lastCpuTotal > 0 && dt > 0 ? 1 - di / dt : 0;
-            root.lastCpuIdle = idle;
-            root.lastCpuTotal = total;
+
+            const match = procStat.text().match(root.cpuRegex);
+            if (!match)
+                return;
+
+            const user = parseInt(match[1], 10);
+            const nice = parseInt(match[2], 10);
+            const system = parseInt(match[3], 10);
+            const idle = parseInt(match[4], 10);
+            const iowait = parseInt(match[5], 10);
+            const irq = parseInt(match[6], 10);
+            const softirq = parseInt(match[7], 10);
+
+            const currentIdle = idle + iowait;
+            const currentTotal = user + nice + system + currentIdle + irq + softirq;
+
+            const di = currentIdle - root.lastCpuIdle;
+            const dt = currentTotal - root.lastCpuTotal;
+
+            if (root.lastCpuTotal > 0 && dt > 0) {
+                root.cpuPerc = 1.0 - (di / dt);
+            }
+
+            root.lastCpuIdle = currentIdle;
+            root.lastCpuTotal = currentTotal;
         }
     }
 
@@ -77,8 +74,19 @@ Item {
         onLoaded: {
             if (!root.componentActive)
                 return;
-            const n = procMemInfo.text().split('\n').map(m => parseInt(m.split(':')[1]));
-            root.usedMemoryPerc = 1 - n[2] / n[0];
+
+            const fileText = procMemInfo.text();
+            const matchTotal = fileText.match(root.memTotalRegex);
+            const matchAvail = fileText.match(root.memAvailRegex);
+
+            if (matchTotal && matchAvail) {
+                const total = parseInt(matchTotal[1], 10);
+                const available = parseInt(matchAvail[1], 10);
+
+                if (total > 0) {
+                    root.usedMemoryPerc = 1.0 - (available / total);
+                }
+            }
         }
     }
 
@@ -90,7 +98,7 @@ Item {
         onTriggered: {
             if (!root.componentActive)
                 return;
-            hwmon.reload();
+            hwmonReader.reload();
             procStat.reload();
             procMemInfo.reload();
         }

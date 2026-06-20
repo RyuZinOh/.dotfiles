@@ -210,7 +210,7 @@ Item {
 
                 Loader {
                     id: bongoCatLoader
-                    active: root.isPinned || root.isHovered
+                    active: root.isPinned
                     anchors.verticalCenter: parent.verticalCenter
                     sourceComponent: Component {
                         BongoCat {
@@ -280,6 +280,7 @@ Item {
 
                     anchors.verticalCenter: parent.verticalCenter
                     active: root.isHovered || root.isPinned
+
                     // asynchronous: true
 
                     sourceComponent: Component {

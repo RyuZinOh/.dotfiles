@@ -1,5 +1,4 @@
 pragma ComponentBehavior: Bound
-
 import QtQuick
 import Quickshell.Widgets
 import qs.Services.Theme
@@ -13,16 +12,16 @@ Item {
     // signal windowHovered(var wayland, real xPos)
     // signal windowUnhovered
 
-    visible: Toplevels.model.values.length > 0
-    implicitWidth: pill.width
-    implicitHeight: pill.height
+    visible: Toplevels.enriched.length > 0
+    implicitWidth: visible ? pill.width : 0
+    implicitHeight: visible ? pill.height : 0
 
     Rectangle {
         id: pill
 
         height: 32
         radius: 8
-        width: iconStrip.width + 20
+        width: iconStrip.implicitWidth + 20
         color: Theme.surfaceContainerHigh
         border.color: Theme.outlineVariant
         border.width: 0.5
@@ -34,7 +33,7 @@ Item {
             spacing: 2
 
             Repeater {
-                model: Toplevels.model
+                model: Toplevels.enriched
 
                 delegate: Item {
                     id: iconDelegate
@@ -45,22 +44,13 @@ Item {
                     height: 28
 
                     IconImage {
-                        id: icon
-
-                        property int attempt: 0
-
                         anchors.centerIn: parent
                         implicitSize: 18
-                        source: Toplevels.iconPath(iconDelegate.modelData.appId, attempt)
-                        onStatusChanged: {
-                            const candidates = Toplevels.iconCandidates(iconDelegate.modelData.appId);
-                            if (status === Image.Error && attempt < candidates.length - 1)
-                                attempt++;
-                        }
+                        source: iconDelegate.modelData.icon
                     }
 
                     Rectangle {
-                        visible: iconDelegate.modelData.activated
+                        visible: iconDelegate.modelData.toplevel.activated
                         width: 4
                         height: 4
                         radius: 2

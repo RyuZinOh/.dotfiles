@@ -216,7 +216,7 @@ Item {
                     transform: Rotation {
                         origin.x: (clockCircle.x + clockCircle.width * clockCircle.scale / 2) - minuteHand.x
                         origin.y: (clockCircle.y + clockCircle.height * clockCircle.scale / 2) - minuteHand.y
-                        angle: (root.currentMinute * 6) + (root.currentSecond * 0.1) - 180
+                        angle: (root.currentMinute * 6) + (root.currentSecond * 0.1) - 175
                         Behavior on angle {
                             RotationAnimation {
                                 duration: 500
@@ -237,7 +237,7 @@ Item {
                     transform: Rotation {
                         origin.x: (clockCircle.x + clockCircle.width * clockCircle.scale / 2) - hourHand.x
                         origin.y: (clockCircle.y + clockCircle.height * clockCircle.scale / 2) - hourHand.y
-                        angle: ((root.currentHour % 12) * 30) + (root.currentMinute * 0.5) - 30
+                        angle: ((root.currentHour % 12) * 30) + (root.currentMinute * 0.5) - 10
                         Behavior on angle {
                             enabled: false
                         }
